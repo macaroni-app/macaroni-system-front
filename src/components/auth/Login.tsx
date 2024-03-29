@@ -1,14 +1,21 @@
+// libs
 import { useState } from "react"
-
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useNavigate, useLocation } from "react-router-dom"
+
+// schema
 import { userSchema } from "./userSchema"
 
+// types
 import { Credentials } from "../../services/types"
-import loginService from "../../services/login"
-import { useAuthContext } from "../../hooks/useAuthContext"
 import { IUserContext } from "../../context/types"
-import { useNavigate, useLocation } from "react-router-dom"
+
+// services
+import loginService from "../../services/login"
+
+// custom hooks
+import { useAuthContext } from "../../hooks/useAuthContext"
 
 import {
   Grid,

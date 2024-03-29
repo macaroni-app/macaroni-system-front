@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom"
 
 // components
 import Login from "./components/auth/Login"
+import Home from "./components/common/Home"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import PersistLogin from "./components/auth/PersistLogin"
 
@@ -16,7 +17,7 @@ function App(): JSX.Element {
         {/* private routes */}
         <Route element={<PersistLogin />}>
           <Route element={<ProtectedRoute />}>
-            <Route path="/*" element={<h1>Hello home</h1>} />
+            <Route path="/*" element={<Home />} />
           </Route>
         </Route>
       </Routes>

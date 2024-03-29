@@ -27,6 +27,12 @@ import { useLogout } from "../../hooks/useLogout"
 
 import { useNavigate } from "react-router-dom"
 
+interface INavType {
+  label: string
+  href: string
+  children?: INavType[]
+}
+
 const Header = (): JSX.Element => {
   const { isOpen, onToggle } = useDisclosure()
 
@@ -124,6 +130,7 @@ const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "gray.200")
   const linkHoverColor = useColorModeValue("gray.800", "white")
   // const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const navigate = useNavigate()
 
   return (
     <Stack direction={"row"} spacing={4}>
@@ -242,8 +249,10 @@ const MobileNav = () => {
   )
 }
 
-const MobileNavItem = ({ label, children, href }) => {
+const MobileNavItem = (props: INavType) => {
+  const { label, children, href } = props
   const { isOpen, onToggle } = useDisclosure()
+  const navigate = useNavigate()
 
   return (
     <Stack spacing={4} onClick={children && onToggle}>
@@ -304,45 +313,14 @@ const MobileNavItem = ({ label, children, href }) => {
   )
 }
 
-const NAV_ITEMS = [
+const NAV_ITEMS: INavType[] = [
   {
     label: "Ventas",
     href: "/",
-    // profiles: ["System Administrator", "Seller"],
-  },
-  {
-    label: "Deudas",
-    href: "/debts",
-    // profiles: ["System Administrator", "Seller"],
-  },
-  {
-    label: "Divider",
-    href: "#",
-    // profiles: ["System Administrator", "Seller"],
   },
   {
     label: "Productos",
     href: "/products",
-  },
-  {
-    label: "Categorias",
-    href: "/categories",
-  },
-  {
-    label: "Clientes",
-    href: "/clients",
-  },
-  {
-    label: "Métodos de pago",
-    href: "/methodPayments",
-  },
-  {
-    label: "Gráficos",
-    href: "/reports",
-  },
-  {
-    label: "Productos vendidos",
-    href: "/products-sold",
   },
 ]
 

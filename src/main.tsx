@@ -9,6 +9,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { UserContextProvider } from "./context/UserContext"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,7 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           </BrowserRouter>
         </UserContextProvider>
       </ChakraProvider>
-      {/* <ReactQueryDevtools /> */}
+      <ReactQueryDevtools />
     </QueryClientProvider>
   </React.StrictMode>
 )
