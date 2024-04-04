@@ -1,45 +1,78 @@
+import {
+  UseFormRegister,
+  FormState,
+  Control,
+  Controller,
+} from "react-hook-form"
+
 import { FormLabel, FormControl, FormErrorMessage } from "@chakra-ui/react"
-import Select from "react-select"
+import Select, { PropsValue } from "react-select"
 
-interface Props {}
+import { ICategory } from "../../categories/types"
 
-const MySelect = (props) => {
-  const { formik, field, placeholder, label, isRequired, data, isDisabled } =
+interface Props {
+  register: UseFormRegister<any>
+  formState: FormState<any>
+  field: string
+  placeholder: string
+  label: string
+  isDisabled?: boolean
+  isRequired?: boolean
+  control: Control<any, any>
+  data?: ICategory[]
+}
+
+type Option = {
+  value: string
+  label: string
+}
+
+const MySelect = (props: Props) => {
+  const { formState, field, placeholder, label, data, control, isRequired } =
     props
 
-  const handleSelect = (options) => {
-    formik.setFieldValue(field, options?.value ? options?.value : "")
-  }
-
-  const options = data?.map((model) => {
-    if (model.client) {
-      return {
-        label: `${model.client.name} - ${model.total}`,
-        value: model._id,
-      }
-    }
+  const options: PropsValue<any> = data?.map((model) => {
+    // if (model.client) {
+    //   return {
+    //     label: `${model.client.name} - ${model.total}`,
+    //     value: model._id,
+    //   }
+    // }
     return { label: model.name, value: model._id }
   })
 
   return (
-    <FormControl isInvalid={formik.errors[field] && formik.touched[field]}>
+    <FormControl
+      isInvalid={
+        !!formState.errors[field]?.message && !!formState.touchedFields[field]
+      }
+    >
       <FormLabel htmlFor={field}>{label}:</FormLabel>
-      <Select
-        options={options}
-        onChange={handleSelect}
-        onBlur={(isTouched) => formik.setFieldTouched(field, isTouched)}
-        isClearable={true}
-        isDisabled={isDisabled}
-        name={field}
-        value={options?.filter((model) => model.value === formik.values[field])}
-        id={field}
-        placeholder={placeholder}
-        noOptionsMessage={() => "No hay datos"}
-        isInvalid={formik.errors[field] && formik.touched[field]}
-        required={isRequired}
+      <Controller
+        control={control}
+        render={({ field: { onChange, value, name, ref, onBlur } }) => (
+          <Select
+            ref={ref}
+            placeholder={placeholder}
+            value={options?.filter((option: Option) => option.value === value)}
+            name={name}
+            isClearable={true}
+            required={isRequired}
+            noOptionsMessage={() => "No hay datos"}
+            options={options}
+            onBlur={onBlur}
+            onChange={(selectedOption) => {
+              onChange(selectedOption ? selectedOption.value : "")
+            }}
+          />
+        )}
+        name={"category"}
       />
-      {formik.errors[field] && formik.touched[field] && (
-        <FormErrorMessage>{formik.errors[field]}</FormErrorMessage>
+
+      {!!formState.errors[field] && !!formState.touchedFields[field] && (
+        <FormErrorMessage>
+          {formState?.errors[field]?.message?.toString()}
+        </FormErrorMessage>
       )}
     </FormControl>
   )

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { ChangeEvent, useState } from "react"
 
 // custom hooks
-import { useProducts } from "../../hooks/useProducts"
+import { useAssets } from "../../hooks/useAssets"
 // import { useError } from "../../hooks/useError"
 
 // types
-import { IProduct } from "./types"
+import { IAsset } from "./types"
 
 // styles
 import {
@@ -27,24 +27,24 @@ import {
 import { AddIcon } from "@chakra-ui/icons"
 
 // components
-import Product from "./Product"
+import Asset from "./Asset"
 // import Dashboard from "../reports/Dashboard"
 import WithoutResults from "../common/WithoutResults"
 
-const Products = (): JSX.Element => {
+const Assets = (): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>("")
 
   // const { throwError } = useError()
 
   const navigate = useNavigate()
 
-  const queryProducts = useProducts({})
+  const queryAssets = useAssets({})
 
   // if (queryProducts?.isError) {
   //   throwError(queryProducts?.error)
   // }
 
-  const handleAddProduct = () => {
+  const handleAddAsset = () => {
     navigate("add")
   }
 
@@ -52,21 +52,23 @@ const Products = (): JSX.Element => {
     setSearchValue(e.target.value)
   }
 
-  const products = queryProducts?.data as IProduct[]
+  const assets = queryAssets?.data as IAsset[]
 
-  const productList = products
-    ?.filter((product) =>
-      product.name.toLowerCase().includes(searchValue.toLowerCase())
-    )
-    ?.map((product) => {
-      return (
-        <Product key={product?._id + product?.createdAt} product={product} />
-      )
+  const assetList = assets
+    ?.filter((asset) => {
+      if (asset.name !== undefined) {
+        return asset.name.toLowerCase().includes(searchValue.toLowerCase())
+      }
+    })
+    ?.map((asset) => {
+      if (asset._id !== undefined && asset.createdAt !== undefined) {
+        return <Asset key={asset?._id + asset?.createdAt} asset={asset} />
+      }
     })
 
   return (
     <>
-      {queryProducts?.isLoading && (
+      {queryAssets?.isLoading && (
         <Card variant="outline" mt={5} mb={3}>
           <CardBody>
             <Stack>
@@ -81,22 +83,22 @@ const Products = (): JSX.Element => {
       {/* {!queryProducts?.isError && !queryProducts?.isLoading && (
         <Dashboard queryProducts={queryProducts} />
       )} */}
-      {!queryProducts?.isError && !queryProducts?.isLoading && (
+      {!queryAssets?.isError && !queryAssets?.isLoading && (
         <>
           <Card bgColor={"#373E68"} variant="outline" mt={5} mb={3}>
             <CardBody>
               <Flex placeItems={"center"}>
                 <Text color={"white"} fontWeight={"bold"}>
-                  {productList?.length} productos
+                  {assetList?.length} insumos
                 </Text>
                 <Spacer />
                 <Button
-                  onClick={() => handleAddProduct()}
+                  onClick={() => handleAddAsset()}
                   colorScheme="purple"
                   variant="solid"
                 >
                   <AddIcon boxSize={3} me={2} />
-                  Agregar producto
+                  Agregar insumo
                 </Button>
               </Flex>
             </CardBody>
@@ -110,7 +112,7 @@ const Products = (): JSX.Element => {
                     type="text"
                     value={searchValue}
                     onChange={(e) => handleSetSearchValue(e)}
-                    placeholder="Buscar producto ..."
+                    placeholder="Buscar insumo ..."
                     required
                   />
                 </FormControl>
@@ -120,7 +122,7 @@ const Products = (): JSX.Element => {
         </>
       )}
 
-      {queryProducts?.isLoading && (
+      {queryAssets?.isLoading && (
         <>
           <Card variant="filled" mb={3}>
             <CardBody>
@@ -184,21 +186,21 @@ const Products = (): JSX.Element => {
         </>
       )}
 
-      {!queryProducts?.isError &&
-        queryProducts?.data?.length !== undefined &&
-        queryProducts?.data?.length > 0 &&
-        !queryProducts?.isLoading && (
+      {!queryAssets?.isError &&
+        queryAssets?.data?.length !== undefined &&
+        queryAssets?.data?.length > 0 &&
+        !queryAssets?.isLoading && (
           <Grid mt={5}>
-            <GridItem>{productList}</GridItem>
+            <GridItem>{assetList}</GridItem>
           </Grid>
         )}
-      {!queryProducts?.isError &&
-        queryProducts?.data?.length === 0 &&
-        !queryProducts?.isLoading && (
-          <WithoutResults text={"No hay productos cargados."} />
+      {!queryAssets?.isError &&
+        queryAssets?.data?.length === 0 &&
+        !queryAssets?.isLoading && (
+          <WithoutResults text={"No hay insumos cargados."} />
         )}
     </>
   )
 }
 
-export default Products
+export default Assets

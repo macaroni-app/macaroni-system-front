@@ -5,10 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 // types
-import { IProduct } from "./types"
+import { IAsset, IAssetWithCategory } from "./types"
+import { ICategory } from "../categories/types"
 
 // schemas
-import { productSchema } from "./productSchema"
+import { assetSchema } from "./assetSchema"
 
 import {
   Grid,
@@ -22,31 +23,36 @@ import {
 
 // components
 import MyInput from "../ui/inputs/MyInput"
-// import MySelect from "../ui/inputs/MySelect"
+import MySelect from "../ui/inputs/MySelect"
 import Loading from "../common/Loading"
 
 interface Props {
-  onSubmit: SubmitHandler<IProduct>
+  onSubmit: SubmitHandler<IAssetWithCategory>
   onCancelOperation: () => void
-  productToUpdate?: IProduct
+  assetToUpdate?: IAsset
+  categories?: ICategory[]
   isEditing: boolean
   isLoading: boolean
 }
 
-const ProductAddEditForm = (props: Props) => {
+const AssetAddEditForm = (props: Props) => {
   const {
     onSubmit,
     onCancelOperation,
-    productToUpdate,
-    // categories,
+    assetToUpdate,
     isEditing,
     isLoading,
+    categories,
   } = props
 
-  const { register, formState, handleSubmit } = useForm<IProduct>({
-    resolver: zodResolver(productSchema),
-    defaultValues: { ...productToUpdate },
-  })
+  const { register, formState, handleSubmit, control } =
+    useForm<IAssetWithCategory>({
+      resolver: zodResolver(assetSchema),
+      values: {
+        name: assetToUpdate?.name,
+        category: assetToUpdate?.category?._id,
+      },
+    })
 
   return (
     <>
@@ -60,48 +66,31 @@ const ProductAddEditForm = (props: Props) => {
             <Card mb={10} variant="outline">
               <CardBody>
                 <Heading mb={3} textAlign="center" size="lg">
-                  {!isEditing ? "Nuevo producto:" : "Modificar producto:"}
+                  {!isEditing ? "Nuevo insumo:" : "Modificar insumo:"}
                 </Heading>
                 <form noValidate onSubmit={handleSubmit(onSubmit)}>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12 }}>
                       <MyInput
                         formState={formState}
                         register={register}
                         field={"name"}
                         type={"text"}
-                        placeholder={"Nombre producto"}
+                        placeholder={"Nombre insumo"}
                         label={"Nombre"}
                       />
                     </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
+
+                    <GridItem colSpan={{ base: 12 }}>
+                      <MySelect
                         formState={formState}
                         register={register}
-                        field={"costPrice"}
-                        type={"number"}
-                        placeholder={"Precio de costo"}
-                        label={"Precio de costo"}
-                      />
-                    </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
-                        formState={formState}
-                        register={register}
-                        field={"retailsalePrice"}
-                        type={"number"}
-                        placeholder={"Precio por menor"}
-                        label={"Precio por menor"}
-                      />
-                    </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
-                        formState={formState}
-                        register={register}
-                        field={"wholesalePrice"}
-                        type={"number"}
-                        placeholder={"Precio por mayor"}
-                        label={"Precio por mayor"}
+                        field={"category"}
+                        placeholder={"Buscar categoria ..."}
+                        label={"Categoria"}
+                        control={control}
+                        data={categories}
+                        isRequired={true}
                       />
                     </GridItem>
                   </Grid>
@@ -137,4 +126,4 @@ const ProductAddEditForm = (props: Props) => {
   )
 }
 
-export default ProductAddEditForm
+export default AssetAddEditForm

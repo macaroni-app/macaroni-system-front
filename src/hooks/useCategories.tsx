@@ -1,4 +1,3 @@
-// libs
 import {
   QueryFunctionContext,
   useQuery,
@@ -6,11 +5,11 @@ import {
 } from "@tanstack/react-query"
 
 // types
-import { IProduct } from "../components/products/types"
+import { ICategory } from "../components/categories/types"
 import { IFilters } from "../components/common/types"
 
 // services
-import productService from "../services/product"
+import categoryService from "../services/category"
 
 // hooks
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
@@ -19,20 +18,23 @@ interface Props {
   id?: string
 }
 
-export const useProducts = (props: Props) => {
+export const useCategories = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
   const { id } = props || ""
 
-  const query: UseQueryResult<IProduct[], Error> = useQuery({
+  const query: UseQueryResult<ICategory[], Error> = useQuery({
     queryKey: [
-      "products",
+      "categories",
       {
         filters: { id },
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
       const { filters } = queryKey[1] as IFilters
-      const { data } = await productService.getAll({ ...filters }, axiosPrivate)
+      const { data } = await categoryService.getAll(
+        { ...filters },
+        axiosPrivate
+      )
       return data
     },
     staleTime: Infinity,

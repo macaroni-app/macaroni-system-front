@@ -3,10 +3,10 @@ import { Route, Routes } from "react-router-dom"
 import {
   Grid,
   GridItem,
-  Text,
-  Flex,
-  Card,
-  CardBody,
+  // Text,
+  // Flex,
+  // Card,
+  // CardBody,
   Box,
 } from "@chakra-ui/react"
 // import {
@@ -19,14 +19,14 @@ import {
 
 // components
 import Header from "./Header"
-import Products from "../products/Products"
-import ProductForm from "../products/ProductForm"
+import Assets from "../assets/Assets"
+import AssetForm from "../assets/AssetForm"
 // import ProductDetails from "../products/ProductDetails"
 // import Sales from "../sales/Sales"
 // import SaleForm from "../sales/SaleForm"
 // import SaleDetails from "../sales/SaleDetails"
-// import Categories from "../categories/Categories"
-// import CategoryForm from "../categories/CategoryForm"
+import Categories from "../categories/Categories"
+import CategoryForm from "../categories/CategoryForm"
 // import ClientForm from "../clients/ClientForm"
 // import Clients from "../clients/Clients"
 // import MethodPayments from "../methodPayments/MethodPayments"
@@ -54,7 +54,7 @@ const Home = () => {
       <Header />
       <Routes>
         <Route
-          path="/products"
+          path="/assets"
           element={
             <Grid templateColumns="repeat(12, 1fr)" mb={10}>
               <GridItem
@@ -63,20 +63,14 @@ const Home = () => {
                 colStart={{ base: 2, md: 2, lg: 3 }}
                 mb={10}
               >
-                <Products />
+                <Assets />
               </GridItem>
             </Grid>
           }
         />
-        <Route path="/products/add" element={<ProductForm />} />
-        <Route path="/products/:productId/edit" element={<ProductForm />} />
-      </Routes>
-      {/*
+        <Route path="/assets/add" element={<AssetForm />} />
+        <Route path="/assets/:assetId/edit" element={<AssetForm />} />
 
-        <Route
-          path="/products/:productId/details"
-          element={<ProductDetails />}
-        />
         <Route
           path="/categories"
           element={
@@ -94,6 +88,13 @@ const Home = () => {
         />
         <Route path="/categories/add" element={<CategoryForm />} />
         <Route path="/categories/:categoryId/edit" element={<CategoryForm />} />
+      </Routes>
+      {/*
+
+        <Route
+          path="/products/:productId/details"
+          element={<ProductDetails />}
+        />
         <Route
           path="/clients"
           element={

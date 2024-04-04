@@ -34,9 +34,6 @@ const MyInput = (props: Props) => {
         {...register(field, {
           valueAsNumber: type === "number" ? true : false,
         })}
-        // value={hookForm.values[field]}
-        // onChange={hookForm.handleChange}
-        // onBlur={hookForm.handleBlur}
         isDisabled={isDisabled}
         placeholder={placeholder}
         isInvalid={

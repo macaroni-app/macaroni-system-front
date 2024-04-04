@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 
 // custom hooks
-// import { useDeleteProduct } from "../../hooks/useDeleteProduct"
-// import { useMessage } from "../../hooks/useMessage"
+import { useDeleteAsset } from "../../hooks/useDeleteAsset"
+import { useMessage } from "../../hooks/useMessage"
 
 // types
-import { IProduct } from "./types"
+import { IAsset } from "./types"
 
 // styles
 import {
@@ -38,41 +38,46 @@ import {
 } from "@chakra-ui/react"
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  product: IProduct
+  asset: IAsset
 }
 
-const Product = ({ product }: Props): JSX.Element => {
+const Asset = ({ asset }: Props): JSX.Element => {
   const navigate = useNavigate()
 
-  // const { deleteProduct } = useDeleteProduct()
-  // const { showMessage } = useMessage()
+  const { deleteAsset } = useDeleteAsset()
+  const { showMessage } = useMessage()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const handleEdit = () => {
-    navigate(`${product._id}/edit`)
+    navigate(`${asset._id}/edit`)
   }
 
   const handleDetails = () => {
-    navigate(`/products/${product._id}/details`)
+    navigate(`/assets/${asset._id}/details`)
   }
 
-  // const handleDelete = async () => {
-  //   setIsLoading(true)
-  //   const response = await deleteProduct({ productId: product._id })
-  //   if (response?.isDeleted) {
-  //     showMessage("Producto eliminado.", "success", "purple")
-  //     setIsLoading(false)
-  //   }
+  const handleDelete = async () => {
+    setIsLoading(true)
+    const response = await deleteAsset({ assetId: asset?._id })
+    if (response?.isDeleted) {
+      showMessage(
+        "Insumo eliminado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+    }
 
-  //   if (!response?.isDeleted) {
-  //     showMessage("Ocurrió un error", "error", "red")
-  //     setIsLoading(false)
-  //   }
-  //   navigate("/products")
-  // }
+    if (!response?.isDeleted) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+    navigate("/assets")
+  }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -84,35 +89,39 @@ const Product = ({ product }: Props): JSX.Element => {
             <GridItem colSpan={5}>
               <Flex direction="column" gap={2}>
                 <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
-                  {product.name}
+                  {asset.name}
                 </Text>
                 <Badge
                   variant="subtle"
                   colorScheme="purple"
                   alignSelf={"start"}
                 >
-                  Category
+                  {asset?.category?.name}
                 </Badge>
-                <Text fontSize="xs" align="start">
+                {/* <Text fontSize="xs" align="start">
                   Stock:{" "}
                   <Text fontWeight={"bold"} as={"span"}>
                     Stock
                   </Text>
-                </Text>
+                </Text> */}
               </Flex>
             </GridItem>
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                <Text as="b" alignSelf="end">
+                {/* {product.retailsalePrice !== undefined && ( */}
+                {/* <Text as="b" alignSelf="end">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     minimumFractionDigits: 2,
                     currency: "USD",
                   }).format(
-                    Number.parseFloat(product.retailsalePrice.toFixed(2))
+                    Number.parseFloat(
+                      product?.retailsalePrice.toFixed(2).toString()
+                    )
                   )}
-                </Text>
+                </Text> */}
+                {/* )} */}
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
                     <IconButton
@@ -195,12 +204,12 @@ const Product = ({ product }: Props): JSX.Element => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Borrar producto</ModalHeader>
+          <ModalHeader>Borrar insumo</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <p>
-              ¿Estás seguro de eliminar el producto{" "}
-              <Text as={"b"}>{product.name}</Text>?
+              ¿Estás seguro de eliminar el insumo{" "}
+              <Text as={"b"}>{asset.name}</Text>?
             </p>
           </ModalBody>
           <ModalFooter>
@@ -208,8 +217,7 @@ const Product = ({ product }: Props): JSX.Element => {
               isLoading={isLoading}
               colorScheme="red"
               mr={3}
-              onClick={() => console.log("lsl")}
-              // onClick={() => handleDelete()}
+              onClick={() => handleDelete()}
             >
               Borrar
             </Button>
@@ -223,4 +231,4 @@ const Product = ({ product }: Props): JSX.Element => {
   )
 }
 
-export default Product
+export default Asset
