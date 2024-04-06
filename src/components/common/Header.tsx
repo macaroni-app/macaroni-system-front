@@ -330,6 +330,10 @@ const NAV_ITEMS: INavType[] = [
     label: "Categorias",
     href: "/categories",
   },
+  {
+    label: "Tipos de productos",
+    href: "/productTypes",
+  },
 ]
 
 export default Header

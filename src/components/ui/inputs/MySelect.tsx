@@ -32,12 +32,6 @@ const MySelect = (props: Props) => {
     props
 
   const options: PropsValue<any> = data?.map((model) => {
-    // if (model.client) {
-    //   return {
-    //     label: `${model.client.name} - ${model.total}`,
-    //     value: model._id,
-    //   }
-    // }
     return { label: model.name, value: model._id }
   })
 
@@ -54,6 +48,7 @@ const MySelect = (props: Props) => {
           <Select
             ref={ref}
             placeholder={placeholder}
+            defaultValue={value}
             value={options?.filter((option: Option) => option.value === value)}
             name={name}
             isClearable={true}
@@ -66,7 +61,7 @@ const MySelect = (props: Props) => {
             }}
           />
         )}
-        name={"category"}
+        name={field}
       />
 
       {!!formState.errors[field] && !!formState.touchedFields[field] && (

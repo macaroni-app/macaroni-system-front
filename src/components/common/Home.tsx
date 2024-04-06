@@ -21,7 +21,11 @@ import {
 import Header from "./Header"
 import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
+import ProductTypes from "../productTypes/ProductTypes"
+import ProductTypeForm from "../productTypes/ProductTypeForm"
 // import ProductDetails from "../products/ProductDetails"
+import Products from "../products/Products"
+import ProductForm from "../products/ProductForm"
 // import Sales from "../sales/Sales"
 // import SaleForm from "../sales/SaleForm"
 // import SaleDetails from "../sales/SaleDetails"
@@ -88,6 +92,44 @@ const Home = () => {
         />
         <Route path="/categories/add" element={<CategoryForm />} />
         <Route path="/categories/:categoryId/edit" element={<CategoryForm />} />
+        <Route
+          path="/productTypes"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <ProductTypes />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/productTypes/add" element={<ProductTypeForm />} />
+        <Route
+          path="/productTypes/:productTypeId/edit"
+          element={<ProductTypeForm />}
+        />
+
+        <Route
+          path="/products"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Products />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/products/add" element={<ProductForm />} />
+        {/* <Route path="/products/:productId/edit" element={<AssetForm />} /> */}
       </Routes>
       {/*
 
