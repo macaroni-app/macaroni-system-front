@@ -1,57 +1,62 @@
-import { useState } from "react"
+import { useState } from "react";
 
-import { SubmitHandler } from "react-hook-form"
+import { SubmitHandler } from "react-hook-form";
 
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom";
 
 // types
-import { IProductComplete } from "./types"
-import { ICategory } from "../categories/types"
-import { IProductTypeType } from "../productTypes/types"
-import { IAsset } from "../assets/types"
+import { IProductComplete, IProductItem } from "./types";
+import { ICategory } from "../categories/types";
+import { IProductTypeType } from "../productTypes/types";
+import { IAsset } from "../assets/types";
 
 // components
-import ProductAddForm from "./ProductAddForm"
+import ProductAddForm from "./ProductAddForm";
 // import SaleFormEdit from "./SaleFormEdit"
 
 // custom hooks
 // import { useProducts } from "../../hooks/useProducts"
-import { useNewProduct } from "../../hooks/useNewProduct"
-import { useCategories } from "../../hooks/useCategories"
-import { useProductTypes } from "../../hooks/useProductTypes"
-import { useAssets } from "../../hooks/useAssets"
+import { useNewProduct } from "../../hooks/useNewProduct";
+import { useCategories } from "../../hooks/useCategories";
+import { useProductTypes } from "../../hooks/useProductTypes";
+import { useAssets } from "../../hooks/useAssets";
+import { useNewManyProductItem } from "../../hooks/useNewManyProductItem";
+import { useMessage } from "../../hooks/useMessage";
+import { useError, Error } from "../../hooks/useError";
 
-import { useMessage } from "../../hooks/useMessage"
-import { useError, Error } from "../../hooks/useError"
+import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 
-import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
-import { useNewManyProductItem } from "../../hooks/useNewManyProductItem"
+type IProductResponse = {
+  data?: IProductComplete;
+  isStored?: boolean;
+  status?: number;
+};
 
 const ProductForm = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { showMessage } = useMessage()
+  const { showMessage } = useMessage();
 
-  const { throwError } = useError()
+  const { throwError } = useError();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { productId } = useParams()
+  const { productId } = useParams();
 
   // products
   // const queryProducts = useProducts({})
-  const queryAssets = useAssets({})
+  const queryAssets = useAssets({});
 
-  const { addNewProduct } = useNewProduct()
-  const { addNewManyProductItem } = useNewManyProductItem()
+  const { addNewProduct } = useNewProduct();
+  const { addNewManyProductItem } = useNewManyProductItem();
 
-  const queryCategories = useCategories({})
-  const queryProductTypes = useProductTypes({})
+  const queryCategories = useCategories({});
+  const queryProductTypes = useProductTypes({});
 
-  const categories = queryCategories?.data as ICategory[]
-  const productTypes = queryProductTypes?.data as IProductTypeType[]
-  const assets = queryAssets?.data as IAsset[]
+  const categories = queryCategories?.data as ICategory[];
+  const productTypes = queryProductTypes?.data as IProductTypeType[];
+  const assets = queryAssets?.data as IAsset[];
 
   //const onSubmit = async () => {
   // setIsLoading(true)
@@ -271,41 +276,34 @@ const ProductForm = () => {
   const onSubmit: SubmitHandler<IProductComplete> = async (
     product: IProductComplete
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      console.log(product)
-      let response
+      let response: IProductResponse = {
+        data: undefined,
+        isStored: undefined,
+        status: undefined,
+      };
+
       if (!productId) {
-        response = await addNewProduct({ ...product })
+        response = await addNewProduct({ ...product });
 
         let producItemWithProduct = product?.productItems?.map(
           (productItem) => {
-            return { ...productItem, product: response?.data._id }
+            return { ...productItem, product: response?.data?._id };
           }
-        )
+        );
 
-        console.log(producItemWithProduct)
-        const { isStored } = await addNewManyProductItem(producItemWithProduct)
+        const { isStored } = await addNewManyProductItem(
+          producItemWithProduct as IProductItem[]
+        );
 
-        // const { isStored, status } = await addManySaleDetails({
-        //   saleDetails: saleItemWithSale,
-        // })
-        // if (isStored && status === 201) {
-        //   response = await updateManyProducts({
-        //     products: productsToUpdate,
-        //   })
-        //   if (response.isUpdated && response.status === 200) {
-        //     showMessage(RECORD_CREATED, "success", "purple")
-        //   }
-        // }
-
-        // if (response.isStored) {
-        //   showMessage(
-        //     RECORD_CREATED,
-        //     AlertStatus.Success,
-        //     AlertColorScheme.Purple
-        //   )
-        // }
+        if (response.isStored) {
+          showMessage(
+            RECORD_CREATED,
+            AlertStatus.Success,
+            AlertColorScheme.Purple
+          );
+        }
       } else {
         // response = await editAsset({ assetId, assetToUpdate: asset })
         // if (response.isUpdated) {
@@ -317,18 +315,18 @@ const ProductForm = () => {
         // }
       }
       if (response.status === 200 || response.status === 201) {
-        navigate("/products")
+        navigate("/products");
       }
     } catch (error: unknown) {
-      throwError(error as Error)
+      throwError(error as Error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onCancelOperation = () => {
-    navigate("/products")
-  }
+    navigate("/products");
+  };
 
   return (
     <>
@@ -353,7 +351,7 @@ const ProductForm = () => {
         />
       )}
     </>
-  )
-}
+  );
+};
 
-export default ProductForm
+export default ProductForm;
