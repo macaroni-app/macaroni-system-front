@@ -154,7 +154,7 @@ const ProductFormAdd = ({
                         formState={formState}
                         register={register}
                         field={"productType"}
-                        placeholder={"Buscar tipo de product ..."}
+                        placeholder={"Buscar tipo de producto ..."}
                         label={"Tipo de producto"}
                         control={control}
                         data={productTypes}
@@ -213,16 +213,16 @@ const ProductFormAdd = ({
                                 alignSelf={"center"}
                                 justifySelf={"end"}
                               >
-                                {/* {fields.length > 1 && ( */}
-                                <IconButton
-                                  variant={"outline"}
-                                  colorScheme="red"
-                                  me={2}
-                                  onClick={() => remove(index)}
-                                  icon={<DeleteIcon />}
-                                  aria-label={""}
-                                />
-                                {/* )} */}
+                                {fields.length > 1 && (
+                                  <IconButton
+                                    variant={"outline"}
+                                    colorScheme="red"
+                                    me={2}
+                                    onClick={() => remove(index)}
+                                    icon={<DeleteIcon />}
+                                    aria-label={""}
+                                  />
+                                )}
                               </GridItem>
                             </Grid>
                           </CardBody>
