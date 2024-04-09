@@ -4,6 +4,7 @@ export const assetSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(1, "Complete el campo"),
   category: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
+  costPrice: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

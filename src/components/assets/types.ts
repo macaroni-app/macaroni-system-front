@@ -4,6 +4,7 @@ export interface IAsset {
   _id?: string
   name?: string
   category?: ICategory
+  costPrice?: number
   isDeleted?: boolean
   createdAt?: Date
   updatedAt?: Date
@@ -16,6 +17,7 @@ export interface IAssetWithCategory {
   _id?: string
   name?: string
   category?: string
+  costPrice?: number
   isDeleted?: boolean
   createdAt?: Date
   updatedAt?: Date

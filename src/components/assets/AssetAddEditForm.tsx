@@ -51,6 +51,7 @@ const AssetAddEditForm = (props: Props) => {
       values: {
         name: assetToUpdate?.name,
         category: assetToUpdate?.category?._id,
+        costPrice: assetToUpdate?.costPrice,
       },
     })
 
@@ -91,6 +92,17 @@ const AssetAddEditForm = (props: Props) => {
                         control={control}
                         data={categories}
                         isRequired={true}
+                      />
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 12 }}>
+                      <MyInput
+                        formState={formState}
+                        register={register}
+                        field={"costPrice"}
+                        type={"number"}
+                        placeholder={"Precio de costo"}
+                        label={"Precio de costo"}
                       />
                     </GridItem>
                   </Grid>
