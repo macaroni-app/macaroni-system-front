@@ -109,19 +109,17 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {/* {product.retailsalePrice !== undefined && ( */}
-                {/* <Text as="b" alignSelf="end">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    minimumFractionDigits: 2,
-                    currency: "USD",
-                  }).format(
-                    Number.parseFloat(
-                      product?.retailsalePrice.toFixed(2).toString()
-                    )
-                  )}
-                </Text> */}
-                {/* )} */}
+                {asset.costPrice !== undefined && (
+                  <Text as="b" alignSelf="end">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      minimumFractionDigits: 2,
+                      currency: "USD",
+                    }).format(
+                      Number.parseFloat(asset?.costPrice.toFixed(2).toString())
+                    )}
+                  </Text>
+                )}
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
                     <IconButton
