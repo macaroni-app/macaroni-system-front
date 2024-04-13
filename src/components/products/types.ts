@@ -1,3 +1,4 @@
+import { IAsset } from "../assets/types"
 import { ICategory } from "../categories/types"
 import { IProductTypeType } from "../productTypes/types"
 
@@ -26,7 +27,7 @@ export interface IProductComplete {
   retailsalePrice?: Number
   productType?: IProductTypeType
   category?: ICategory
-  productItems?: {asset: string, quantity: number}[]
+  productItems?: {asset: string, quantity: number, id?: string}[]
   isDeleted?: boolean
   isActive?: boolean
   createdAt?: Date
@@ -37,6 +38,7 @@ export interface IProductComplete {
 }
 
 export interface IProductItem {
+  id?: string
   asset?: string
   product?: string
   quantity?: Number
@@ -46,4 +48,24 @@ export interface IProductItem {
   deletedAt?: Date
   createdBy?: string
   updatedBy?: string
+}
+
+export interface IProductItemFull {
+  _id?: string
+  asset?: IAsset
+  product?: IProduct
+  quantity?: Number
+  isDeleted?: boolean
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date
+  createdBy?: string
+  updatedBy?: string
+}
+
+export type IProductItemPreview = Pick<IProductItem, "asset" | "quantity" | "id">;
+
+export interface AssetWithQuantity {
+  asset?: IAsset
+  quantity?: Number
 }

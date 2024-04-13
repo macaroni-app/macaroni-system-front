@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import {
   Grid,
   GridItem,
@@ -25,18 +27,27 @@ import {
   Badge,
 } from "@chakra-ui/react"
 
+import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
-// import { useDeleteSale } from "../../hooks/useDeleteSale";
-// import { useMessage } from "../../hooks/useMessage"
+import { useMessage } from "../../hooks/useMessage"
+import { useDeleteProduct } from "../../hooks/useDeleteProduct"
+import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem"
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns";
 // import { es } from "date-fns/locale";
-import { useState } from "react"
 
-import { IProductComplete } from "./types"
+// types
+import {
+  IProductComplete,
+  IProductItemFull,
+  IProductItemPreview,
+} from "./types"
+
+import { PRODUCT_DELETED } from "../../utils/constants"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
   product: IProductComplete
@@ -47,34 +58,62 @@ const Product = ({ product }: Props) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  // const { deleteSale } = useDeleteSale()
-  // const { showMessage } = useMessage()
+  const { deleteProduct } = useDeleteProduct()
+  const { deleteManyProductItem } = useDeleteManyProductItem()
+  const { showMessage } = useMessage()
 
   const handleEdit = () => {
     navigate(`${product._id}/edit`)
   }
 
-  // const handleDetails = () => {
-  //   navigate(`/${product._id}/details`)
-  // }
+  const handleDetails = () => {
+    navigate(`/products/${product._id}/details`)
+  }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const queryClient = useQueryClient()
+
+  const productItems = queryClient.getQueryData([
+    "productItems",
+    { filters: {} },
+  ]) as IProductItemFull[]
+
   const handleDelete = async () => {
-    // setIsLoading(true)
-    // const response = await deleteSale({
-    //   saleId: sale?._id,
-    //   saleDetails,
-    //   debt: debt,
-    // })
-    // if (response?.status === 200) {
-    //   showMessage("Venta eliminada.", "success", "purple")
-    //   setIsLoading(false)
-    // }
-    // if (!response?.status === 200) {
-    //   showMessage("No se pudo eliminar", "error", "red")
-    //   setIsLoading(false)
-    // }
+    setIsLoading(true)
+
+    // delete product
+    const response = await deleteProduct({ productId: product._id })
+
+    const productItemsToDelete: IProductItemPreview[] = []
+    productItems.forEach((productItem) => {
+      if (productItem.product?._id === product._id) {
+        productItemsToDelete.push({
+          asset: productItem.asset?._id,
+          id: productItem._id,
+          quantity: productItem.quantity,
+        })
+      }
+    })
+
+    if (response.isDeleted && response.status === 200) {
+      // delete productItems
+      const response = await deleteManyProductItem(
+        productItemsToDelete as IProductItemPreview[]
+      )
+
+      if (
+        response.isDeleted &&
+        response.status === 200 &&
+        response.data.deletedCount > 0
+      ) {
+        showMessage(
+          PRODUCT_DELETED,
+          AlertStatus.Success,
+          AlertColorScheme.Purple
+        )
+      }
+    }
   }
 
   return (
@@ -150,7 +189,7 @@ const Product = ({ product }: Props) => {
                           <PopoverArrow />
                           <PopoverBody p={0}>
                             <VStack spacing={1} align="stretch">
-                              {/* <Button
+                              <Button
                                 onClick={() => handleDetails()}
                                 variant="blue"
                                 colorScheme="blue"
@@ -163,7 +202,7 @@ const Product = ({ product }: Props) => {
                                 }}
                               >
                                 Ver detalles
-                              </Button> */}
+                              </Button>
                               <Button
                                 onClick={() => handleEdit()}
                                 variant={"blue"}

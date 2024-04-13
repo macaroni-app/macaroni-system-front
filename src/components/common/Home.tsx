@@ -23,7 +23,7 @@ import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
 import ProductTypes from "../productTypes/ProductTypes"
 import ProductTypeForm from "../productTypes/ProductTypeForm"
-// import ProductDetails from "../products/ProductDetails"
+import ProductDetails from "../products/ProductDetails"
 import Products from "../products/Products"
 import ProductForm from "../products/ProductForm"
 // import Sales from "../sales/Sales"
@@ -129,7 +129,11 @@ const Home = () => {
           }
         />
         <Route path="/products/add" element={<ProductForm />} />
-        {/* <Route path="/products/:productId/edit" element={<AssetForm />} /> */}
+        <Route path="/products/:productId/edit" element={<ProductForm />} />
+        <Route
+          path="/products/:productId/details"
+          element={<ProductDetails />}
+        />
       </Routes>
       {/*
 

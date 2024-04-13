@@ -3,12 +3,13 @@ import {z} from "zod"
 const productItems = z.object({
   asset: z.string(),
   quantity: z.number().nonnegative(),
+  id: z.string().optional()
 })
 
 export const productSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(1, "Complete el campo"),
-  costPrice: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
+  costPrice: z.number().nonnegative().optional(),
   wholesalePrice: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
   retailsalePrice: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
   category: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),

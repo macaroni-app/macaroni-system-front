@@ -50,7 +50,7 @@ const productItemService = {
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.post(
-      PRODUCT_ITEM_URL + "/bulk",
+      PRODUCT_ITEM_URL + "/bulkCreate",
       { productItems: newProductItems },
       {
         withCredentials: true,
@@ -62,6 +62,32 @@ const productItemService = {
     const { data } = await axiosPrivate.delete(`${PRODUCT_ITEM_URL}/${id}`, {
       withCredentials: true,
     })
+    return data
+  },
+  deleteMany: async (
+    productItemsToDelete: IProductItem[],
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${PRODUCT_ITEM_URL}/bulkDelete`,
+      { productItems: productItemsToDelete },
+      {
+        withCredentials: true,
+      }
+    )
+    return data
+  },
+  updateMany: async (
+    productItemsToUpdate: IProductItem[],
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      PRODUCT_ITEM_URL + "/bulkUpdate",
+      { productItems: productItemsToUpdate },
+      {
+        withCredentials: true,
+      }
+    )
     return data
   },
   update: async (

@@ -3,7 +3,7 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
-import { IProductComplete } from "./types"
+import { AssetWithQuantity, IProductComplete } from "./types"
 
 import { productSchema } from "./productSchema"
 
@@ -16,10 +16,13 @@ import {
   Heading,
   FormControl,
   Stack,
+  Text,
   Flex,
   SimpleGrid,
   IconButton,
   Divider,
+  Input,
+  FormLabel,
 } from "@chakra-ui/react"
 
 import { DeleteIcon } from "@chakra-ui/icons"
@@ -56,14 +59,12 @@ const ProductFormAdd = ({
       resolver: zodResolver(productSchema),
       defaultValues: {
         name: "",
-        costPrice: undefined,
         wholesalePrice: undefined,
         retailsalePrice: undefined,
         productItems: [{ asset: "", quantity: 1 }],
       },
       values: {
         name: productToUpdate?.name || "",
-        costPrice: productToUpdate?.costPrice || undefined,
         wholesalePrice: productToUpdate?.wholesalePrice || undefined,
         retailsalePrice: productToUpdate?.retailsalePrice || undefined,
         productItems: [{ asset: "", quantity: 1 }],
@@ -71,12 +72,72 @@ const ProductFormAdd = ({
     })
 
   // suscripción para los fields
-  watch()
+  const product = watch()
 
   const { fields, remove, append } = useFieldArray({
     name: "productItems",
     control,
   })
+
+  const getCostTotal = () => {
+    let assetIds = product?.productItems?.map(
+      (productItem) => productItem.asset
+    )
+
+    let assetWithCostPrice: IAsset[] = []
+
+    assetIds?.forEach((assetId) =>
+      assets?.forEach((asset) => {
+        if (asset._id === assetId) {
+          assetWithCostPrice.push(asset)
+        }
+      })
+    )
+
+    let assetWithQuantity: AssetWithQuantity[] = []
+
+    assetWithCostPrice.forEach((asset) => {
+      product.productItems?.forEach((productItem) => {
+        if (asset._id === productItem.asset) {
+          assetWithQuantity.push({
+            asset,
+            quantity: productItem.quantity,
+          })
+        }
+      })
+    })
+
+    let totalCost = assetWithQuantity
+      ?.map((assetWithQ) => {
+        if (
+          assetWithQ.asset?.costPrice !== undefined &&
+          assetWithQ.quantity !== undefined
+        ) {
+          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity)
+        }
+      })
+      .reduce((acc, currentValue) => {
+        if (acc !== undefined && currentValue !== undefined) {
+          return acc + currentValue
+        }
+      }, 0)
+
+    return totalCost
+  }
+
+  const getCostSubtotal = (index: number) => {
+    if (assets !== undefined && product !== undefined && index !== undefined) {
+      const assetLine =
+        assets?.filter((asset) => {
+          if (asset?._id === product?.productItems?.at(index)?.asset) {
+            return asset?.costPrice
+          }
+        })[0]?.costPrice || 0
+
+      const quantityLine = product.productItems?.at(index)?.quantity || 0
+      return assetLine * quantityLine
+    }
+  }
 
   return (
     <>
@@ -102,14 +163,17 @@ const ProductFormAdd = ({
                       />
                     </GridItem>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
-                        formState={formState}
-                        register={register}
-                        field={"costPrice"}
-                        type={"number"}
-                        placeholder={"Precio de costo"}
-                        label={"Precio de costo"}
-                      />
+                      <FormControl>
+                        <FormLabel>Costo total:</FormLabel>
+                        <Input
+                          value={new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "ARS",
+                          }).format(getCostTotal() || 0)}
+                          disabled={true}
+                        />
+                      </FormControl>
                     </GridItem>
                   </Grid>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
@@ -170,6 +234,22 @@ const ProductFormAdd = ({
                       </FormControl>
                     </GridItem>
                   </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <FormControl>
+                        <Text fontSize={"large"}>
+                          Seleccione los insumos del producto
+                        </Text>
+                      </FormControl>
+                    </GridItem>
+                  </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <FormControl>
+                        <Divider orientation="horizontal" />
+                      </FormControl>
+                    </GridItem>
+                  </Grid>
 
                   {fields.map((field, index) => {
                     return (
@@ -206,6 +286,14 @@ const ProductFormAdd = ({
                                     placeholder={"Cantidad"}
                                     label={"Cantidad"}
                                   />
+                                  <Text>
+                                    Subtotal de costo:{" "}
+                                    {new Intl.NumberFormat("en-US", {
+                                      style: "currency",
+                                      minimumFractionDigits: 2,
+                                      currency: "ARS",
+                                    }).format(getCostSubtotal(index) || 0)}
+                                  </Text>
                                 </SimpleGrid>
                               </GridItem>
                               <GridItem

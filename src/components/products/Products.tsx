@@ -19,6 +19,8 @@ import { AddIcon, SearchIcon } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
+
 // components
 // import Dashboard from "../reports/Dashboard";
 import WithoutResults from "../common/WithoutResults"
@@ -28,17 +30,19 @@ import Product from "./Product"
 // import { useSaleDetails } from "../../hooks/useSaleDetails";
 // import { useDebts } from "../../hooks/useDebts";
 import { useProducts } from "../../hooks/useProducts"
+import { useProductItems } from "../../hooks/useProductItems"
 // import { useTodayDate } from "../../hooks/useTodayDate";
 // import { useError } from "../../hooks/useError"
 
 // types
-import { IProductComplete } from "./types"
+import { IProductComplete, IProductItem } from "./types"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
   const queryProducts = useProducts({})
+  const queryProductItems = useProductItems({})
   // const {
   //   query: querySaleDetails,
   //   setRangeDateFilter: setRangeDateFilterSaleDetail,
@@ -55,6 +59,7 @@ const Products = () => {
   }
 
   const products = queryProducts?.data as IProductComplete[]
+  const productItems = queryProductItems?.data as IProductItem[]
 
   // const saleDetails = querySaleDetails?.data
 
