@@ -27,7 +27,7 @@ export interface IProductComplete {
   retailsalePrice?: Number
   productType?: IProductTypeType
   category?: ICategory
-  productItems?: {asset: string, quantity: number, id?: string}[]
+  productItems?: IProductItemPreview[]
   isDeleted?: boolean
   isActive?: boolean
   createdAt?: Date

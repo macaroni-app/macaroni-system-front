@@ -1,11 +1,11 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // types
-import { AssetWithQuantity, IProductComplete } from "./types"
+import { AssetWithQuantity, IProductComplete } from "./types";
 
-import { productSchema } from "./productSchema"
+import { productSchema } from "./productSchema";
 
 import {
   Grid,
@@ -23,26 +23,26 @@ import {
   Divider,
   Input,
   FormLabel,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { DeleteIcon } from "@chakra-ui/icons"
+import { DeleteIcon } from "@chakra-ui/icons";
 
 // components
-import Loading from "../common/Loading"
-import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
-import { ICategory } from "../categories/types"
-import { IProductTypeType } from "../productTypes/types"
-import { IAsset } from "../assets/types"
+import Loading from "../common/Loading";
+import MyInput from "../ui/inputs/MyInput";
+import MySelect from "../ui/inputs/MySelect";
+import { ICategory } from "../categories/types";
+import { IProductTypeType } from "../productTypes/types";
+import { IAsset } from "../assets/types";
 
 interface Props {
-  onSubmit: SubmitHandler<IProductComplete>
-  onCancelOperation: () => void
-  productToUpdate?: IProductComplete
-  categories?: ICategory[]
-  productTypes?: IProductTypeType[]
-  assets?: IAsset[]
-  isLoading: boolean
+  onSubmit: SubmitHandler<IProductComplete>;
+  onCancelOperation: () => void;
+  productToUpdate?: IProductComplete;
+  categories?: ICategory[];
+  productTypes?: IProductTypeType[];
+  assets?: IAsset[];
+  isLoading: boolean;
 }
 
 const ProductFormAdd = ({
@@ -69,32 +69,32 @@ const ProductFormAdd = ({
         retailsalePrice: productToUpdate?.retailsalePrice || undefined,
         productItems: [{ asset: "", quantity: 1 }],
       },
-    })
+    });
 
   // suscripción para los fields
-  const product = watch()
+  const product = watch();
 
   const { fields, remove, append } = useFieldArray({
     name: "productItems",
     control,
-  })
+  });
 
   const getCostTotal = () => {
     let assetIds = product?.productItems?.map(
       (productItem) => productItem.asset
-    )
+    );
 
-    let assetWithCostPrice: IAsset[] = []
+    let assetWithCostPrice: IAsset[] = [];
 
     assetIds?.forEach((assetId) =>
       assets?.forEach((asset) => {
         if (asset._id === assetId) {
-          assetWithCostPrice.push(asset)
+          assetWithCostPrice.push(asset);
         }
       })
-    )
+    );
 
-    let assetWithQuantity: AssetWithQuantity[] = []
+    let assetWithQuantity: AssetWithQuantity[] = [];
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {
@@ -102,10 +102,10 @@ const ProductFormAdd = ({
           assetWithQuantity.push({
             asset,
             quantity: productItem.quantity,
-          })
+          });
         }
-      })
-    })
+      });
+    });
 
     let totalCost = assetWithQuantity
       ?.map((assetWithQ) => {
@@ -113,31 +113,31 @@ const ProductFormAdd = ({
           assetWithQ.asset?.costPrice !== undefined &&
           assetWithQ.quantity !== undefined
         ) {
-          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity)
+          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity);
         }
       })
       .reduce((acc, currentValue) => {
         if (acc !== undefined && currentValue !== undefined) {
-          return acc + currentValue
+          return acc + currentValue;
         }
-      }, 0)
+      }, 0);
 
-    return totalCost
-  }
+    return totalCost;
+  };
 
   const getCostSubtotal = (index: number) => {
     if (assets !== undefined && product !== undefined && index !== undefined) {
       const assetLine =
         assets?.filter((asset) => {
           if (asset?._id === product?.productItems?.at(index)?.asset) {
-            return asset?.costPrice
+            return asset?.costPrice;
           }
-        })[0]?.costPrice || 0
+        })[0]?.costPrice || 0;
 
-      const quantityLine = product.productItems?.at(index)?.quantity || 0
-      return assetLine * quantityLine
+      const quantityLine = product.productItems?.at(index)?.quantity || 0;
+      return assetLine * quantityLine;
     }
-  }
+  };
 
   return (
     <>
@@ -316,7 +316,7 @@ const ProductFormAdd = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    )
+                    );
                   })}
                   <Button
                     key={"addRows"}
@@ -358,7 +358,7 @@ const ProductFormAdd = ({
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ProductFormAdd
+export default ProductFormAdd;

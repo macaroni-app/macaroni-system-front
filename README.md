@@ -1,30 +1,34 @@
-# React + TypeScript + Vite
+# Macaroni Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Testear
 
-Currently, two official plugins are available:
+### Authentication
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[] Login an user.
+[] Access Token.
+[] Refresh Token.
+[] Register an user.
 
-## Expanding the ESLint configuration
+### Product Types
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+[] Insert product type.
+[] Update product type.
+[] Delete product type: it should deactivate the product type, but not hard delete.
 
-- Configure the top-level `parserOptions` property like this:
+### Categories
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+[] Insert category.
+[] Update category.
+[] Delete category: it should deactivate the category, but not hard delete.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### Assets
+
+[] Insert asset.
+[] Update asset.
+[] Delete asset: it should deactivate the asset, but not hard delete.
+
+### Products
+
+[] Insert product: should insert a product with almost one product item else do not allow it.
+[] Update product: should update a product with almost one product item else do not allow it.
+[] Delete product: should deactivate the product with all its product items, but not hard delete.
