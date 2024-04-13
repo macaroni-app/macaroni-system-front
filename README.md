@@ -4,7 +4,7 @@
 
 ### Authentication
 
-[ ] Login an user.
+[x] Login an user.
 [ ] Access Token.
 [ ] Refresh Token.
 [ ] Register an user.
