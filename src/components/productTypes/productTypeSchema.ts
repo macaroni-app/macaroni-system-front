@@ -1,7 +1,7 @@
 import {z} from "zod"
 
 export const productTypeSchema = z.object({
-  _id: z.string().optional(),
+  id: z.string().optional(),
   name: z.string().min(1, "Complete el campo"),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),

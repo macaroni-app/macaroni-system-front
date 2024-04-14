@@ -8,24 +8,24 @@ import {
   Stack,
   Skeleton,
   Text,
-} from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
+} from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 // components
-import ProductType from "./ProductType"
-import WithoutResults from "../common/WithoutResults"
+import ProductType from "./ProductType";
+import WithoutResults from "../common/WithoutResults";
 
 // custom hooks
-import { useProductTypes } from "../../hooks/useProductTypes"
-import { IProductTypeType } from "./types"
+import { useProductTypes } from "../../hooks/useProductTypes";
+import { IProductTypeType } from "./types";
 // import { useError } from "../../hooks/useError"
 
 const ProductTypes = (): JSX.Element => {
-  const queryProductTypes = useProductTypes({})
+  const queryProductTypes = useProductTypes({});
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // const { throwError } = useError()
 
@@ -34,10 +34,10 @@ const ProductTypes = (): JSX.Element => {
   // }
 
   const handleAddProductType = () => {
-    navigate("/productTypes/add")
-  }
+    navigate("/productTypes/add");
+  };
 
-  const productTypes = queryProductTypes?.data as IProductTypeType[]
+  const productTypes = queryProductTypes?.data as IProductTypeType[];
 
   const productTypeList = productTypes?.map((productType) => {
     if (productType._id !== undefined && productType.createdAt !== undefined) {
@@ -46,9 +46,9 @@ const ProductTypes = (): JSX.Element => {
           key={productType?._id + productType?.createdAt}
           productType={productType}
         />
-      )
+      );
     }
-  })
+  });
 
   if (queryProductTypes?.isLoading) {
     return (
@@ -122,7 +122,7 @@ const ProductTypes = (): JSX.Element => {
           </CardBody>
         </Card>
       </>
-    )
+    );
   }
 
   return (
@@ -158,7 +158,7 @@ const ProductTypes = (): JSX.Element => {
           <WithoutResults text={"No hay tipos de productos cargados."} />
         )}
     </>
-  )
-}
+  );
+};
 
-export default ProductTypes
+export default ProductTypes;

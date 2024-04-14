@@ -1,13 +1,13 @@
 // libs
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 // custom hooks
-import { useDeleteAsset } from "../../hooks/useDeleteAsset"
-import { useMessage } from "../../hooks/useMessage"
+import { useDeleteAsset } from "../../hooks/useDeleteAsset";
+import { useMessage } from "../../hooks/useMessage";
 
 // types
-import { IAsset } from "./types"
+import { IAssetFullCategory } from "./types";
 
 // styles
 import {
@@ -35,51 +35,51 @@ import {
   ModalBody,
   ModalCloseButton,
   Badge,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 
 interface Props {
-  asset: IAsset
+  asset: IAssetFullCategory;
 }
 
 const Asset = ({ asset }: Props): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { deleteAsset } = useDeleteAsset()
-  const { showMessage } = useMessage()
+  const { deleteAsset } = useDeleteAsset();
+  const { showMessage } = useMessage();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleEdit = () => {
-    navigate(`${asset._id}/edit`)
-  }
+    navigate(`${asset._id}/edit`);
+  };
 
   const handleDetails = () => {
-    navigate(`/assets/${asset._id}/details`)
-  }
+    navigate(`/assets/${asset._id}/details`);
+  };
 
   const handleDelete = async () => {
-    setIsLoading(true)
-    const response = await deleteAsset({ assetId: asset?._id })
+    setIsLoading(true);
+    const response = await deleteAsset({ assetId: asset?._id });
     if (response?.isDeleted) {
       showMessage(
         "Insumo eliminado.",
         AlertStatus.Success,
         AlertColorScheme.Purple
-      )
-      setIsLoading(false)
+      );
+      setIsLoading(false);
     }
 
     if (!response?.isDeleted) {
-      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
-      setIsLoading(false)
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red);
+      setIsLoading(false);
     }
-    navigate("/assets")
-  }
+    navigate("/assets");
+  };
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -226,7 +226,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
         </ModalContent>
       </Modal>
     </GridItem>
-  )
-}
+  );
+};
 
-export default Asset
+export default Asset;

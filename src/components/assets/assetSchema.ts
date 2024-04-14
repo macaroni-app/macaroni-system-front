@@ -12,5 +12,3 @@ export const assetSchema = z.object({
   createdBy: z.string().min(24).max(24).optional(),
   updatedBy: z.string().min(24).max(24).optional()
 })
-
-  

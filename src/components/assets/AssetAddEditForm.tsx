@@ -1,15 +1,15 @@
 // libs
-import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // custom hook
-import { SubmitHandler, useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form";
 
 // types
-import { IAsset, IAssetWithCategory } from "./types"
-import { ICategory } from "../categories/types"
+import { IAssetLessCategory, IAssetFullCategory } from "./types";
+import { ICategory } from "../categories/types";
 
 // schemas
-import { assetSchema } from "./assetSchema"
+import { assetSchema } from "./assetSchema";
 
 import {
   Grid,
@@ -19,20 +19,20 @@ import {
   CardBody,
   Heading,
   Stack,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
 // components
-import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
-import Loading from "../common/Loading"
+import MyInput from "../ui/inputs/MyInput";
+import MySelect from "../ui/inputs/MySelect";
+import Loading from "../common/Loading";
 
 interface Props {
-  onSubmit: SubmitHandler<IAssetWithCategory>
-  onCancelOperation: () => void
-  assetToUpdate?: IAsset
-  categories?: ICategory[]
-  isEditing: boolean
-  isLoading: boolean
+  onSubmit: SubmitHandler<IAssetLessCategory>;
+  onCancelOperation: () => void;
+  assetToUpdate?: IAssetFullCategory;
+  categories?: ICategory[];
+  isEditing: boolean;
+  isLoading: boolean;
 }
 
 const AssetAddEditForm = (props: Props) => {
@@ -43,17 +43,17 @@ const AssetAddEditForm = (props: Props) => {
     isEditing,
     isLoading,
     categories,
-  } = props
+  } = props;
 
   const { register, formState, handleSubmit, control } =
-    useForm<IAssetWithCategory>({
+    useForm<IAssetLessCategory>({
       resolver: zodResolver(assetSchema),
       values: {
         name: assetToUpdate?.name,
         category: assetToUpdate?.category?._id,
         costPrice: assetToUpdate?.costPrice,
       },
-    })
+    });
 
   return (
     <>
@@ -135,7 +135,7 @@ const AssetAddEditForm = (props: Props) => {
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default AssetAddEditForm
+export default AssetAddEditForm;

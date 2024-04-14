@@ -1,9 +1,8 @@
 import { ICategory } from "../categories/types"
 
-export interface IAsset {
+export interface IAssetFather {
   _id?: string
   name?: string
-  category?: ICategory
   costPrice?: number
   isDeleted?: boolean
   createdAt?: Date
@@ -13,15 +12,10 @@ export interface IAsset {
   updatedBy?: string
 }
 
-export interface IAssetWithCategory {
-  _id?: string
-  name?: string
+export interface IAssetFullCategory extends IAssetFather {
+  category?: ICategory
+}
+
+export interface IAssetLessCategory extends IAssetFather {
   category?: string
-  costPrice?: number
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }
