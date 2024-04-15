@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 
 import {
   Grid,
@@ -25,16 +25,16 @@ import {
   ModalBody,
   ModalCloseButton,
   Badge,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 
-import { useMessage } from "../../hooks/useMessage";
-import { useDeleteProduct } from "../../hooks/useDeleteProduct";
-import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem";
+import { useMessage } from "../../hooks/useMessage"
+import { useDeleteProduct } from "../../hooks/useDeleteProduct"
+import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns";
 // import { es } from "date-fns/locale";
@@ -44,63 +44,63 @@ import {
   IProductComplete,
   IProductItemFull,
   IProductItemPreview,
-} from "./types";
+} from "./types"
 
-import { PRODUCT_DELETED } from "../../utils/constants";
-import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { PRODUCT_DELETED } from "../../utils/constants"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  product: IProductComplete;
+  product: IProductComplete
 }
 
 const Product = ({ product }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { deleteProduct } = useDeleteProduct();
-  const { deleteManyProductItem } = useDeleteManyProductItem();
-  const { showMessage } = useMessage();
+  const { deleteProduct } = useDeleteProduct()
+  const { deleteManyProductItem } = useDeleteManyProductItem()
+  const { showMessage } = useMessage()
 
   const handleEdit = () => {
-    navigate(`${product._id}/edit`);
-  };
+    navigate(`${product._id}/edit`)
+  }
 
   const handleDetails = () => {
-    navigate(`/products/${product._id}/details`);
-  };
+    navigate(`/products/${product._id}/details`)
+  }
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const productItems = queryClient.getQueryData([
     "productItems",
     { filters: {} },
-  ]) as IProductItemFull[];
+  ]) as IProductItemFull[]
 
   const handleDelete = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     // delete product
-    const response = await deleteProduct({ productId: product._id });
+    const response = await deleteProduct({ productId: product._id })
 
-    const productItemsToDelete: IProductItemPreview[] = [];
+    const productItemsToDelete: IProductItemPreview[] = []
     productItems.forEach((productItem) => {
       if (productItem.product?._id === product._id) {
         productItemsToDelete.push({
           asset: productItem.asset?._id,
           id: productItem._id,
           quantity: productItem.quantity,
-        });
+        })
       }
-    });
+    })
 
     if (response.isDeleted && response.status === 200) {
       // delete productItems
       const response = await deleteManyProductItem(
         productItemsToDelete as IProductItemPreview[]
-      );
+      )
 
       if (
         response.isDeleted &&
@@ -111,10 +111,10 @@ const Product = ({ product }: Props) => {
           PRODUCT_DELETED,
           AlertStatus.Success,
           AlertColorScheme.Purple
-        );
+        )
       }
     }
-  };
+  }
 
   return (
     <>
@@ -282,7 +282,7 @@ const Product = ({ product }: Props) => {
         </GridItem>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

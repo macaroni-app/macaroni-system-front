@@ -1,6 +1,6 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
 import {
@@ -9,9 +9,9 @@ import {
   IProductItem,
   IProductItemFull,
   IProductItemPreview,
-} from "./types";
+} from "./types"
 
-import { productSchema } from "./productSchema";
+import { productSchema } from "./productSchema"
 
 import {
   Grid,
@@ -29,36 +29,36 @@ import {
   Divider,
   Input,
   FormLabel,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons"
 
 // components
-import Loading from "../common/Loading";
-import MyInput from "../ui/inputs/MyInput";
-import MySelect from "../ui/inputs/MySelect";
+import Loading from "../common/Loading"
+import MyInput from "../ui/inputs/MyInput"
+import MySelect from "../ui/inputs/MySelect"
 
 // types
-import { ICategory } from "../categories/types";
-import { IProductTypeType } from "../productTypes/types";
-import { IAsset } from "../assets/types";
+import { ICategory } from "../categories/types"
+import { IProductTypeType } from "../productTypes/types"
+import { IAssetFullCategory } from "../assets/types"
 
 // custom hooks
-import { useMessage } from "../../hooks/useMessage";
-import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem";
+import { useMessage } from "../../hooks/useMessage"
+import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem"
 
-import { ASSET_DELETED } from "../../utils/constants";
-import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { ASSET_DELETED } from "../../utils/constants"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  onSubmit: SubmitHandler<IProductComplete>;
-  onCancelOperation: () => void;
-  productToUpdate?: IProductComplete;
-  categories?: ICategory[];
-  productTypes?: IProductTypeType[];
-  assets?: IAsset[];
-  productItems: IProductItemFull[];
-  isLoading: boolean;
+  onSubmit: SubmitHandler<IProductComplete>
+  onCancelOperation: () => void
+  productToUpdate?: IProductComplete
+  categories?: ICategory[]
+  productTypes?: IProductTypeType[]
+  assets?: IAssetFullCategory[]
+  productItems: IProductItemFull[]
+  isLoading: boolean
 }
 
 const ProductFormEdit = ({
@@ -71,9 +71,9 @@ const ProductFormEdit = ({
   assets,
   productItems,
 }: Props) => {
-  const { showMessage } = useMessage();
+  const { showMessage } = useMessage()
 
-  const productItemInitial: IProductItemPreview[] = [];
+  const productItemInitial: IProductItemPreview[] = []
 
   productItems?.filter((productItem) => {
     if (productItem.product?._id === productToUpdate?._id) {
@@ -81,9 +81,9 @@ const ProductFormEdit = ({
         asset: productItem.asset?._id,
         quantity: productItem.quantity,
         id: productItem._id,
-      });
+      })
     }
-  });
+  })
 
   const { register, formState, handleSubmit, control, watch } =
     useForm<IProductComplete>({
@@ -96,55 +96,55 @@ const ProductFormEdit = ({
         productType: productToUpdate?.productType?._id,
         productItems: productItemInitial,
       },
-    });
+    })
 
   // suscripción para los fields
-  const product = watch();
+  const product = watch()
 
   const { fields, remove, append } = useFieldArray({
     name: "productItems",
     control,
-  });
+  })
 
-  const { deleteManyProductItem } = useDeleteManyProductItem();
+  const { deleteManyProductItem } = useDeleteManyProductItem()
 
   const handleRemoveProductItem = async (index: number): Promise<void> => {
-    remove(index);
-    const productItemsToDelete: IProductItemPreview[] = [];
+    remove(index)
+    const productItemsToDelete: IProductItemPreview[] = []
     product?.productItems?.forEach((field, currentIndex) => {
       if (currentIndex === index) {
-        productItemsToDelete.push(field);
+        productItemsToDelete.push(field)
       }
-    });
+    })
     const response = await deleteManyProductItem(
       productItemsToDelete as IProductItem[]
-    );
+    )
 
     if (
       response.isDeleted &&
       response.status === 200 &&
       response.data.deletedCount > 0
     ) {
-      showMessage(ASSET_DELETED, AlertStatus.Success, AlertColorScheme.Purple);
+      showMessage(ASSET_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
     }
-  };
+  }
 
   const getCostTotal = () => {
     let assetIds = product?.productItems?.map(
       (productItem) => productItem.asset
-    );
+    )
 
-    let assetWithCostPrice: IAsset[] = [];
+    let assetWithCostPrice: IAssetFullCategory[] = []
 
     assetIds?.forEach((assetId) =>
       assets?.forEach((asset) => {
         if (asset._id === assetId) {
-          assetWithCostPrice.push(asset);
+          assetWithCostPrice.push(asset)
         }
       })
-    );
+    )
 
-    let assetWithQuantity: AssetWithQuantity[] = [];
+    let assetWithQuantity: AssetWithQuantity[] = []
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {
@@ -152,10 +152,10 @@ const ProductFormEdit = ({
           assetWithQuantity.push({
             asset,
             quantity: productItem.quantity,
-          });
+          })
         }
-      });
-    });
+      })
+    })
 
     let totalCost = assetWithQuantity
       ?.map((assetWithQ) => {
@@ -163,31 +163,31 @@ const ProductFormEdit = ({
           assetWithQ.asset?.costPrice !== undefined &&
           assetWithQ.quantity !== undefined
         ) {
-          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity);
+          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity)
         }
       })
       .reduce((acc, currentValue) => {
         if (acc !== undefined && currentValue !== undefined) {
-          return acc + currentValue;
+          return acc + currentValue
         }
-      }, 0);
+      }, 0)
 
-    return totalCost;
-  };
+    return totalCost
+  }
 
   const getCostSubtotal = (index: number) => {
     if (assets !== undefined && product !== undefined && index !== undefined) {
       const assetLine =
         assets?.filter((asset) => {
           if (asset?._id === product?.productItems?.at(index)?.asset) {
-            return asset?.costPrice;
+            return asset?.costPrice
           }
-        })[0]?.costPrice || 0;
+        })[0]?.costPrice || 0
 
-      const quantityLine = product.productItems?.at(index)?.quantity || 0;
-      return assetLine * Number(quantityLine);
+      const quantityLine = product.productItems?.at(index)?.quantity || 0
+      return assetLine * Number(quantityLine)
     }
-  };
+  }
 
   return (
     <>
@@ -368,7 +368,7 @@ const ProductFormEdit = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    );
+                    )
                   })}
                   <Button
                     key={"addRows"}
@@ -410,7 +410,7 @@ const ProductFormEdit = ({
         </Grid>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ProductFormEdit;
+export default ProductFormEdit

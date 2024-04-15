@@ -14,33 +14,33 @@ import {
   // FormLabel,
   // Input,
   GridItem,
-} from "@chakra-ui/react";
-import { AddIcon /* , SearchIcon */ } from "@chakra-ui/icons";
+} from "@chakra-ui/react"
+import { AddIcon /* , SearchIcon */ } from "@chakra-ui/icons"
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 // components
 // import Dashboard from "../reports/Dashboard";
-import WithoutResults from "../common/WithoutResults";
-import Product from "./Product";
+import WithoutResults from "../common/WithoutResults"
+import Product from "./Product"
 
 // custom hooks
 // import { useSaleDetails } from "../../hooks/useSaleDetails";
 // import { useDebts } from "../../hooks/useDebts";
-import { useProducts } from "../../hooks/useProducts";
-import { useProductItems } from "../../hooks/useProductItems";
+import { useProducts } from "../../hooks/useProducts"
+import { useProductItems } from "../../hooks/useProductItems"
 // import { useTodayDate } from "../../hooks/useTodayDate";
 // import { useError } from "../../hooks/useError"
 
 // types
-import { IProductComplete, IProductItem } from "./types";
+import { IProductComplete, IProductItem } from "./types"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
-  const queryProducts = useProducts({});
-  const queryProductItems = useProductItems({});
+  const queryProducts = useProducts({})
+  const queryProductItems = useProductItems({})
   // const {
   //   query: querySaleDetails,
   //   setRangeDateFilter: setRangeDateFilterSaleDetail,
@@ -50,14 +50,14 @@ const Products = () => {
 
   // const { throwError } = useError()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleAddProduct = () => {
-    navigate("add");
-  };
+    navigate("add")
+  }
 
-  const products = queryProducts?.data as IProductComplete[];
-  const productItems = queryProductItems?.data as IProductItem[];
+  const products = queryProducts?.data as IProductComplete[]
+  const productItems = queryProductItems?.data as IProductItem[]
 
   // const saleDetails = querySaleDetails?.data
 
@@ -71,9 +71,9 @@ const Products = () => {
     if (product._id !== undefined && product.createdAt !== undefined) {
       return (
         <Product key={product?._id + product?.createdAt} product={product} />
-      );
+      )
     }
-  });
+  })
 
   return (
     <>
@@ -192,7 +192,7 @@ const Products = () => {
         </GridItem>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Products;
+export default Products

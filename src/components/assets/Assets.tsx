@@ -1,13 +1,13 @@
 // libs
-import { useNavigate } from "react-router-dom";
-import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom"
+import { ChangeEvent, useState } from "react"
 
 // custom hooks
-import { useAssets } from "../../hooks/useAssets";
-import { useError } from "../../hooks/useError";
+import { useAssets } from "../../hooks/useAssets"
+import { useError } from "../../hooks/useError"
 
 // types
-import { IAssetFullCategory } from "./types";
+import { IAssetFullCategory } from "./types"
 
 // styles
 import {
@@ -23,48 +23,48 @@ import {
   Skeleton,
   FormControl,
   Input,
-} from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+} from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
 
 // components
-import Asset from "./Asset";
+import Asset from "./Asset"
 // import Dashboard from "../reports/Dashboard"
-import WithoutResults from "../common/WithoutResults";
+import WithoutResults from "../common/WithoutResults"
 
 const Assets = (): JSX.Element => {
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>("")
 
-  const { throwError } = useError();
+  const { throwError } = useError()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const queryAssets = useAssets({});
+  const queryAssets = useAssets({})
 
   if (queryAssets.isError) {
-    throwError(queryAssets.error);
+    throwError(queryAssets.error)
   }
 
   const handleAddAsset = () => {
-    navigate("add");
-  };
+    navigate("add")
+  }
 
   const handleSetSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  };
+    setSearchValue(e.target.value)
+  }
 
-  const assets = queryAssets?.data as IAssetFullCategory[];
+  const assets = queryAssets?.data as IAssetFullCategory[]
 
   const assetList = assets
     ?.filter((asset) => {
       if (asset.name !== undefined) {
-        return asset.name.toLowerCase().includes(searchValue.toLowerCase());
+        return asset.name.toLowerCase().includes(searchValue.toLowerCase())
       }
     })
     ?.map((asset) => {
       if (asset._id !== undefined && asset.createdAt !== undefined) {
-        return <Asset key={asset?._id + asset?.createdAt} asset={asset} />;
+        return <Asset key={asset?._id + asset?.createdAt} asset={asset} />
       }
-    });
+    })
 
   return (
     <>
@@ -200,7 +200,7 @@ const Assets = (): JSX.Element => {
           <WithoutResults text={"No hay insumos cargados."} />
         )}
     </>
-  );
-};
+  )
+}
 
-export default Assets;
+export default Assets

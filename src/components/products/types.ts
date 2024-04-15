@@ -1,4 +1,4 @@
-import { IAsset } from "../assets/types"
+import { IAssetFullCategory } from "../assets/types"
 import { ICategory } from "../categories/types"
 import { IProductTypeType } from "../productTypes/types"
 
@@ -52,7 +52,7 @@ export interface IProductItem {
 
 export interface IProductItemFull {
   _id?: string
-  asset?: IAsset
+  asset?: IAssetFullCategory
   product?: IProduct
   quantity?: Number
   isDeleted?: boolean
@@ -66,6 +66,6 @@ export interface IProductItemFull {
 export type IProductItemPreview = Pick<IProductItem, "asset" | "quantity" | "id">;
 
 export interface AssetWithQuantity {
-  asset?: IAsset
+  asset?: IAssetFullCategory
   quantity?: Number
 }

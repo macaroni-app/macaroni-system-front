@@ -20,36 +20,36 @@ import {
   Td,
   TableContainer,
   Badge,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"
 
 // types
-import { IProductComplete } from "./types";
+import { IProductComplete } from "./types"
 
-import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
 
 // custom hooks
-import { useProductItems } from "../../hooks/useProductItems";
-import { useProducts } from "../../hooks/useProducts";
+import { useProductItems } from "../../hooks/useProductItems"
+import { useProducts } from "../../hooks/useProducts"
 
 const ProductDetails = () => {
-  const { productId } = useParams();
+  const { productId } = useParams()
 
-  const queryProducts = useProducts({});
+  const queryProducts = useProducts({})
 
   const product = queryProducts.data?.filter(
     (product) => product._id === productId
-  )[0] as IProductComplete;
+  )[0] as IProductComplete
 
-  const queryProductItems = useProductItems({});
+  const queryProductItems = useProductItems({})
 
   const productItems = queryProductItems?.data?.filter(
     (productItem) => productItem?.product?._id === productId
-  );
+  )
 
   const productCostTotal = productItems
     ?.map((productItem) => {
@@ -60,14 +60,14 @@ const ProductDetails = () => {
       ) {
         return (
           Number(productItem?.quantity) * Number(productItem?.asset?.costPrice)
-        );
+        )
       }
     })
     .reduce((acc, currentValue) => {
       if (acc !== undefined && currentValue !== undefined) {
-        return acc + currentValue;
+        return acc + currentValue
       }
-    }, 0);
+    }, 0)
 
   const productDetailsList = productItems?.map((productItem) => {
     return (
@@ -89,18 +89,18 @@ const ProductDetails = () => {
           )}
         </Td>
       </Tr>
-    );
-  });
+    )
+  })
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleGoBack = () => {
-    navigate("/products");
-  };
+    navigate("/products")
+  }
 
   const handleEditProduct = () => {
-    navigate(`/products/${product._id}/edit`);
-  };
+    navigate(`/products/${product._id}/edit`)
+  }
 
   return (
     <>
@@ -329,7 +329,7 @@ const ProductDetails = () => {
         )}
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default ProductDetails;
+export default ProductDetails
