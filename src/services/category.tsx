@@ -1,16 +1,7 @@
 import { AxiosInstance } from "axios"
+import { ICategory } from "../components/categories/types"
 
 const CATEGORY_URL = "/api/v1/categories"
-
-interface ICategory {
-  name?: string
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
-}
 
 interface IFilters {
   id?: string

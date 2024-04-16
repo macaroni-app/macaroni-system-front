@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IProductItem } from "../components/products/types"
+import { IProductItemLessRelated } from "../components/products/types"
 
 import productItemService from "../services/productItem"
 
@@ -12,7 +12,7 @@ export const useEditManyProductItem = () => {
   const axiosPrivate = useAxiosPrivate()
 
   const { mutateAsync: editManyProductItem } = useMutation({
-    mutationFn: (productItemsToUpdate: IProductItem[]) =>
+    mutationFn: (productItemsToUpdate: IProductItemLessRelated[]) =>
       productItemService.updateMany(productItemsToUpdate, axiosPrivate),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["productItems"] })

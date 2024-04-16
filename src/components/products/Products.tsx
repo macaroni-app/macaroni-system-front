@@ -33,7 +33,7 @@ import { useProductItems } from "../../hooks/useProductItems"
 // import { useError } from "../../hooks/useError"
 
 // types
-import { IProductComplete, IProductItem } from "./types"
+import { IProductFullRelated, IProductItemFullRelated } from "./types"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -56,8 +56,8 @@ const Products = () => {
     navigate("add")
   }
 
-  const products = queryProducts?.data as IProductComplete[]
-  const productItems = queryProductItems?.data as IProductItem[]
+  const products = queryProducts?.data as IProductFullRelated[]
+  const productItems = queryProductItems?.data as IProductItemFullRelated[]
 
   // const saleDetails = querySaleDetails?.data
 

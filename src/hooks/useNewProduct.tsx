@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IProductComplete } from "../components/products/types"
+import { IProductLessRelated } from "../components/products/types"
 
 import productService from "../services/product"
 
@@ -12,7 +12,7 @@ export const useNewProduct = () => {
   const axiosPrivate = useAxiosPrivate()
 
   const { mutateAsync: addNewProduct } = useMutation({
-    mutationFn: (newProduct: IProductComplete) =>
+    mutationFn: (newProduct: IProductLessRelated) =>
       productService.store(newProduct, axiosPrivate),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })

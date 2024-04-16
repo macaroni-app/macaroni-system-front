@@ -1,16 +1,7 @@
 import { AxiosInstance } from "axios"
+import { IProductLessRelated } from "../components/products/types"
 
 const PRODUCT_URL = "/api/v1/products"
-
-interface IProduct {
-  name?: string
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
-}
 
 interface IFilters {
   id?: string
@@ -37,7 +28,10 @@ const productService = {
     })
     return data
   },
-  store: async (newProduct: IProduct, axiosPrivate: AxiosInstance) => {
+  store: async (
+    newProduct: IProductLessRelated,
+    axiosPrivate: AxiosInstance
+  ) => {
     const { data } = await axiosPrivate.post(PRODUCT_URL, newProduct, {
       withCredentials: true,
     })
@@ -51,7 +45,7 @@ const productService = {
   },
   update: async (
     id: string,
-    productToUpdate: IProduct,
+    productToUpdate: IProductLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(

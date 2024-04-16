@@ -3,7 +3,11 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
-import { AssetWithQuantity, IProductComplete } from "./types"
+import {
+  IProductItemOmitProduct,
+  IProductFullRelated,
+  IProductLessRelated,
+} from "./types"
 
 import { productSchema } from "./productSchema"
 
@@ -36,9 +40,9 @@ import { IProductTypeType } from "../productTypes/types"
 import { IAssetFullCategory } from "../assets/types"
 
 interface Props {
-  onSubmit: SubmitHandler<IProductComplete>
+  onSubmit: SubmitHandler<IProductLessRelated>
   onCancelOperation: () => void
-  productToUpdate?: IProductComplete
+  productToUpdate?: IProductFullRelated
   categories?: ICategory[]
   productTypes?: IProductTypeType[]
   assets?: IAssetFullCategory[]
@@ -55,7 +59,7 @@ const ProductFormAdd = ({
   assets,
 }: Props) => {
   const { register, formState, handleSubmit, control, watch } =
-    useForm<IProductComplete>({
+    useForm<IProductLessRelated>({
       resolver: zodResolver(productSchema),
       defaultValues: {
         name: "",
@@ -94,7 +98,7 @@ const ProductFormAdd = ({
       })
     )
 
-    let assetWithQuantity: AssetWithQuantity[] = []
+    let assetWithQuantity: IProductItemOmitProduct[] = []
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {

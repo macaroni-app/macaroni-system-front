@@ -1,10 +1,5 @@
-export interface ICategory {
-  _id?: string
+import { IGenericObject } from "../common/types"
+
+export interface ICategory extends IGenericObject{
   name?: string
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }

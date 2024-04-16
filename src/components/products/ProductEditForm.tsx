@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
 import {
-  AssetWithQuantity,
-  IProductComplete,
-  IProductItem,
-  IProductItemFull,
+  IProductItemOmitProduct,
+  IProductFullRelated,
+  IProductItemLessRelated,
+  IProductItemFullRelated,
   IProductItemPreview,
+  IProductLessRelated,
 } from "./types"
 
 import { productSchema } from "./productSchema"
@@ -51,13 +52,13 @@ import { ASSET_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  onSubmit: SubmitHandler<IProductComplete>
+  onSubmit: SubmitHandler<IProductLessRelated>
   onCancelOperation: () => void
-  productToUpdate?: IProductComplete
+  productToUpdate?: IProductFullRelated
   categories?: ICategory[]
   productTypes?: IProductTypeType[]
   assets?: IAssetFullCategory[]
-  productItems: IProductItemFull[]
+  productItems: IProductItemFullRelated[]
   isLoading: boolean
 }
 
@@ -86,7 +87,7 @@ const ProductFormEdit = ({
   })
 
   const { register, formState, handleSubmit, control, watch } =
-    useForm<IProductComplete>({
+    useForm<IProductLessRelated>({
       resolver: zodResolver(productSchema),
       values: {
         name: productToUpdate?.name || "",
@@ -117,7 +118,7 @@ const ProductFormEdit = ({
       }
     })
     const response = await deleteManyProductItem(
-      productItemsToDelete as IProductItem[]
+      productItemsToDelete as IProductItemLessRelated[]
     )
 
     if (
@@ -144,7 +145,7 @@ const ProductFormEdit = ({
       })
     )
 
-    let assetWithQuantity: AssetWithQuantity[] = []
+    let assetWithQuantity: IProductItemOmitProduct[] = []
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {

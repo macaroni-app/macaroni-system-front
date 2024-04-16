@@ -6,26 +6,26 @@ import {
   CardBody,
   Heading,
   Stack,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
 // Components
-import MyInput from "../ui/inputs/MyInput";
-import Loading from "../common/Loading";
+import MyInput from "../ui/inputs/MyInput"
+import Loading from "../common/Loading"
 
 // libs
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
 
 // custom hook
-import { SubmitHandler, useForm } from "react-hook-form";
-import { IProductTypeType } from "./types";
-import { productTypeSchema } from "./productTypeSchema";
+import { SubmitHandler, useForm } from "react-hook-form"
+import { IProductTypeType } from "./types"
+import { productTypeSchema } from "./productTypeSchema"
 
 interface Props {
-  onSubmit: SubmitHandler<IProductTypeType>;
-  onCancelOperation: () => void;
-  productTypeToUpdate?: IProductTypeType;
-  isEditing: boolean;
-  isLoading: boolean;
+  onSubmit: SubmitHandler<IProductTypeType>
+  onCancelOperation: () => void
+  productTypeToUpdate?: IProductTypeType
+  isEditing: boolean
+  isLoading: boolean
 }
 
 const ProductTypeAddEditForm = (props: Props) => {
@@ -35,14 +35,14 @@ const ProductTypeAddEditForm = (props: Props) => {
     productTypeToUpdate,
     isEditing,
     isLoading,
-  } = props;
+  } = props
 
   const { register, formState, handleSubmit } = useForm<IProductTypeType>({
     resolver: zodResolver(productTypeSchema),
     values: {
       name: productTypeToUpdate?.name,
     },
-  });
+  })
 
   return (
     <>
@@ -99,7 +99,7 @@ const ProductTypeAddEditForm = (props: Props) => {
         </Grid>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ProductTypeAddEditForm;
+export default ProductTypeAddEditForm

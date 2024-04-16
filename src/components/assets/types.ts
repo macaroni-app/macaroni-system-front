@@ -1,15 +1,9 @@
 import { ICategory } from "../categories/types"
+import { IGenericObject } from "../common/types"
 
-export interface IAssetFather {
-  _id?: string
+export interface IAssetFather extends IGenericObject {
   name?: string
   costPrice?: number
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }
 
 export interface IAssetFullCategory extends IAssetFather {

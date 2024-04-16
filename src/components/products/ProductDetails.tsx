@@ -25,7 +25,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom"
 
 // types
-import { IProductComplete } from "./types"
+import { IProductFullRelated } from "./types"
 
 import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons"
 
@@ -43,7 +43,7 @@ const ProductDetails = () => {
 
   const product = queryProducts.data?.filter(
     (product) => product._id === productId
-  )[0] as IProductComplete
+  )[0] as IProductFullRelated
 
   const queryProductItems = useProductItems({})
 

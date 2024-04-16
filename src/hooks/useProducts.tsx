@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query"
 
 // types
-import { IProduct } from "../components/products/types"
+import { IProductFullRelated } from "../components/products/types"
 import { IFilters } from "../components/common/types"
 
 // services
@@ -23,7 +23,7 @@ export const useProducts = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
   const { id } = props || ""
 
-  const query: UseQueryResult<IProduct[], Error> = useQuery({
+  const query: UseQueryResult<IProductFullRelated[], Error> = useQuery({
     queryKey: [
       "products",
       {

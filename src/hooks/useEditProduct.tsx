@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IProductComplete } from "../components/products/types"
+import { IProductLessRelated } from "../components/products/types"
 
 import productService from "../services/product"
 
@@ -8,7 +8,7 @@ import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
   productId: string
-  productToUpdate: IProductComplete
+  productToUpdate: IProductLessRelated
 }
 
 export const useEditProduct = () => {
@@ -22,14 +22,17 @@ export const useEditProduct = () => {
     onMutate: async (productToUpdate) => {
       queryClient.cancelQueries({ queryKey: ["products"] })
 
-      const previousProducts = queryClient.getQueryData<IProductComplete>([
+      const previousProducts = queryClient.getQueryData<IProductLessRelated>([
         "products",
       ])
 
-      queryClient.setQueryData(["products"], (oldData: IProductComplete[]) => {
-        if (oldData == null) return [productToUpdate]
-        return [productToUpdate, ...oldData]
-      })
+      queryClient.setQueryData(
+        ["products"],
+        (oldData: IProductLessRelated[]) => {
+          if (oldData == null) return [productToUpdate]
+          return [productToUpdate, ...oldData]
+        }
+      )
 
       return { previousProducts }
     },

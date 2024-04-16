@@ -3,27 +3,27 @@ import {
   QueryFunctionContext,
   useQuery,
   UseQueryResult,
-} from "@tanstack/react-query";
+} from "@tanstack/react-query"
 
 // types
-import { IProductItemFull } from "../components/products/types";
-import { IFilters } from "../components/common/types";
+import { IProductItemFullRelated } from "../components/products/types"
+import { IFilters } from "../components/common/types"
 
 // services
-import productItemService from "../services/productItem";
+import productItemService from "../services/productItem"
 
 // hooks
-import useAxiosPrivate from "./useAxiosPrivate";
+import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
-  id?: string;
+  id?: string
 }
 
 export const useProductItems = (props: Props) => {
-  const axiosPrivate = useAxiosPrivate();
-  const { id } = props || "";
+  const axiosPrivate = useAxiosPrivate()
+  const { id } = props || ""
 
-  const query: UseQueryResult<IProductItemFull[], Error> = useQuery({
+  const query: UseQueryResult<IProductItemFullRelated[], Error> = useQuery({
     queryKey: [
       "productItems",
       {
@@ -31,15 +31,15 @@ export const useProductItems = (props: Props) => {
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
-      const { filters } = queryKey[1] as IFilters;
+      const { filters } = queryKey[1] as IFilters
       const { data } = await productItemService.getAll(
         { ...filters },
         axiosPrivate
-      );
-      return data;
+      )
+      return data
     },
     staleTime: Infinity,
-  });
+  })
 
-  return query;
-};
+  return query
+}

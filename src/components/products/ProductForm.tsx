@@ -5,7 +5,12 @@ import { SubmitHandler } from "react-hook-form"
 import { useNavigate, useParams } from "react-router-dom"
 
 // types
-import { AssetWithQuantity, IProductComplete, IProductItem } from "./types"
+import {
+  IProductItemOmitProduct,
+  IProductFullRelated,
+  IProductLessRelated,
+  IProductItemLessRelated,
+} from "./types"
 import { ICategory } from "../categories/types"
 import { IProductTypeType } from "../productTypes/types"
 import { IAssetFullCategory } from "../assets/types"
@@ -31,7 +36,7 @@ import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 type IProductResponse = {
-  data?: IProductComplete
+  data?: IProductFullRelated
   isStored?: boolean
   isUpdated?: boolean
   status?: number
@@ -64,10 +69,10 @@ const ProductForm = () => {
   const categories = queryCategories?.data as ICategory[]
   const productTypes = queryProductTypes?.data as IProductTypeType[]
   const assets = queryAssets?.data as IAssetFullCategory[]
-  const productItems = queryProductItems.data as IProductItem[]
+  const productItems = queryProductItems.data as IProductItemLessRelated[]
 
-  const onSubmit: SubmitHandler<IProductComplete> = async (
-    product: IProductComplete
+  const onSubmit: SubmitHandler<IProductLessRelated> = async (
+    product: IProductLessRelated
   ) => {
     setIsLoading(true)
     try {
@@ -92,7 +97,7 @@ const ProductForm = () => {
           })
         )
 
-        let assetWithQuantity: AssetWithQuantity[] = []
+        let assetWithQuantity: IProductItemOmitProduct[] = []
 
         assetWithCostPrice.forEach((asset) => {
           product.productItems?.forEach((productItem) => {
@@ -128,7 +133,9 @@ const ProductForm = () => {
           }
         )
 
-        await addNewManyProductItem(producItemWithProduct as IProductItem[])
+        await addNewManyProductItem(
+          producItemWithProduct as IProductItemLessRelated[]
+        )
 
         if (response.isStored) {
           showMessage(
@@ -152,7 +159,7 @@ const ProductForm = () => {
           })
         )
 
-        let assetWithQuantity: AssetWithQuantity[] = []
+        let assetWithQuantity: IProductItemOmitProduct[] = []
 
         assetWithCostPrice.forEach((asset) => {
           product.productItems?.forEach((productItem) => {
@@ -185,8 +192,8 @@ const ProductForm = () => {
           productToUpdate: { ...product, costPrice: totalCost },
         })
 
-        let newProductItemWithProduct: IProductItem[] = []
-        let productItemsWithProductToUpdate: IProductItem[] = []
+        let newProductItemWithProduct: IProductItemLessRelated[] = []
+        let productItemsWithProductToUpdate: IProductItemLessRelated[] = []
 
         product?.productItems?.forEach((productItem) => {
           if (productItem.hasOwnProperty("id")) {
@@ -208,13 +215,13 @@ const ProductForm = () => {
 
         if (productItemsWithProductToUpdate.length > 0) {
           await editManyProductItem(
-            productItemsWithProductToUpdate as IProductItem[]
+            productItemsWithProductToUpdate as IProductItemLessRelated[]
           )
         }
 
         if (newProductItemWithProduct.length > 0) {
           await addNewManyProductItem(
-            newProductItemWithProduct as IProductItem[]
+            newProductItemWithProduct as IProductItemLessRelated[]
           )
         }
 
@@ -249,13 +256,13 @@ const ProductForm = () => {
           productToUpdate={
             {
               ...queryProducts?.data?.find((s) => s._id === productId),
-            } as IProductComplete
+            } as IProductFullRelated
           }
           isLoading={isLoading}
           categories={categories}
           productTypes={productTypes}
           assets={assets}
-          productItems={productItems as IProductComplete[]}
+          productItems={productItems as IProductFullRelated[]}
         />
       )}
       {!productId && (

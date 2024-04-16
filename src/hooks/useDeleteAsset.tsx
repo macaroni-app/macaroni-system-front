@@ -4,7 +4,7 @@ import assetService from "../services/asset"
 
 import useAxiosPrivate from "./useAxiosPrivate"
 
-import { IAsset } from "../components/assets/types"
+import { IAssetFullCategory } from "../components/assets/types"
 
 interface Props {
   assetId?: string
@@ -22,9 +22,11 @@ export const useDeleteAsset = () => {
     onMutate: async (assetToDelete) => {
       queryClient.cancelQueries({ queryKey: ["assets"] })
 
-      const previousAssets = queryClient.getQueryData<IAsset>(["assets"])
+      const previousAssets = queryClient.getQueryData<IAssetFullCategory>([
+        "assets",
+      ])
 
-      queryClient.setQueryData(["assets"], (oldData: IAsset[]) => {
+      queryClient.setQueryData(["assets"], (oldData: IAssetFullCategory[]) => {
         if (oldData == null) return []
         return [...oldData.filter((c) => c._id !== assetToDelete)]
       })

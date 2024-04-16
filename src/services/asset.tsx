@@ -1,16 +1,7 @@
 import { AxiosInstance } from "axios"
+import { IAssetLessCategory } from "../components/assets/types"
 
 const ASSET_URL = "/api/v1/assets"
-
-interface IAsset {
-  name?: string
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
-}
 
 interface IFilters {
   id?: string
@@ -37,7 +28,7 @@ const assetService = {
     })
     return data
   },
-  store: async (newAsset: IAsset, axiosPrivate: AxiosInstance) => {
+  store: async (newAsset: IAssetLessCategory, axiosPrivate: AxiosInstance) => {
     const { data } = await axiosPrivate.post(ASSET_URL, newAsset, {
       withCredentials: true,
     })
@@ -51,7 +42,7 @@ const assetService = {
   },
   update: async (
     id: string,
-    assetToUpdate: IAsset,
+    assetToUpdate: IAssetLessCategory,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(

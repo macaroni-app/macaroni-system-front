@@ -1,18 +1,7 @@
 import { AxiosInstance } from "axios"
+import { IProductItemLessRelated } from "../components/products/types"
 
 const PRODUCT_ITEM_URL = "/api/v1/productItems"
-
-interface IProductItem {
-  asset?: string
-  product?: string
-  quantity?: Number
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
-}
 
 interface IFilters {
   id?: string
@@ -39,14 +28,17 @@ const productItemService = {
     })
     return data
   },
-  store: async (newProductItem: IProductItem, axiosPrivate: AxiosInstance) => {
+  store: async (
+    newProductItem: IProductItemLessRelated,
+    axiosPrivate: AxiosInstance
+  ) => {
     const { data } = await axiosPrivate.post(PRODUCT_ITEM_URL, newProductItem, {
       withCredentials: true,
     })
     return data
   },
   storeMany: async (
-    newProductItems: IProductItem[],
+    newProductItems: IProductItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.post(
@@ -65,7 +57,7 @@ const productItemService = {
     return data
   },
   deleteMany: async (
-    productItemsToDelete: IProductItem[],
+    productItemsToDelete: IProductItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(
@@ -78,7 +70,7 @@ const productItemService = {
     return data
   },
   updateMany: async (
-    productItemsToUpdate: IProductItem[],
+    productItemsToUpdate: IProductItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(
@@ -92,7 +84,7 @@ const productItemService = {
   },
   update: async (
     id: string,
-    productToUpdate: IProductItem,
+    productToUpdate: IProductItemLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(

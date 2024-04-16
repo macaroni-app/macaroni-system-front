@@ -22,47 +22,47 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import { useState } from "react"
 
-import { useDeleteProductType } from "../../hooks/useDeleteProductType";
-import { useMessage } from "../../hooks/useMessage";
+import { useDeleteProductType } from "../../hooks/useDeleteProductType"
+import { useMessage } from "../../hooks/useMessage"
 
-import { IProductTypeType } from "./types";
-import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { IProductTypeType } from "./types"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  productType: IProductTypeType;
+  productType: IProductTypeType
 }
 
 const ProductType = ({ productType }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { deleteProductType } = useDeleteProductType();
-  const { showMessage } = useMessage();
+  const { deleteProductType } = useDeleteProductType()
+  const { showMessage } = useMessage()
 
   const handleEdit = () => {
-    navigate(`${productType._id}/edit`);
-  };
+    navigate(`${productType._id}/edit`)
+  }
 
   const handleDelete = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     if (productType === undefined) {
-      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red);
-      setIsLoading(false);
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
     }
 
-    let response = undefined;
+    let response = undefined
 
     if (productType !== undefined && productType._id !== undefined) {
-      response = await deleteProductType(productType._id);
+      response = await deleteProductType(productType._id)
     }
 
     if (response?.isDeleted) {
@@ -70,18 +70,18 @@ const ProductType = ({ productType }: Props) => {
         "Tipo de producto eliminado.",
         AlertStatus.Success,
         AlertColorScheme.Purple
-      );
-      setIsLoading(false);
+      )
+      setIsLoading(false)
     }
 
     if (!response?.isDeleted) {
-      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red);
-      setIsLoading(false);
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
     }
-    navigate("/productTypes");
-  };
+    navigate("/productTypes")
+  }
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -190,7 +190,7 @@ const ProductType = ({ productType }: Props) => {
         </ModalContent>
       </Modal>
     </GridItem>
-  );
-};
+  )
+}
 
-export default ProductType;
+export default ProductType

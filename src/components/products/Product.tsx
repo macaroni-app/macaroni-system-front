@@ -41,8 +41,8 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
 // types
 import {
-  IProductComplete,
-  IProductItemFull,
+  IProductFullRelated,
+  IProductItemFullRelated,
   IProductItemPreview,
 } from "./types"
 
@@ -50,7 +50,7 @@ import { PRODUCT_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  product: IProductComplete
+  product: IProductFullRelated
 }
 
 const Product = ({ product }: Props) => {
@@ -77,7 +77,7 @@ const Product = ({ product }: Props) => {
   const productItems = queryClient.getQueryData([
     "productItems",
     { filters: {} },
-  ]) as IProductItemFull[]
+  ]) as IProductItemFullRelated[]
 
   const handleDelete = async () => {
     setIsLoading(true)

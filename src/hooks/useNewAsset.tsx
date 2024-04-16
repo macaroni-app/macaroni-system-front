@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IAssetWithCategory } from "../components/assets/types"
+import { IAssetLessCategory } from "../components/assets/types"
 
 import assetService from "../services/asset"
 
@@ -12,7 +12,7 @@ export const useNewAsset = () => {
   const axiosPrivate = useAxiosPrivate()
 
   const { mutateAsync: addNewAsset } = useMutation({
-    mutationFn: (newAsset: IAssetWithCategory) =>
+    mutationFn: (newAsset: IAssetLessCategory) =>
       assetService.store(newAsset, axiosPrivate),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["assets"] })

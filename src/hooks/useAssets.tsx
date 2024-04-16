@@ -3,25 +3,25 @@ import {
   QueryFunctionContext,
   useQuery,
   UseQueryResult,
-} from "@tanstack/react-query";
+} from "@tanstack/react-query"
 
 // types
-import { IAssetFullCategory } from "../components/assets/types";
-import { IFilters } from "../components/common/types";
+import { IAssetFullCategory } from "../components/assets/types"
+import { IFilters } from "../components/common/types"
 
 // services
-import assetService from "../services/asset";
+import assetService from "../services/asset"
 
 // hooks
-import useAxiosPrivate from "./useAxiosPrivate";
+import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
-  id?: string;
+  id?: string
 }
 
 export const useAssets = (props: Props) => {
-  const axiosPrivate = useAxiosPrivate();
-  const { id } = props || "";
+  const axiosPrivate = useAxiosPrivate()
+  const { id } = props || ""
 
   const query: UseQueryResult<IAssetFullCategory[], Error> = useQuery({
     queryKey: [
@@ -31,12 +31,12 @@ export const useAssets = (props: Props) => {
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
-      const { filters } = queryKey[1] as IFilters;
-      const { data } = await assetService.getAll({ ...filters }, axiosPrivate);
-      return data;
+      const { filters } = queryKey[1] as IFilters
+      const { data } = await assetService.getAll({ ...filters }, axiosPrivate)
+      return data
     },
     staleTime: Infinity,
-  });
+  })
 
-  return query;
-};
+  return query
+}

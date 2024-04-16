@@ -1,11 +1,5 @@
-export interface IProductTypeType {
-  _id?: string
+import { IGenericObject } from "../common/types"
+
+export interface IProductTypeType extends IGenericObject {
   name?: string
-  isDeleted?: boolean
-  isActive?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }

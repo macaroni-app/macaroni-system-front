@@ -1,71 +1,41 @@
 import { IAssetFullCategory } from "../assets/types"
 import { ICategory } from "../categories/types"
+import { IGenericObject } from "../common/types"
 import { IProductTypeType } from "../productTypes/types"
 
-export interface IProduct {
-  _id?: string
+export interface IProductFather extends IGenericObject {
   name?: string
   costPrice?: Number
   wholesalePrice?: Number
   retailsalePrice?: Number
-  productType?: string
-  category?: string
-  isDeleted?: boolean
-  isActive?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
+  productItems?: IProductItemPreview[]
 }
 
-export interface IProductComplete {
-  _id?: string
-  name?: string
-  costPrice?: Number
-  wholesalePrice?: Number
-  retailsalePrice?: Number
+export interface IProductFullRelated extends IProductFather {
   productType?: IProductTypeType
   category?: ICategory
-  productItems?: IProductItemPreview[]
-  isDeleted?: boolean
-  isActive?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }
 
-export interface IProductItem {
-  id?: string
+export interface IProductLessRelated extends IProductFather {
+  productType?: string
+  category?: string
+}
+
+export interface IProductItemFather extends IGenericObject {
+  quantity?: Number
+}
+
+export interface IProductItemFullRelated extends IProductItemFather {
+  asset?: IAssetFullCategory
+  product?: IProductFullRelated
+  quantity?: Number
+}
+
+export interface IProductItemLessRelated extends IProductItemFather {
   asset?: string
   product?: string
   quantity?: Number
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
 }
 
-export interface IProductItemFull {
-  _id?: string
-  asset?: IAssetFullCategory
-  product?: IProduct
-  quantity?: Number
-  isDeleted?: boolean
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
-  createdBy?: string
-  updatedBy?: string
-}
-
-export type IProductItemPreview = Pick<IProductItem, "asset" | "quantity" | "id">;
-
-export interface AssetWithQuantity {
-  asset?: IAssetFullCategory
-  quantity?: Number
-}
+export type IProductItemPreview = Pick<IProductItemLessRelated, "asset" | "quantity" | "id">;
+export type IProductItemOmitProduct = Pick<IProductItemFullRelated, "asset" | "quantity">;

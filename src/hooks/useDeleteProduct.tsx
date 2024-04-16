@@ -4,7 +4,7 @@ import productService from "../services/product"
 
 import useAxiosPrivate from "./useAxiosPrivate"
 
-import { IProduct } from "../components/products/types"
+import { IProductLessRelated } from "../components/products/types"
 
 interface Props {
   productId?: string
@@ -22,12 +22,17 @@ export const useDeleteProduct = () => {
     onMutate: async (productToDelete) => {
       queryClient.cancelQueries({ queryKey: ["products"] })
 
-      const previousProducts = queryClient.getQueryData<IProduct>(["products"])
+      const previousProducts = queryClient.getQueryData<IProductLessRelated>([
+        "products",
+      ])
 
-      queryClient.setQueryData(["products"], (oldData: IProduct[]) => {
-        if (oldData == null) return []
-        return [...oldData.filter((c) => c._id !== productToDelete)]
-      })
+      queryClient.setQueryData(
+        ["products"],
+        (oldData: IProductLessRelated[]) => {
+          if (oldData == null) return []
+          return [...oldData.filter((c) => c._id !== productToDelete)]
+        }
+      )
 
       return { previousProducts }
     },

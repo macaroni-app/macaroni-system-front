@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IAssetWithCategory } from "../components/assets/types"
+import { IAssetLessCategory } from "../components/assets/types"
 
 import assetService from "../services/asset"
 
@@ -8,7 +8,7 @@ import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
   assetId: string
-  assetToUpdate: IAssetWithCategory
+  assetToUpdate: IAssetLessCategory
 }
 
 export const useEditAsset = () => {
