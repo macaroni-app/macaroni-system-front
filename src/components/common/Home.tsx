@@ -26,6 +26,10 @@ import ProductTypeForm from "../productTypes/ProductTypeForm"
 import ProductDetails from "../products/ProductDetails"
 import Products from "../products/Products"
 import ProductForm from "../products/ProductForm"
+import Inventories from "../inventories/Inventories"
+import InventoryForm from "../inventories/InventoryForm"
+import InventoryTransactions from "../inventoryTransactions/InventoryTransactions"
+import InventoryTransactionForm from "../inventoryTransactions/InventoryTransactionForm"
 // import Sales from "../sales/Sales"
 // import SaleForm from "../sales/SaleForm"
 // import SaleDetails from "../sales/SaleDetails"
@@ -133,6 +137,49 @@ const Home = () => {
         <Route
           path="/products/:productId/details"
           element={<ProductDetails />}
+        />
+        <Route
+          path="/inventories"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Inventories />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/inventories/add" element={<InventoryForm />} />
+        <Route
+          path="/inventories/:inventoryId/edit"
+          element={<InventoryForm />}
+        />
+        <Route
+          path="/inventoryTransactions"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <InventoryTransactions />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route
+          path="/inventoryTransactions/add"
+          element={<InventoryTransactionForm />}
+        />
+        <Route
+          path="/inventoryTransactions/:inventoryTransactionId/edit"
+          element={<InventoryTransactionForm />}
         />
       </Routes>
       {/*

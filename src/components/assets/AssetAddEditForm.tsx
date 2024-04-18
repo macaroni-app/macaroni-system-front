@@ -92,6 +92,7 @@ const AssetAddEditForm = (props: Props) => {
                         control={control}
                         data={categories}
                         isRequired={true}
+                        noOptionsMessage="No hay datos"
                       />
                     </GridItem>
 

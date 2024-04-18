@@ -20,6 +20,7 @@ interface Props {
   isRequired?: boolean
   control: Control<any, any>
   data?: ICategory[]
+  noOptionsMessage?: string
 }
 
 type Option = {
@@ -28,8 +29,16 @@ type Option = {
 }
 
 const MySelect = (props: Props) => {
-  const { formState, field, placeholder, label, data, control, isRequired } =
-    props
+  const {
+    formState,
+    field,
+    placeholder,
+    label,
+    data,
+    control,
+    isRequired,
+    noOptionsMessage,
+  } = props
 
   const options: PropsValue<any> = data?.map((model) => {
     return { label: model.name, value: model._id }
@@ -53,7 +62,7 @@ const MySelect = (props: Props) => {
             name={name}
             isClearable={true}
             required={isRequired}
-            noOptionsMessage={() => "No hay datos"}
+            noOptionsMessage={() => noOptionsMessage}
             options={options}
             onBlur={onBlur}
             onChange={(selectedOption) => {

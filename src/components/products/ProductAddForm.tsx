@@ -214,6 +214,7 @@ const ProductFormAdd = ({
                         control={control}
                         data={categories}
                         isRequired={true}
+                        noOptionsMessage="No hay datos"
                       />
                     </GridItem>
 
@@ -227,6 +228,7 @@ const ProductFormAdd = ({
                         control={control}
                         data={productTypes}
                         isRequired={true}
+                        noOptionsMessage="No hay datos"
                       />
                     </GridItem>
                   </Grid>

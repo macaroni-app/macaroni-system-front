@@ -334,6 +334,14 @@ const NAV_ITEMS: INavType[] = [
     label: "Tipos de productos",
     href: "/productTypes",
   },
+  {
+    label: "Inventarios",
+    href: "/inventories",
+  },
+  {
+    label: "Historial inventario",
+    href: "/inventoryTransactions",
+  },
 ]
 
 export default Header
