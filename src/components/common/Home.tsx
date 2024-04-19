@@ -30,19 +30,12 @@ import Inventories from "../inventories/Inventories"
 import InventoryForm from "../inventories/InventoryForm"
 import InventoryTransactions from "../inventoryTransactions/InventoryTransactions"
 import InventoryTransactionForm from "../inventoryTransactions/InventoryTransactionForm"
-// import Sales from "../sales/Sales"
-// import SaleForm from "../sales/SaleForm"
-// import SaleDetails from "../sales/SaleDetails"
 import Categories from "../categories/Categories"
 import CategoryForm from "../categories/CategoryForm"
-// import ClientForm from "../clients/ClientForm"
-// import Clients from "../clients/Clients"
-// import MethodPayments from "../methodPayments/MethodPayments"
-// import MethodPaymentForm from "../methodPayments/MethodPaymentForm"
-// import Debts from "../debts/Debts"
-// import DebtForm from "../debts/DebtForm"
-// import BarChart from "../reports/BarChart"
-// import HistorySales from "../reports/HistorySales"
+import Clients from "../clients/Clients"
+import ClientForm from "../clients/ClientForm"
+import PaymentMethods from "../paymentMethods/PaymentMethods"
+import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
 // import PageNotFound from "./PageNotFound"
 
 const Home = () => {
@@ -180,6 +173,43 @@ const Home = () => {
         <Route
           path="/inventoryTransactions/:inventoryTransactionId/edit"
           element={<InventoryTransactionForm />}
+        />
+        <Route
+          path="/clients"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Clients />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/clients/add" element={<ClientForm />} />
+        <Route path="/clients/:clientId/edit" element={<ClientForm />} />
+        <Route
+          path="/paymentMethods"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <PaymentMethods />
+              </GridItem>
+            </Grid>
+          }
+        />
+        <Route path="/paymentMethods/add" element={<PaymentMethodForm />} />
+        <Route
+          path="/paymentMethods/:paymentMethodId/edit"
+          element={<PaymentMethodForm />}
         />
       </Routes>
       {/*

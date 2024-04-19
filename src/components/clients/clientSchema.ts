@@ -1,6 +1,6 @@
 import {z} from "zod"
 
-export const categorySchema = z.object({
+export const clientSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(1, "Complete el campo"),
   isDeleted: z.boolean().optional(),

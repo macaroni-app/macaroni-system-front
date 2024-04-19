@@ -32,3 +32,12 @@
 - [ ] Insert product: should insert a product with almost one product item else do not allow it.
 - [ ] Update product: should update a product with almost one product item else do not allow it.
 - [ ] Delete product: should deactivate the product with all its product items, but not hard delete.
+
+### Ventas
+
+- [ ] Insert sale: should insert a sale with almost one sale item else do not allow it.
+
+#### Acciones que debería hacer cuando se crea una venta:
+
+- Actualizar el inventario de cada insumo que contiene la venta.
+- Registrar las transacciones correspondientes de cada insumo.
