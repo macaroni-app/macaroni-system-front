@@ -316,7 +316,7 @@ const MobileNavItem = (props: INavType) => {
 const NAV_ITEMS: INavType[] = [
   {
     label: "Ventas",
-    href: "/",
+    href: "/sales",
   },
   {
     label: "Productos",

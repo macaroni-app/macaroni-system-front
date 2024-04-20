@@ -1,43 +1,37 @@
-import { IAssetFullCategory } from "../assets/types"
-import { ICategory } from "../categories/types"
+import { IClient } from "../clients/types"
 import { IGenericObject } from "../common/types"
-import { IProductTypeType } from "../productTypes/types"
+import { IPaymentMethod } from "../paymentMethods/types"
+import { IProductFullRelated } from "../products/types"
 
 export interface ISaleFather extends IGenericObject {
   isRetail?: boolean
-  client: string
-  paymentMethod: string
-  total: number
-  // productItems?: IProductItemPreview[]
+  total?: number
+  saleItems?: ISaleItemPreview[]
 }
 export interface ISaleFullRelated extends ISaleFather{
-  
+  client?: IClient
+  paymentMethod?: IPaymentMethod
 }
-// export interface IProductFullRelated extends IProductFather {
-//   productType?: IProductTypeType
-//   category?: ICategory
-// }
 
-// export interface IProductLessRelated extends IProductFather {
-//   productType?: string
-//   category?: string
-// }
+export interface ISaleLessRelated extends ISaleFather {
+  client?: string
+  paymentMethod?: string
+}
 
-// export interface IProductItemFather extends IGenericObject {
-//   quantity?: Number
-// }
+export interface ISaleItemFather extends IGenericObject {
+  quantity?: number
+  subtotal?: number
+}
 
-// export interface IProductItemFullRelated extends IProductItemFather {
-//   asset?: IAssetFullCategory
-//   product?: IProductFullRelated
-//   quantity?: Number
-// }
+export interface ISaleItemFullRelated extends ISaleItemFather {
+  sale?: ISaleFullRelated
+  product?: IProductFullRelated
+}
 
-// export interface IProductItemLessRelated extends IProductItemFather {
-//   asset?: string
-//   product?: string
-//   quantity?: Number
-// }
+export interface ISaleItemLessRelated extends ISaleItemFather {
+  sale?: string
+  product?: string
+}
 
-// export type IProductItemPreview = Pick<IProductItemLessRelated, "asset" | "quantity" | "id">;
-// export type IProductItemOmitProduct = Pick<IProductItemFullRelated, "asset" | "quantity">;
+export type ISaleItemPreview = Pick<ISaleItemLessRelated, "product" | "quantity" | "id">
+export type ISaleItemOmitSale = Pick<ISaleItemFullRelated, "product" | "quantity">

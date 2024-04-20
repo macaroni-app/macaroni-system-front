@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios"
-import { IProductLessRelated } from "../components/products/types"
+import { ISaleLessRelated } from "../components/sales/types"
 
 const SALE_URL = "/api/v1/sales"
 
@@ -28,7 +28,7 @@ const saleService = {
     })
     return data
   },
-  store: async (newSale: IProductLessRelated, axiosPrivate: AxiosInstance) => {
+  store: async (newSale: ISaleLessRelated, axiosPrivate: AxiosInstance) => {
     const { data } = await axiosPrivate.post(SALE_URL, newSale, {
       withCredentials: true,
     })
@@ -42,7 +42,7 @@ const saleService = {
   },
   update: async (
     id: string,
-    saleToUpdate: IProductLessRelated,
+    saleToUpdate: ISaleLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(`${SALE_URL}/${id}`, saleToUpdate, {

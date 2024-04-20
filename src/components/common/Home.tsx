@@ -19,6 +19,7 @@ import {
 
 // components
 import Header from "./Header"
+import Sales from "../sales/Sales"
 import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
 import ProductTypes from "../productTypes/ProductTypes"
@@ -54,6 +55,24 @@ const Home = () => {
       )}
       <Header />
       <Routes>
+        <Route
+          path="/sales"
+          element={
+            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <GridItem
+                as="main"
+                colSpan={{ base: 10, md: 10, lg: 8 }}
+                colStart={{ base: 2, md: 2, lg: 3 }}
+                mb={10}
+              >
+                <Sales />
+              </GridItem>
+            </Grid>
+          }
+        />
+        {/* <Route path="/sales/add" element={<ProductForm />} />
+        <Route path="/sales/:saleId/edit" element={<ProductForm />} />
+        <Route path="/sales/:saleId/details" element={<ProductDetails />} /> */}
         <Route
           path="/assets"
           element={

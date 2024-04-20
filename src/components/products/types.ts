@@ -28,13 +28,11 @@ export interface IProductItemFather extends IGenericObject {
 export interface IProductItemFullRelated extends IProductItemFather {
   asset?: IAssetFullCategory
   product?: IProductFullRelated
-  quantity?: Number
 }
 
 export interface IProductItemLessRelated extends IProductItemFather {
   asset?: string
   product?: string
-  quantity?: Number
 }
 
 export type IProductItemPreview = Pick<IProductItemLessRelated, "asset" | "quantity" | "id">;

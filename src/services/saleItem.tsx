@@ -1,20 +1,20 @@
 import { AxiosInstance } from "axios"
-import { IProductItemLessRelated } from "../components/products/types"
+import { ISaleItemLessRelated } from "../components/sales/types"
 
-const PRODUCT_ITEM_URL = "/api/v1/productItems"
+const SALE_ITEM_URL = "/api/v1/saleItems"
 
 interface IFilters {
   id?: string
 }
 
-const productItemService = {
+const saleItemService = {
   getAll: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
     let finalUrl
 
     if (filters.id) {
-      finalUrl = `${PRODUCT_ITEM_URL}?id=${filters.id}`
+      finalUrl = `${SALE_ITEM_URL}?id=${filters.id}`
     } else {
-      finalUrl = PRODUCT_ITEM_URL
+      finalUrl = SALE_ITEM_URL
     }
 
     const { data } = await axiosPrivate.get(finalUrl, {
@@ -23,27 +23,27 @@ const productItemService = {
     return data
   },
   getOne: async (id: string, axiosPrivate: AxiosInstance) => {
-    const { data } = await axiosPrivate.get(`${PRODUCT_ITEM_URL}/${id}`, {
+    const { data } = await axiosPrivate.get(`${SALE_ITEM_URL}/${id}`, {
       withCredentials: true,
     })
     return data
   },
   store: async (
-    newProductItem: IProductItemLessRelated,
+    newSaleItem: ISaleItemLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
-    const { data } = await axiosPrivate.post(PRODUCT_ITEM_URL, newProductItem, {
+    const { data } = await axiosPrivate.post(SALE_ITEM_URL, newSaleItem, {
       withCredentials: true,
     })
     return data
   },
   storeMany: async (
-    newProductItems: IProductItemLessRelated[],
+    newSaleItems: ISaleItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.post(
-      PRODUCT_ITEM_URL + "/bulkCreate",
-      { productItems: newProductItems },
+      SALE_ITEM_URL + "/bulkCreate",
+      { saleItems: newSaleItems },
       {
         withCredentials: true,
       }
@@ -51,18 +51,18 @@ const productItemService = {
     return data
   },
   delete: async (id: string | undefined, axiosPrivate: AxiosInstance) => {
-    const { data } = await axiosPrivate.delete(`${PRODUCT_ITEM_URL}/${id}`, {
+    const { data } = await axiosPrivate.delete(`${SALE_ITEM_URL}/${id}`, {
       withCredentials: true,
     })
     return data
   },
   deleteMany: async (
-    productItemsToDelete: IProductItemLessRelated[],
+    saleItemsToDelete: ISaleItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(
-      `${PRODUCT_ITEM_URL}/bulkDelete`,
-      { productItems: productItemsToDelete },
+      `${SALE_ITEM_URL}/bulkDelete`,
+      { saleItems: saleItemsToDelete },
       {
         withCredentials: true,
       }
@@ -70,12 +70,12 @@ const productItemService = {
     return data
   },
   updateMany: async (
-    productItemsToUpdate: IProductItemLessRelated[],
+    saleItemsToUpdate: ISaleItemLessRelated[],
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(
-      PRODUCT_ITEM_URL + "/bulkUpdate",
-      { productItems: productItemsToUpdate },
+      SALE_ITEM_URL + "/bulkUpdate",
+      { saleItems: saleItemsToUpdate },
       {
         withCredentials: true,
       }
@@ -84,12 +84,12 @@ const productItemService = {
   },
   update: async (
     id: string,
-    productToUpdate: IProductItemLessRelated,
+    saleToUpdate: ISaleItemLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(
-      `${PRODUCT_ITEM_URL}/${id}`,
-      productToUpdate,
+      `${SALE_ITEM_URL}/${id}`,
+      saleToUpdate,
       {
         withCredentials: true,
       }
@@ -98,4 +98,4 @@ const productItemService = {
   },
 }
 
-export default productItemService
+export default saleItemService
