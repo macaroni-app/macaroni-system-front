@@ -32,12 +32,16 @@ import Loading from "../common/Loading";
 import MyInput from "../ui/inputs/MyInput";
 import MySelect from "../ui/inputs/MySelect";
 import { IProductFullRelated } from "../products/types";
+import { IClient } from "../clients/types";
+import { IPaymentMethod } from "../paymentMethods/types";
 
 interface Props {
   onSubmit: SubmitHandler<ISaleLessRelated>;
   onCancelOperation: () => void;
   saleToUpdate?: ISaleFullRelated;
   products?: IProductFullRelated[];
+  clients?: IClient[];
+  paymentMethods?: IPaymentMethod[];
   isLoading: boolean;
 }
 
@@ -47,6 +51,8 @@ const SaleFormAdd = ({
   saleToUpdate,
   isLoading,
   products,
+  clients,
+  paymentMethods,
 }: Props) => {
   const { register, formState, handleSubmit, control, watch } =
     useForm<ISaleLessRelated>({
@@ -85,52 +91,44 @@ const SaleFormAdd = ({
                 <form noValidate onSubmit={handleSubmit(onSubmit)}>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
+                      <MySelect
                         formState={formState}
                         register={register}
-                        field={"name"}
-                        type={"text"}
-                        placeholder={"Nombre producto"}
-                        label={"Nombre"}
+                        field={"client"}
+                        placeholder={"Buscar cliente ..."}
+                        label={"Cliente"}
+                        control={control}
+                        data={clients}
+                        isRequired={true}
+                        noOptionsMessage="No hay datos"
                       />
                     </GridItem>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <FormControl>
-                        <FormLabel>Costo total:</FormLabel>
-                        <Input
-                          value={new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "ARS",
-                          }).format(0)}
-                          disabled={true}
-                        />
-                      </FormControl>
+                      <MyInput
+                        formState={formState}
+                        register={register}
+                        field={"total"}
+                        type={"text"}
+                        placeholder={"Total"}
+                        label={"Total"}
+                      />
                     </GridItem>
                   </Grid>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
+                      <MySelect
                         formState={formState}
                         register={register}
-                        field={"retailsalePrice"}
-                        type={"number"}
-                        placeholder={"Precio por menor"}
-                        label={"Precio por menor"}
-                      />
-                    </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
-                        formState={formState}
-                        register={register}
-                        field={"wholesalePrice"}
-                        type={"number"}
-                        placeholder={"Precio por mayor"}
-                        label={"Precio por mayor"}
+                        field={"paymentMethod"}
+                        placeholder={"Buscar método de pago ..."}
+                        label={"Método de pago"}
+                        control={control}
+                        data={paymentMethods}
+                        isRequired={true}
+                        noOptionsMessage="No hay datos"
                       />
                     </GridItem>
                   </Grid>
-
                   <Grid mb={4}>
                     <GridItem>
                       <FormControl>
