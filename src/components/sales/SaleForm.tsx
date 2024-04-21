@@ -12,6 +12,7 @@ import {
   IProductItemLessRelated,
   ISaleItemLessRelated,
   ISaleLessRelated,
+  ISaleFullRelated,
 } from "./types";
 import { IClient } from "../clients/types";
 import { IPaymentMethod } from "../paymentMethods/types";
@@ -34,9 +35,11 @@ import { useError, Error } from "../../hooks/useError";
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants";
 import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { useProductItems } from "../../hooks/useProductItems";
+import { IProductItemFullRelated } from "../products/types";
 
-type IProductResponse = {
-  data?: IProductFullRelated;
+type ISaleResponse = {
+  data?: ISaleFullRelated;
   isStored?: boolean;
   isUpdated?: boolean;
   status?: number;
@@ -55,6 +58,7 @@ const SaleForm = () => {
 
   // products
   const queryProducts = useProducts({});
+  const queryProductItems = useProductItems({});
   const queryClients = useClients({});
   const queryPaymentMethod = usePaymentMethods({});
   const querySaleItems = useSaleItems({});
@@ -65,6 +69,7 @@ const SaleForm = () => {
   // const { editManyProductItem } = useEditManyProductItem();
 
   const products = queryProducts.data as IProductFullRelated[];
+  const productItems = queryProductItems.data as IProductItemFullRelated[];
   const clients = queryClients.data as IClient[];
   const paymentMethods = queryPaymentMethod.data as IPaymentMethod[];
   const saleItems = querySaleItems.data as ISaleItemLessRelated[];
@@ -75,13 +80,27 @@ const SaleForm = () => {
     console.log(sale);
     setIsLoading(true);
     try {
-      let response: IProductResponse = {
+      let response: ISaleResponse = {
         data: undefined,
         isStored: undefined,
         status: undefined,
       };
 
       if (!saleId) {
+        let assetIdsFromSale: string[] | undefined[] = [];
+
+        productItems.forEach((productItem) => {
+          sale.saleItems?.forEach((saleItem) => {
+            if (saleItem.product === productItem.product?._id) {
+              assetIdsFromSale.push(productItem.asset?._id);
+            }
+          });
+        });
+
+        // Todo: actualizar el inventario de cada insumo.
+        // Todo: registrar las transacciones del inventario de cada insumo.
+        // Todo: insertar la venta.
+        // Todo: insertar los items de la venta.
         // let assetIds = sale?.saleItems?.map((saleItem) => saleItem.product);
         // let assetWithCostPrice: IAssetFullCategory[] = [];
         // assetIds?.forEach((assetId) =>

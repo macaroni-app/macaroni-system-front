@@ -3,7 +3,7 @@ import {z} from "zod"
 const saleItems = z.object({
   product: z.string(),
   quantity: z.number().nonnegative(),
-  subtotal: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
+  // subtotal: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
   id: z.string().optional()
 })
 

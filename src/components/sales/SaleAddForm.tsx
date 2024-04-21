@@ -21,7 +21,7 @@ import {
   SimpleGrid,
   IconButton,
   Divider,
-  Input,
+  Checkbox,
   FormLabel,
 } from "@chakra-ui/react";
 
@@ -63,7 +63,7 @@ const SaleFormAdd = ({
         saleItems: [{ product: "", quantity: 1 }],
       },
       values: {
-        isRetail: saleToUpdate?.isRetail || false,
+        isRetail: saleToUpdate?.isRetail || true,
         total: saleToUpdate?.total || undefined,
         saleItems: [{ product: "", quantity: 1 }],
       },
@@ -108,7 +108,7 @@ const SaleFormAdd = ({
                         formState={formState}
                         register={register}
                         field={"total"}
-                        type={"text"}
+                        type={"number"}
                         placeholder={"Total"}
                         label={"Total"}
                       />
@@ -127,6 +127,19 @@ const SaleFormAdd = ({
                         isRequired={true}
                         noOptionsMessage="No hay datos"
                       />
+                    </GridItem>
+                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                      <FormControl>
+                        <FormLabel>Por menor?</FormLabel>
+                        <Checkbox
+                          type="checkbox"
+                          colorScheme="purple"
+                          placeholder="Por menor"
+                          {...register("isRetail")}
+                        >
+                          Si
+                        </Checkbox>
+                      </FormControl>
                     </GridItem>
                   </Grid>
                   <Grid mb={4}>
