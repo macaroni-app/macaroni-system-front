@@ -1,6 +1,7 @@
 import {z} from "zod"
 
 export const inventorySchema = z.object({
+  id: z.string().optional(),
   _id: z.string().optional(),
   asset: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
   quantityAvailable: z.number().nonnegative(),

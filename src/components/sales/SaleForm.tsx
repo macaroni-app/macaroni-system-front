@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState } from "react"
 
-import { SubmitHandler } from "react-hook-form";
+import { SubmitHandler } from "react-hook-form"
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"
 
 // types
 import {
@@ -13,92 +13,156 @@ import {
   ISaleItemLessRelated,
   ISaleLessRelated,
   ISaleFullRelated,
-} from "./types";
-import { IClient } from "../clients/types";
-import { IPaymentMethod } from "../paymentMethods/types";
+} from "./types"
+import { IClient } from "../clients/types"
+import { IPaymentMethod } from "../paymentMethods/types"
 
 // components
-import SaleFormAdd from "./SaleAddForm";
+import SaleFormAdd from "./SaleAddForm"
 // import ProductFormEdit from "./ProductEditForm";
 
 // custom hooks
-import { useProducts } from "../../hooks/useProducts";
-import { useClients } from "../../hooks/useClients";
-import { usePaymentMethods } from "../../hooks/usePaymentMethods";
-import { useSaleItems } from "../../hooks/useSaleItems";
-import { useNewProduct } from "../../hooks/useNewProduct";
-import { useEditProduct } from "../../hooks/useEditProduct";
-import { useNewManyProductItem } from "../../hooks/useNewManyProductItem";
-import { useEditManyProductItem } from "../../hooks/useEditManyProductItem";
-import { useMessage } from "../../hooks/useMessage";
-import { useError, Error } from "../../hooks/useError";
+import { useProducts } from "../../hooks/useProducts"
+import { useClients } from "../../hooks/useClients"
+import { usePaymentMethods } from "../../hooks/usePaymentMethods"
+import { useSaleItems } from "../../hooks/useSaleItems"
+import { useEditManyInventory } from "../../hooks/useEditManyInventory"
+import { useNewProduct } from "../../hooks/useNewProduct"
+import { useEditProduct } from "../../hooks/useEditProduct"
+import { useNewManyProductItem } from "../../hooks/useNewManyProductItem"
+import { useEditManyProductItem } from "../../hooks/useEditManyProductItem"
+import { useMessage } from "../../hooks/useMessage"
+import { useError, Error } from "../../hooks/useError"
 
-import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants";
-import { AlertColorScheme, AlertStatus } from "../../utils/enums";
-import { useProductItems } from "../../hooks/useProductItems";
-import { IProductItemFullRelated } from "../products/types";
+import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import { useProductItems } from "../../hooks/useProductItems"
+import { IProductItemFullRelated } from "../products/types"
+import { useInventories } from "../../hooks/useInventories"
+import {
+  IInventoryFullRelated,
+  IInventoryLessRelated,
+} from "../inventories/types"
+import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
+import {
+  IInventoryTransactionLessRelated,
+  TransactionType,
+} from "../inventoryTransactions/types"
 
 type ISaleResponse = {
-  data?: ISaleFullRelated;
-  isStored?: boolean;
-  isUpdated?: boolean;
-  status?: number;
-};
+  data?: ISaleFullRelated
+  isStored?: boolean
+  isUpdated?: boolean
+  status?: number
+}
 
 const SaleForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { showMessage } = useMessage();
+  const { showMessage } = useMessage()
 
-  const { throwError } = useError();
+  const { throwError } = useError()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const { saleId } = useParams();
+  const { saleId } = useParams()
 
   // products
-  const queryProducts = useProducts({});
-  const queryProductItems = useProductItems({});
-  const queryClients = useClients({});
-  const queryPaymentMethod = usePaymentMethods({});
-  const querySaleItems = useSaleItems({});
+  const queryProducts = useProducts({})
+  const queryProductItems = useProductItems({})
+  const queryClients = useClients({})
+  const queryPaymentMethod = usePaymentMethods({})
+  const querySaleItems = useSaleItems({})
+  const queryInventories = useInventories({})
 
   // const { addNewProduct } = useNewProduct();
   // const { addNewManyProductItem } = useNewManyProductItem();
   // const { editProduct } = useEditProduct();
   // const { editManyProductItem } = useEditManyProductItem();
+  const { editManyInventory } = useEditManyInventory()
+  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
 
-  const products = queryProducts.data as IProductFullRelated[];
-  const productItems = queryProductItems.data as IProductItemFullRelated[];
-  const clients = queryClients.data as IClient[];
-  const paymentMethods = queryPaymentMethod.data as IPaymentMethod[];
-  const saleItems = querySaleItems.data as ISaleItemLessRelated[];
+  const products = queryProducts.data as IProductFullRelated[]
+  const productItems = queryProductItems.data as IProductItemFullRelated[]
+  const clients = queryClients.data as IClient[]
+  const paymentMethods = queryPaymentMethod.data as IPaymentMethod[]
+  const saleItems = querySaleItems.data as ISaleItemLessRelated[]
+  const inventories = queryInventories.data as IInventoryFullRelated[]
 
   const onSubmit: SubmitHandler<ISaleLessRelated> = async (
     sale: ISaleLessRelated
   ) => {
-    console.log(sale);
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       let response: ISaleResponse = {
         data: undefined,
         isStored: undefined,
         status: undefined,
-      };
+      }
 
       if (!saleId) {
-        let assetIdsFromSale: string[] | undefined[] = [];
+        // Todo: actualizar el inventario de cada insumo.
+        let assetQuantityByAssetId = new Map<string, number>()
 
         productItems.forEach((productItem) => {
           sale.saleItems?.forEach((saleItem) => {
             if (saleItem.product === productItem.product?._id) {
-              assetIdsFromSale.push(productItem.asset?._id);
+              if (
+                assetQuantityByAssetId.has(productItem?.asset?._id as string)
+              ) {
+                let prevQuantity = assetQuantityByAssetId.get(
+                  productItem?.asset?._id as string
+                )
+                assetQuantityByAssetId.set(
+                  productItem.asset?._id as string,
+                  Number(prevQuantity) +
+                    Number(productItem.quantity) * Number(saleItem.quantity)
+                )
+              } else {
+                assetQuantityByAssetId.set(
+                  productItem.asset?._id as string,
+                  (Number(productItem.quantity) *
+                    Number(saleItem.quantity)) as number
+                )
+              }
             }
-          });
-        });
+          })
+        })
+        let inventoriesToUpdate: IInventoryLessRelated[] = []
 
-        // Todo: actualizar el inventario de cada insumo.
+        assetQuantityByAssetId.forEach((value, key) => {
+          inventories.forEach((inventory) => {
+            let inventoryUpdated: IInventoryLessRelated = {
+              asset: inventory.asset?._id,
+              id: inventory._id,
+              quantityAvailable: inventory.quantityAvailable,
+            }
+            if (key === inventory.asset?._id) {
+              inventoryUpdated.quantityAvailable =
+                inventoryUpdated.quantityAvailable !== undefined
+                  ? inventoryUpdated.quantityAvailable - value
+                  : inventoryUpdated.quantityAvailable
+              inventoriesToUpdate.push(inventoryUpdated)
+            }
+          })
+        })
+
+        await editManyInventory(inventoriesToUpdate)
+
         // Todo: registrar las transacciones del inventario de cada insumo.
+
+        let inventoryTransactions: IInventoryTransactionLessRelated[] = []
+
+        assetQuantityByAssetId.forEach((value, key) => {
+          inventoryTransactions.push({
+            asset: key,
+            affectedAmount: value,
+            transactionType: TransactionType.BUY,
+          })
+        })
+
+        await addNewManyInventoryTransaction(inventoryTransactions)
+
         // Todo: insertar la venta.
         // Todo: insertar los items de la venta.
         // let assetIds = sale?.saleItems?.map((saleItem) => saleItem.product);
@@ -233,18 +297,18 @@ const SaleForm = () => {
         // }
       }
       if (response.status === 200 || response.status === 201) {
-        navigate("/sales");
+        navigate("/sales")
       }
     } catch (error: unknown) {
-      throwError(error as Error);
+      throwError(error as Error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const onCancelOperation = () => {
-    navigate("/sales");
-  };
+    navigate("/sales")
+  }
 
   return (
     <>
@@ -275,7 +339,7 @@ const SaleForm = () => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default SaleForm;
+export default SaleForm

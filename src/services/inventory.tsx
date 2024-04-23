@@ -57,6 +57,19 @@ const inventoryService = {
     )
     return data
   },
+  updateMany: async (
+    inventoriesToUpdate: IInventoryLessRelated[],
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      INVENTORY_URL + "/bulkUpdate",
+      { inventories: inventoriesToUpdate },
+      {
+        withCredentials: true,
+      }
+    )
+    return data
+  },
 }
 
 export default inventoryService

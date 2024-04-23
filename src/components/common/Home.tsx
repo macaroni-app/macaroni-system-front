@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom"
 
 import {
   Grid,
@@ -8,7 +8,7 @@ import {
   // Card,
   // CardBody,
   Box,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 // import {
 //   FaHouse,
 //   FaUsers,
@@ -18,26 +18,26 @@ import {
 // } from "react-icons/fa6"
 
 // components
-import Header from "./Header";
-import Sales from "../sales/Sales";
-import SaleForm from "../sales/SaleForm";
-import Assets from "../assets/Assets";
-import AssetForm from "../assets/AssetForm";
-import ProductTypes from "../productTypes/ProductTypes";
-import ProductTypeForm from "../productTypes/ProductTypeForm";
-import ProductDetails from "../products/ProductDetails";
-import Products from "../products/Products";
-import ProductForm from "../products/ProductForm";
-import Inventories from "../inventories/Inventories";
-import InventoryForm from "../inventories/InventoryForm";
-import InventoryTransactions from "../inventoryTransactions/InventoryTransactions";
-import InventoryTransactionForm from "../inventoryTransactions/InventoryTransactionForm";
-import Categories from "../categories/Categories";
-import CategoryForm from "../categories/CategoryForm";
-import Clients from "../clients/Clients";
-import ClientForm from "../clients/ClientForm";
-import PaymentMethods from "../paymentMethods/PaymentMethods";
-import PaymentMethodForm from "../paymentMethods/PaymentMethodForm";
+import Header from "./Header"
+import Sales from "../sales/Sales"
+import SaleForm from "../sales/SaleForm"
+import Assets from "../assets/Assets"
+import AssetForm from "../assets/AssetForm"
+import ProductTypes from "../productTypes/ProductTypes"
+import ProductTypeForm from "../productTypes/ProductTypeForm"
+import ProductDetails from "../products/ProductDetails"
+import Products from "../products/Products"
+import ProductForm from "../products/ProductForm"
+import Inventories from "../inventories/Inventories"
+import InventoryForm from "../inventories/InventoryForm"
+import InventoryTransactions from "../inventoryTransactions/InventoryTransactions"
+import InventoryTransactionForm from "../inventoryTransactions/InventoryTransactionForm"
+import Categories from "../categories/Categories"
+import CategoryForm from "../categories/CategoryForm"
+import Clients from "../clients/Clients"
+import ClientForm from "../clients/ClientForm"
+import PaymentMethods from "../paymentMethods/PaymentMethods"
+import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
 // import PageNotFound from "./PageNotFound"
 
 const Home = () => {
@@ -363,7 +363,7 @@ const Home = () => {
         />
       </Routes> */}
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

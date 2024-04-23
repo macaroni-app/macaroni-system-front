@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 
 import {
   Grid,
@@ -25,16 +25,16 @@ import {
   ModalBody,
   ModalCloseButton,
   Badge,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 
-import { useMessage } from "../../hooks/useMessage";
-import { useDeleteSale } from "../../hooks/useDeleteSale";
-import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem";
+import { useMessage } from "../../hooks/useMessage"
+import { useDeleteSale } from "../../hooks/useDeleteSale"
+import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
@@ -44,63 +44,63 @@ import {
   ISaleFullRelated,
   ISaleItemFullRelated,
   ISaleItemPreview,
-} from "./types";
+} from "./types"
 
-import { PRODUCT_DELETED } from "../../utils/constants";
-import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { PRODUCT_DELETED } from "../../utils/constants"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
-  sale: ISaleFullRelated;
+  sale: ISaleFullRelated
 }
 
 const Sale = ({ sale }: Props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { deleteSale } = useDeleteSale();
-  const { deleteManySaleItem } = useDeleteManySaleItem();
-  const { showMessage } = useMessage();
+  const { deleteSale } = useDeleteSale()
+  const { deleteManySaleItem } = useDeleteManySaleItem()
+  const { showMessage } = useMessage()
 
   const handleEdit = () => {
-    navigate(`${sale._id}/edit`);
-  };
+    navigate(`${sale._id}/edit`)
+  }
 
   const handleDetails = () => {
-    navigate(`/sales/${sale._id}/details`);
-  };
+    navigate(`/sales/${sale._id}/details`)
+  }
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const saleItems = queryClient.getQueryData([
     "saleItems",
     { filters: {} },
-  ]) as ISaleItemFullRelated[];
+  ]) as ISaleItemFullRelated[]
 
   const handleDelete = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     // delete sale
-    const response = await deleteSale({ saleId: sale._id });
+    const response = await deleteSale({ saleId: sale._id })
 
-    const saleItemsToDelete: ISaleItemPreview[] = [];
+    const saleItemsToDelete: ISaleItemPreview[] = []
     saleItems.forEach((saleItem) => {
       if (saleItem.sale?._id === sale._id) {
         saleItemsToDelete.push({
           product: saleItem.product?._id,
           id: saleItem._id,
           quantity: saleItem.quantity,
-        });
+        })
       }
-    });
+    })
 
     if (response.isDeleted && response.status === 200) {
       // delete productItems
       const response = await deleteManySaleItem(
         saleItemsToDelete as ISaleItemPreview[]
-      );
+      )
 
       if (
         response.isDeleted &&
@@ -111,10 +111,10 @@ const Sale = ({ sale }: Props) => {
           PRODUCT_DELETED,
           AlertStatus.Success,
           AlertColorScheme.Purple
-        );
+        )
       }
     }
-  };
+  }
 
   return (
     <>
@@ -278,7 +278,7 @@ const Sale = ({ sale }: Props) => {
         </GridItem>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Sale;
+export default Sale

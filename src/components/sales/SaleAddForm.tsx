@@ -1,11 +1,11 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
-import { ISaleLessRelated, ISaleFullRelated } from "./types";
+import { ISaleLessRelated, ISaleFullRelated } from "./types"
 
-import { saleSchema } from "./saleSchema";
+import { saleSchema } from "./saleSchema"
 
 import {
   Grid,
@@ -23,26 +23,26 @@ import {
   Divider,
   Checkbox,
   FormLabel,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons"
 
 // components
-import Loading from "../common/Loading";
-import MyInput from "../ui/inputs/MyInput";
-import MySelect from "../ui/inputs/MySelect";
-import { IProductFullRelated } from "../products/types";
-import { IClient } from "../clients/types";
-import { IPaymentMethod } from "../paymentMethods/types";
+import Loading from "../common/Loading"
+import MyInput from "../ui/inputs/MyInput"
+import MySelect from "../ui/inputs/MySelect"
+import { IProductFullRelated } from "../products/types"
+import { IClient } from "../clients/types"
+import { IPaymentMethod } from "../paymentMethods/types"
 
 interface Props {
-  onSubmit: SubmitHandler<ISaleLessRelated>;
-  onCancelOperation: () => void;
-  saleToUpdate?: ISaleFullRelated;
-  products?: IProductFullRelated[];
-  clients?: IClient[];
-  paymentMethods?: IPaymentMethod[];
-  isLoading: boolean;
+  onSubmit: SubmitHandler<ISaleLessRelated>
+  onCancelOperation: () => void
+  saleToUpdate?: ISaleFullRelated
+  products?: IProductFullRelated[]
+  clients?: IClient[]
+  paymentMethods?: IPaymentMethod[]
+  isLoading: boolean
 }
 
 const SaleFormAdd = ({
@@ -67,15 +67,15 @@ const SaleFormAdd = ({
         total: saleToUpdate?.total || undefined,
         saleItems: [{ product: "", quantity: 1 }],
       },
-    });
+    })
 
   // suscripción para los fields
-  const sale = watch();
+  const sale = watch()
 
   const { fields, remove, append } = useFieldArray({
     name: "saleItems",
     control,
-  });
+  })
 
   return (
     <>
@@ -229,7 +229,7 @@ const SaleFormAdd = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    );
+                    )
                   })}
                   <Button
                     key={"addRows"}
@@ -271,7 +271,7 @@ const SaleFormAdd = ({
         </Grid>
       )}
     </>
-  );
-};
+  )
+}
 
-export default SaleFormAdd;
+export default SaleFormAdd

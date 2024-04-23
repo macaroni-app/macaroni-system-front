@@ -67,6 +67,19 @@ const inventoryTransactionService = {
     )
     return data
   },
+  storeMany: async (
+    newInventoryTransactions: IInventoryTransactionLessRelated[],
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.post(
+      INVENTORY_TRANSACTION_URL + "/bulkCreate",
+      { inventoryTransactions: newInventoryTransactions },
+      {
+        withCredentials: true,
+      }
+    )
+    return data
+  },
 }
 
 export default inventoryTransactionService
