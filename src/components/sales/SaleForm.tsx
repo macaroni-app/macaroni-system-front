@@ -13,6 +13,8 @@ import {
   ISaleItemLessRelated,
   ISaleLessRelated,
   ISaleFullRelated,
+  SaleStatus,
+  ISaleItemOmitSale,
 } from "./types"
 import { IClient } from "../clients/types"
 import { IPaymentMethod } from "../paymentMethods/types"
@@ -48,6 +50,8 @@ import {
   IInventoryTransactionLessRelated,
   TransactionType,
 } from "../inventoryTransactions/types"
+import { useNewSale } from "../../hooks/useNewSale"
+import { useNewManySaleItem } from "../../hooks/useNewManySaleItem"
 
 type ISaleResponse = {
   data?: ISaleFullRelated
@@ -79,8 +83,10 @@ const SaleForm = () => {
   // const { addNewManyProductItem } = useNewManyProductItem();
   // const { editProduct } = useEditProduct();
   // const { editManyProductItem } = useEditManyProductItem();
+  const { addNewSale } = useNewSale()
   const { editManyInventory } = useEditManyInventory()
   const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
+  const { addNewManySaleItem } = useNewManySaleItem()
 
   const products = queryProducts.data as IProductFullRelated[]
   const productItems = queryProductItems.data as IProductItemFullRelated[]
@@ -88,6 +94,65 @@ const SaleForm = () => {
   const paymentMethods = queryPaymentMethod.data as IPaymentMethod[]
   const saleItems = querySaleItems.data as ISaleItemLessRelated[]
   const inventories = queryInventories.data as IInventoryFullRelated[]
+
+  const productsById = new Map()
+
+  products?.forEach((product) => {
+    productsById.set(product._id, product)
+  })
+
+  const getTotalSale = (sale: ISaleLessRelated) => {
+    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product)
+
+    let productWithSalePrice: IProductFullRelated[] = []
+
+    productIds?.forEach((productId) =>
+      products?.forEach((product) => {
+        if (product._id === productId) {
+          productWithSalePrice.push(product)
+        }
+      })
+    )
+
+    let productWithQuantity: ISaleItemOmitSale[] = []
+
+    productWithSalePrice.forEach((product) => {
+      sale.saleItems?.forEach((saleItem) => {
+        if (product._id === saleItem.product) {
+          productWithQuantity.push({
+            product,
+            quantity: saleItem.quantity,
+          })
+        }
+      })
+    })
+
+    let totalSale = productWithQuantity
+      ?.map((productWithQ) => {
+        if (
+          productWithQ.product?.retailsalePrice !== undefined &&
+          productWithQ.quantity !== undefined
+        ) {
+          if (sale.isRetail) {
+            return (
+              Number(productWithQ.product.retailsalePrice) *
+              Number(productWithQ.quantity)
+            )
+          }
+          return (
+            Number(productWithQ.product.wholesalePrice) *
+            Number(productWithQ.quantity)
+          )
+        }
+      })
+      .reduce((acc, currentValue) => {
+        if (acc !== undefined && currentValue !== undefined) {
+          return acc + currentValue
+        }
+      }, 0)
+
+    return totalSale
+  }
 
   const onSubmit: SubmitHandler<ISaleLessRelated> = async (
     sale: ISaleLessRelated
@@ -157,66 +222,42 @@ const SaleForm = () => {
           inventoryTransactions.push({
             asset: key,
             affectedAmount: value,
-            transactionType: TransactionType.BUY,
+            transactionType: TransactionType.SELL,
           })
         })
 
         await addNewManyInventoryTransaction(inventoryTransactions)
 
         // Todo: insertar la venta.
+
+        sale.total = getTotalSale(sale)
+        sale.status = SaleStatus.PAID
+        response = await addNewSale(sale)
+
         // Todo: insertar los items de la venta.
-        // let assetIds = sale?.saleItems?.map((saleItem) => saleItem.product);
-        // let assetWithCostPrice: IAssetFullCategory[] = [];
-        // assetIds?.forEach((assetId) =>
-        //   assets.forEach((asset) => {
-        //     if (asset._id === assetId) {
-        //       assetWithCostPrice.push(asset);
-        //     }
-        //   })
-        // );
-        // let assetWithQuantity: IProductItemOmitProduct[] = [];
-        // assetWithCostPrice.forEach((asset) => {
-        //   product.productItems?.forEach((productItem) => {
-        //     if (asset._id === productItem.asset) {
-        //       assetWithQuantity.push({
-        //         asset,
-        //         quantity: productItem.quantity,
-        //       });
-        //     }
-        //   });
-        // });
-        // let totalCost = assetWithQuantity
-        //   ?.map((assetWithQ) => {
-        //     if (
-        //       assetWithQ.asset?.costPrice !== undefined &&
-        //       assetWithQ.quantity !== undefined
-        //     ) {
-        //       return (
-        //         assetWithQ?.asset?.costPrice * Number(assetWithQ?.quantity)
-        //       );
-        //     }
-        //   })
-        //   .reduce((acc, currentValue) => {
-        //     if (acc !== undefined && currentValue !== undefined) {
-        //       return acc + currentValue;
-        //     }
-        //   }, 0);
-        // response = await addNewProduct({ ...product, costPrice: totalCost });
-        // let producItemWithProduct = product?.productItems?.map(
-        //   (productItem) => {
-        //     return { ...productItem, product: response?.data?._id };
-        //   }
-        // );
-        // await addNewManyProductItem(
-        //   producItemWithProduct as IProductItemLessRelated[]
-        // );
-        // if (response.isStored) {
-        //   showMessage(
-        //     RECORD_CREATED,
-        //     AlertStatus.Success,
-        //     AlertColorScheme.Purple
-        //   );
-        // }
+
+        let saleItemWithSale = sale?.saleItems?.map((saleItem) => {
+          let subTotal = sale.isRetail
+            ? saleItem?.quantity *
+              productsById.get(saleItem.product).retailsalePrice
+            : saleItem?.quantity *
+              productsById.get(saleItem.product).wholesalePrice
+          return {
+            ...saleItem,
+            sale: response?.data?._id,
+            subtotal: subTotal,
+          }
+        })
+
+        await addNewManySaleItem(saleItemWithSale as ISaleItemLessRelated[])
+
+        if (response.isStored) {
+          showMessage(
+            RECORD_CREATED,
+            AlertStatus.Success,
+            AlertColorScheme.Purple
+          )
+        }
       } else {
         // let assetIds = product?.productItems?.map(
         //   (productItem) => productItem.asset

@@ -3,7 +3,7 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
-import { ISaleLessRelated, ISaleFullRelated } from "./types"
+import { ISaleLessRelated, ISaleFullRelated, ISaleItemOmitSale } from "./types"
 
 import { saleSchema } from "./saleSchema"
 
@@ -23,6 +23,7 @@ import {
   Divider,
   Checkbox,
   FormLabel,
+  Input,
 } from "@chakra-ui/react"
 
 import { DeleteIcon } from "@chakra-ui/icons"
@@ -77,6 +78,59 @@ const SaleFormAdd = ({
     control,
   })
 
+  const getTotalSale = () => {
+    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product)
+
+    let productWithSalePrice: IProductFullRelated[] = []
+
+    productIds?.forEach((productId) =>
+      products?.forEach((product) => {
+        if (product._id === productId) {
+          productWithSalePrice.push(product)
+        }
+      })
+    )
+
+    let productWithQuantity: ISaleItemOmitSale[] = []
+
+    productWithSalePrice.forEach((product) => {
+      sale.saleItems?.forEach((saleItem) => {
+        if (product._id === saleItem.product) {
+          productWithQuantity.push({
+            product,
+            quantity: saleItem.quantity,
+          })
+        }
+      })
+    })
+
+    let totalSale = productWithQuantity
+      ?.map((productWithQ) => {
+        if (
+          productWithQ.product?.retailsalePrice !== undefined &&
+          productWithQ.quantity !== undefined
+        ) {
+          if (sale.isRetail) {
+            return (
+              Number(productWithQ.product.retailsalePrice) *
+              Number(productWithQ.quantity)
+            )
+          }
+          return (
+            Number(productWithQ.product.wholesalePrice) *
+            Number(productWithQ.quantity)
+          )
+        }
+      })
+      .reduce((acc, currentValue) => {
+        if (acc !== undefined && currentValue !== undefined) {
+          return acc + currentValue
+        }
+      }, 0)
+
+    return totalSale
+  }
+
   return (
     <>
       {isLoading && <Loading />}
@@ -104,14 +158,17 @@ const SaleFormAdd = ({
                       />
                     </GridItem>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
-                      <MyInput
-                        formState={formState}
-                        register={register}
-                        field={"total"}
-                        type={"number"}
-                        placeholder={"Total"}
-                        label={"Total"}
-                      />
+                      <FormControl>
+                        <FormLabel>Total:</FormLabel>
+                        <Input
+                          value={new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "ARS",
+                          }).format(getTotalSale() || 0)}
+                          disabled={true}
+                        />
+                      </FormControl>
                     </GridItem>
                   </Grid>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>

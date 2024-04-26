@@ -103,7 +103,14 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                   <Badge variant={"subtle"} colorScheme={"green"}>
                     {inventoryTransaction?.transactionType === "BUY"
                       ? "Compra"
-                      : "Venta"}
+                      : inventoryTransaction?.transactionType === "SELL"
+                      ? "Venta"
+                      : inventoryTransaction?.transactionType === "RETURN"
+                      ? "Devolución"
+                      : inventoryTransaction?.transactionType ===
+                        "ADJUSTMENT_UP"
+                      ? "Ajustar +"
+                      : "Ajustar -"}
                   </Badge>
                 </Flex>
                 <Text fontSize="xs" align="start">

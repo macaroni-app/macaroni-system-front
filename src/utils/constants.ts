@@ -5,3 +5,4 @@ export const RECORD_CREATED = "Registro creado.";
 export const RECORD_UPDATED = "Registro actualizado.";
 export const ASSET_DELETED = "Se eliminó el insumo correctamente"
 export const PRODUCT_DELETED = "Se eliminó el producto correctamente"
+export const SALE_DELETED = "Se eliminó la venta correctamente"

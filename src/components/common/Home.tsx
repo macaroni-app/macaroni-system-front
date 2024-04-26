@@ -21,6 +21,7 @@ import {
 import Header from "./Header"
 import Sales from "../sales/Sales"
 import SaleForm from "../sales/SaleForm"
+import SaleDetails from "../sales/SaleDetails"
 import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
 import ProductTypes from "../productTypes/ProductTypes"
@@ -72,6 +73,7 @@ const Home = () => {
           }
         />
         <Route path="/sales/add" element={<SaleForm />} />
+        <Route path="/sales/:saleId/details" element={<SaleDetails />} />
         {/* <Route path="/sales/:saleId/edit" element={<ProductForm />} />
         <Route path="/sales/:saleId/details" element={<ProductDetails />} /> */}
         <Route

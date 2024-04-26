@@ -62,6 +62,9 @@ const InventoryTransactionAddEditForm = (props: Props) => {
     return [
       { _id: "BUY", name: "Compra" },
       { _id: "SELL", name: "Venta" },
+      { _id: "RETURN", name: "Devolución" },
+      { _id: "ADJUSTMENT_UP", name: "Ajustar +" },
+      { _id: "ADJUSTMENT_DOWN", name: "Ajustar -" },
     ]
   }
 

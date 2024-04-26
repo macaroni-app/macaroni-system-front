@@ -46,7 +46,7 @@ import {
   ISaleItemPreview,
 } from "./types"
 
-import { PRODUCT_DELETED } from "../../utils/constants"
+import { SALE_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 interface Props {
@@ -107,11 +107,7 @@ const Sale = ({ sale }: Props) => {
         response.status === 200 &&
         response.data.deletedCount > 0
       ) {
-        showMessage(
-          PRODUCT_DELETED,
-          AlertStatus.Success,
-          AlertColorScheme.Purple
-        )
+        showMessage(SALE_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
       }
     }
   }

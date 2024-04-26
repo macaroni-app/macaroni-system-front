@@ -1,6 +1,6 @@
 import {z} from "zod"
 
-export const TRANSACTION_TYPE = ['BUY', 'SELL'] as const
+export const TRANSACTION_TYPE = ['BUY', 'SELL', 'RETURN', 'ADJUSTMENT_UP', 'ADJUSTMENT_DOWN'] as const
 
 export const inventoryTransactionSchema = z.object({
   _id: z.string().optional(),

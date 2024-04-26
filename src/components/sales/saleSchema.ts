@@ -1,5 +1,7 @@
 import {z} from "zod"
 
+export const SALE_STATUS = ['PAID', 'CANCELLED'] as const
+
 const saleItems = z.object({
   product: z.string(),
   quantity: z.number().nonnegative(),
@@ -11,8 +13,9 @@ export const saleSchema = z.object({
   _id: z.string().optional(),
   client: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
   paymentMethod: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
-  total: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative(),
+  total: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
   saleItems: z.array(saleItems),
+  status: z.enum(SALE_STATUS).optional(),
   isRetail: z.boolean().optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),

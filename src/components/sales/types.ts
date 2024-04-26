@@ -3,9 +3,15 @@ import { IGenericObject } from "../common/types"
 import { IPaymentMethod } from "../paymentMethods/types"
 import { IProductFullRelated } from "../products/types"
 
+export enum SaleStatus {
+  PAID = 'PAID',
+  CANCELLED = 'CANCELLED'
+}
+
 export interface ISaleFather extends IGenericObject {
   isRetail?: boolean
   total?: number
+  status?: SaleStatus
   saleItems?: ISaleItemPreview[]
 }
 export interface ISaleFullRelated extends ISaleFather{
