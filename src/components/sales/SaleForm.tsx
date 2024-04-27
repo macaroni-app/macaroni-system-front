@@ -6,16 +6,13 @@ import { useNavigate, useParams } from "react-router-dom"
 
 // types
 import {
-  IProductItemOmitProduct,
-  IProductFullRelated,
-  IProductLessRelated,
-  IProductItemLessRelated,
   ISaleItemLessRelated,
   ISaleLessRelated,
   ISaleFullRelated,
   SaleStatus,
   ISaleItemOmitSale,
 } from "./types"
+import { IProductFullRelated } from "../products/types"
 import { IClient } from "../clients/types"
 import { IPaymentMethod } from "../paymentMethods/types"
 
@@ -29,10 +26,6 @@ import { useClients } from "../../hooks/useClients"
 import { usePaymentMethods } from "../../hooks/usePaymentMethods"
 import { useSaleItems } from "../../hooks/useSaleItems"
 import { useEditManyInventory } from "../../hooks/useEditManyInventory"
-import { useNewProduct } from "../../hooks/useNewProduct"
-import { useEditProduct } from "../../hooks/useEditProduct"
-import { useNewManyProductItem } from "../../hooks/useNewManyProductItem"
-import { useEditManyProductItem } from "../../hooks/useEditManyProductItem"
 import { useMessage } from "../../hooks/useMessage"
 import { useError, Error } from "../../hooks/useError"
 

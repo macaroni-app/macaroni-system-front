@@ -185,9 +185,37 @@ const SaleDetails = () => {
                       direction="row"
                       justifyContent={"space-between"}
                     >
-                      <Text fontSize="lg">Nombre: </Text>
+                      <Text fontSize="lg">Cliente: </Text>
                       <Text as="b" fontSize="lg">
                         {sale?.client?.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Método de pago: </Text>
+                      <Text as="b" fontSize="lg">
+                        {sale?.paymentMethod?.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Total: </Text>
+                      <Text as="b" fontSize="lg">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          sale?.total !== undefined
+                            ? Number.parseFloat(sale?.total?.toFixed(2))
+                            : 0
+                        )}
                       </Text>
                     </Flex>
                     <Flex
@@ -218,84 +246,6 @@ const SaleDetails = () => {
                         )}
                       </Text>
                     </Flex>
-                    {/* <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Precio por menor: </Text>
-                      <Text as="b" fontSize="lg">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(
-                          product?.retailsalePrice !== undefined
-                            ? Number.parseFloat(
-                                product?.retailsalePrice?.toFixed(2)
-                              )
-                            : 0
-                        )}
-                      </Text>
-                    </Flex> */}
-                    {/* <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Precio por mayor: </Text>
-                      <Text as="b" fontSize="lg">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(
-                          product?.wholesalePrice !== undefined
-                            ? Number.parseFloat(
-                                product?.wholesalePrice?.toFixed(2)
-                              )
-                            : 0
-                        )}
-                      </Text>
-                    </Flex> */}
-                    {/* <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Precio de costo: </Text>
-                      <Text as="b" fontSize="lg">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(
-                          product?.costPrice !== undefined
-                            ? Number.parseFloat(product?.costPrice?.toFixed(2))
-                            : 0
-                        )}
-                      </Text>
-                    </Flex> */}
-                    {/* <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Categoria: </Text>
-                      <Text as="b" fontSize="lg">
-                        {product?.category?.name}
-                      </Text>
-                    </Flex>
-                    <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Tipo de producto: </Text>
-                      <Text as="b" fontSize="lg">
-                        {product?.productType?.name}
-                      </Text>
-                    </Flex> */}
                   </GridItem>
                 </Grid>
               </CardBody>
