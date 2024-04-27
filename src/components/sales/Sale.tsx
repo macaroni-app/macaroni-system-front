@@ -49,11 +49,25 @@ import {
 import { SALE_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
+import { useEditManyInventory } from "../../hooks/useEditManyInventory"
+import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
+import {
+  IInventoryFullRelated,
+  IInventoryLessRelated,
+} from "../inventories/types"
+import {
+  IInventoryTransactionLessRelated,
+  TransactionType,
+} from "../inventoryTransactions/types"
+import { IProductItemFullRelated } from "../products/types"
+
 interface Props {
   sale: ISaleFullRelated
+  inventories: IInventoryFullRelated[]
+  productItems: IProductItemFullRelated[]
 }
 
-const Sale = ({ sale }: Props) => {
+const Sale = ({ sale, inventories, productItems }: Props) => {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -74,6 +88,9 @@ const Sale = ({ sale }: Props) => {
 
   const queryClient = useQueryClient()
 
+  const { editManyInventory } = useEditManyInventory()
+  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
+
   const saleItems = queryClient.getQueryData([
     "saleItems",
     { filters: {} },
@@ -81,6 +98,66 @@ const Sale = ({ sale }: Props) => {
 
   const handleDelete = async () => {
     setIsLoading(true)
+
+    // Todo: actualizar el inventario de cada insumo.
+    let assetQuantityByAssetId = new Map<string, number>()
+
+    productItems.forEach((productItem) => {
+      saleItems?.forEach((saleItem) => {
+        if (saleItem.product?._id === productItem.product?._id) {
+          if (assetQuantityByAssetId.has(productItem?.asset?._id as string)) {
+            let prevQuantity = assetQuantityByAssetId.get(
+              productItem?.asset?._id as string
+            )
+            assetQuantityByAssetId.set(
+              productItem.asset?._id as string,
+              Number(prevQuantity) +
+                Number(productItem.quantity) * Number(saleItem.quantity)
+            )
+          } else {
+            assetQuantityByAssetId.set(
+              productItem.asset?._id as string,
+              (Number(productItem.quantity) *
+                Number(saleItem.quantity)) as number
+            )
+          }
+        }
+      })
+    })
+    let inventoriesToUpdate: IInventoryLessRelated[] = []
+
+    assetQuantityByAssetId.forEach((value, key) => {
+      inventories.forEach((inventory) => {
+        let inventoryUpdated: IInventoryLessRelated = {
+          asset: inventory.asset?._id,
+          id: inventory._id,
+          quantityAvailable: inventory.quantityAvailable,
+        }
+        if (key === inventory.asset?._id) {
+          inventoryUpdated.quantityAvailable =
+            inventoryUpdated.quantityAvailable !== undefined
+              ? inventoryUpdated.quantityAvailable + value
+              : inventoryUpdated.quantityAvailable
+          inventoriesToUpdate.push(inventoryUpdated)
+        }
+      })
+    })
+
+    await editManyInventory(inventoriesToUpdate)
+
+    // Todo: registrar las transacciones del inventario de cada insumo.
+
+    let inventoryTransactions: IInventoryTransactionLessRelated[] = []
+
+    assetQuantityByAssetId.forEach((value, key) => {
+      inventoryTransactions.push({
+        asset: key,
+        affectedAmount: value,
+        transactionType: TransactionType.RETURN,
+      })
+    })
+
+    await addNewManyInventoryTransaction(inventoryTransactions)
 
     // delete sale
     const response = await deleteSale({ saleId: sale._id })

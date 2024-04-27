@@ -230,11 +230,16 @@ const SaleForm = () => {
         // Todo: insertar los items de la venta.
 
         let saleItemWithSale = sale?.saleItems?.map((saleItem) => {
-          let subTotal = sale.isRetail
-            ? saleItem?.quantity *
-              productsById.get(saleItem.product).retailsalePrice
-            : saleItem?.quantity *
-              productsById.get(saleItem.product).wholesalePrice
+          let subTotal
+
+          if (saleItem.quantity !== undefined) {
+            subTotal = sale.isRetail
+              ? saleItem?.quantity *
+                productsById.get(saleItem.product).retailsalePrice
+              : saleItem?.quantity *
+                productsById.get(saleItem.product).wholesalePrice
+          }
+
           return {
             ...saleItem,
             sale: response?.data?._id,

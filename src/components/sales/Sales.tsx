@@ -24,12 +24,17 @@ import { useNavigate } from "react-router-dom"
 import WithoutResults from "../common/WithoutResults"
 import Sale from "./Sale"
 
+import { IProductItemFullRelated } from "../products/types"
+
 // custom hooks
 import { useSales } from "../../hooks/useSales"
 import { useSaleItems } from "../../hooks/useSaleItems"
+import { useProductItems } from "../../hooks/useProductItems"
+import { useInventories } from "../../hooks/useInventories"
 
 // types
 import { ISaleFullRelated, ISaleItemFullRelated } from "./types"
+import { IInventoryFullRelated } from "../inventories/types"
 
 const Sales = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -37,6 +42,11 @@ const Sales = () => {
   // );
   const querySales = useSales({})
   const querySaleItems = useSaleItems({})
+  const queryProductItems = useProductItems({})
+  const queryInventories = useInventories({})
+
+  const productItems = queryProductItems.data as IProductItemFullRelated[]
+  const inventories = queryInventories.data as IInventoryFullRelated[]
   // const {
   //   query: querySaleDetails,
   //   setRangeDateFilter: setRangeDateFilterSaleDetail,
@@ -65,7 +75,14 @@ const Sales = () => {
 
   const saleList = sales?.map((sale) => {
     if (sale._id !== undefined && sale.createdAt !== undefined) {
-      return <Sale key={sale?._id + sale?.createdAt} sale={sale} />
+      return (
+        <Sale
+          key={sale?._id + sale?.createdAt}
+          sale={sale}
+          productItems={productItems}
+          inventories={inventories}
+        />
+      )
     }
   })
 
