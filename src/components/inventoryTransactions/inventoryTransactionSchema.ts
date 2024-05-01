@@ -1,11 +1,13 @@
 import {z} from "zod"
 
-export const TRANSACTION_TYPE = ['BUY', 'SELL', 'RETURN', 'ADJUSTMENT_UP', 'ADJUSTMENT_DOWN'] as const
+export const TRANSACTION_TYPE = ['UP', 'DOWN'] as const
+export const TRANSACTION_REASON = ['BUY', 'SELL', 'RETURN', 'ADJUSTMENT', 'DONATION', 'DEFEATED', 'LOSS', 'INTERNAL_USAGE'] as const
 
 export const inventoryTransactionSchema = z.object({
   _id: z.string().optional(),
   asset: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
   transactionType: z.enum(TRANSACTION_TYPE),
+  transactionReason: z.enum(TRANSACTION_REASON),
   affectedAmount: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),

@@ -139,7 +139,7 @@ const InventoryTransactions = (): JSX.Element => {
             <CardBody>
               <Flex placeItems={"center"}>
                 <Text color={"white"} fontWeight={"bold"}>
-                  {inventoryTransactionList?.length} inventarios
+                  {inventoryTransactionList?.length} transacciones de inventario
                 </Text>
                 <Spacer />
                 <Button

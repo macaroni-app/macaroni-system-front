@@ -28,7 +28,12 @@ import {
   Badge,
 } from "@chakra-ui/react"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import {
+  ChevronDownIcon,
+  AddIcon,
+  TriangleUpIcon,
+  TriangleDownIcon,
+} from "@chakra-ui/icons"
 
 import { useDeleteInventoryTransaction } from "../../hooks/useDeleteInventoryTransaction"
 import { useMessage } from "../../hooks/useMessage"
@@ -87,6 +92,30 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
     navigate("/inventoryTransactions")
   }
 
+  const getColorSchemeBaseOnTransactionType = (transactionType: string) => {
+    return transactionType === "DOWN" ? "green" : "red"
+  }
+
+  const getLabelBaseOnTransactionType = (transactionReason: string) => {
+    return transactionReason === "BUY"
+      ? "Compra"
+      : transactionReason === "SELL"
+      ? "Venta"
+      : transactionReason === "RETURN"
+      ? "Devolución"
+      : transactionReason === "ADJUSTMENT"
+      ? "Ajuste"
+      : transactionReason === "DONATION"
+      ? "Donación"
+      : transactionReason === "DEFEATED"
+      ? "Vencido"
+      : transactionReason === "LOSS"
+      ? "Pérdida"
+      : transactionReason === "INTERNAL_USAGE"
+      ? "Uso interno"
+      : "Otro"
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -100,17 +129,25 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                   <Text fontSize="lg" align="start" mr={2}>
                     {inventoryTransaction?.asset?.name}
                   </Text>
-                  <Badge variant={"subtle"} colorScheme={"green"}>
-                    {inventoryTransaction?.transactionType === "BUY"
-                      ? "Compra"
-                      : inventoryTransaction?.transactionType === "SELL"
-                      ? "Venta"
-                      : inventoryTransaction?.transactionType === "RETURN"
-                      ? "Devolución"
-                      : inventoryTransaction?.transactionType ===
-                        "ADJUSTMENT_UP"
-                      ? "Ajustar +"
-                      : "Ajustar -"}
+                  <Badge
+                    variant={"subtle"}
+                    colorScheme={getColorSchemeBaseOnTransactionType(
+                      inventoryTransaction.transactionType !== undefined
+                        ? inventoryTransaction.transactionType
+                        : ""
+                    )}
+                  >
+                    {getLabelBaseOnTransactionType(
+                      inventoryTransaction.transactionReason !== undefined
+                        ? inventoryTransaction.transactionReason
+                        : ""
+                    )}
+                    {inventoryTransaction.transactionType === "UP" && (
+                      <TriangleUpIcon boxSize={3} ms={2} mb={1} />
+                    )}
+                    {inventoryTransaction.transactionType === "DOWN" && (
+                      <TriangleDownIcon boxSize={3} ms={2} mb={1} />
+                    )}
                   </Badge>
                 </Flex>
                 <Text fontSize="xs" align="start">

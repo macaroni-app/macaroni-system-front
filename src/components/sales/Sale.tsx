@@ -31,8 +31,8 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
 import { useMessage } from "../../hooks/useMessage"
-import { useDeleteSale } from "../../hooks/useDeleteSale"
-import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem"
+// import { useDeleteSale } from "../../hooks/useDeleteSale"
+// import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem"
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
@@ -43,10 +43,11 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import {
   ISaleFullRelated,
   ISaleItemFullRelated,
-  ISaleItemPreview,
+  // ISaleItemPreview,
+  SaleStatus,
 } from "./types"
 
-import { SALE_DELETED } from "../../utils/constants"
+import { SALE_CANCELLED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useEditManyInventory } from "../../hooks/useEditManyInventory"
@@ -57,9 +58,11 @@ import {
 } from "../inventories/types"
 import {
   IInventoryTransactionLessRelated,
+  TransactionReason,
   TransactionType,
 } from "../inventoryTransactions/types"
 import { IProductItemFullRelated } from "../products/types"
+import { useEditSale } from "../../hooks/useEditSale"
 
 interface Props {
   sale: ISaleFullRelated
@@ -72,8 +75,9 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const { deleteSale } = useDeleteSale()
-  const { deleteManySaleItem } = useDeleteManySaleItem()
+  const { editSale } = useEditSale()
+  // const { deleteSale } = useDeleteSale()
+  // const { deleteManySaleItem } = useDeleteManySaleItem()
   const { showMessage } = useMessage()
 
   const handleEdit = () => {
@@ -96,14 +100,28 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
     { filters: {} },
   ]) as ISaleItemFullRelated[]
 
+  const saleItemsFiltered = saleItems?.filter(
+    (saleItem) => saleItem.sale?._id === sale._id
+  ) as ISaleItemFullRelated[]
+
   const handleDelete = async () => {
+    if (sale.status === "CANCELLED") {
+      showMessage(
+        "Ya esta cancelada la venta",
+        AlertStatus.Error,
+        AlertColorScheme.Red
+      )
+      onClose()
+      return
+    }
+
     setIsLoading(true)
 
     // Todo: actualizar el inventario de cada insumo.
     let assetQuantityByAssetId = new Map<string, number>()
 
     productItems.forEach((productItem) => {
-      saleItems?.forEach((saleItem) => {
+      saleItemsFiltered?.forEach((saleItem) => {
         if (saleItem.product?._id === productItem.product?._id) {
           if (assetQuantityByAssetId.has(productItem?.asset?._id as string)) {
             let prevQuantity = assetQuantityByAssetId.get(
@@ -153,39 +171,52 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
       inventoryTransactions.push({
         asset: key,
         affectedAmount: value,
-        transactionType: TransactionType.RETURN,
+        transactionType: TransactionType.UP,
+        transactionReason: TransactionReason.ADJUSTMENT,
       })
     })
 
     await addNewManyInventoryTransaction(inventoryTransactions)
 
     // delete sale
-    const response = await deleteSale({ saleId: sale._id })
-
-    const saleItemsToDelete: ISaleItemPreview[] = []
-    saleItems.forEach((saleItem) => {
-      if (saleItem.sale?._id === sale._id) {
-        saleItemsToDelete.push({
-          product: saleItem.product?._id,
-          id: saleItem._id,
-          quantity: saleItem.quantity,
-        })
-      }
+    // const response = await deleteSale({ saleId: sale._id })
+    const response = await editSale({
+      saleId: sale._id !== undefined ? sale?._id : "",
+      saleToUpdate: {
+        status: SaleStatus.CANCELLED,
+        client: sale.client?._id,
+        paymentMethod: sale.paymentMethod?._id,
+        total: sale.total,
+        isRetail: sale.isRetail,
+      },
     })
 
-    if (response.isDeleted && response.status === 200) {
-      // delete productItems
-      const response = await deleteManySaleItem(
-        saleItemsToDelete as ISaleItemPreview[]
-      )
+    // const saleItemsToDelete: ISaleItemPreview[] = []
+    // saleItems.forEach((saleItem) => {
+    //   if (saleItem.sale?._id === sale._id) {
+    //     saleItemsToDelete.push({
+    //       product: saleItem.product?._id,
+    //       id: saleItem._id,
+    //       quantity: saleItem.quantity,
+    //     })
+    //   }
+    // })
 
-      if (
-        response.isDeleted &&
-        response.status === 200 &&
-        response.data.deletedCount > 0
-      ) {
-        showMessage(SALE_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
-      }
+    if (response.isUpdated && response.status === 200) {
+      showMessage(SALE_CANCELLED, AlertStatus.Success, AlertColorScheme.Purple)
+      onClose()
+      // delete productItems
+      // const response = await deleteManySaleItem(
+      //   saleItemsToDelete as ISaleItemPreview[]
+      // )
+
+      // if (
+      //   response.isDeleted &&
+      //   response.status === 200 &&
+      //   response.data.deletedCount > 0
+      // ) {
+      //   showMessage(SALE_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
+      // }
     }
   }
 
@@ -206,8 +237,13 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                       <Text fontSize="lg" align="start" mr={2}>
                         {sale.client?.name}
                       </Text>
-                      <Badge variant={"subtle"} colorScheme={"green"}>
-                        {sale.paymentMethod?.name}
+                      <Badge
+                        variant={"subtle"}
+                        colorScheme={
+                          sale.status === "CANCELLED" ? "red" : "green"
+                        }
+                      >
+                        {sale.status === "CANCELLED" ? "Cancelado" : "Pagado"}
                       </Badge>
                     </Flex>
                     {/* <Text fontSize="xs" align="start">
@@ -298,7 +334,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                                   bg: "purple.100",
                                 }}
                               >
-                                Borrar
+                                Cancelar
                               </Button>
                             </VStack>
                           </PopoverBody>
@@ -319,11 +355,11 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Borrar venta</ModalHeader>
+              <ModalHeader>Cancelar venta</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <Text>
-                  ¿Estás seguro de eliminar el producto{" "}
+                  ¿Estás seguro de cancelar la venta{" "}
                   <Text fontWeight={"bold"} as={"span"}>
                     {sale.client?.name}?
                   </Text>
@@ -336,7 +372,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                   mr={3}
                   onClick={() => handleDelete()}
                 >
-                  Borrar
+                  Cancelar
                 </Button>
                 <Button
                   isDisabled={isLoading}

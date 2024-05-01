@@ -41,6 +41,7 @@ import {
 import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
 import {
   IInventoryTransactionLessRelated,
+  TransactionReason,
   TransactionType,
 } from "../inventoryTransactions/types"
 import { useNewSale } from "../../hooks/useNewSale"
@@ -215,7 +216,8 @@ const SaleForm = () => {
           inventoryTransactions.push({
             asset: key,
             affectedAmount: value,
-            transactionType: TransactionType.SELL,
+            transactionType: TransactionType.DOWN,
+            transactionReason: TransactionReason.SELL,
           })
         })
 

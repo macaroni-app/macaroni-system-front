@@ -3,16 +3,25 @@ import { IGenericObject } from "../common/types"
 
 
 export enum TransactionType {
+  UP = 'UP',
+  DOWN = 'DOWN'
+}
+
+export enum TransactionReason {
   BUY = 'BUY',
   SELL = 'SELL',
   RETURN = 'RETURN',
-  ADJUSTMENT_UP = 'ADJUSTMENT_UP',
-  ADJUSTMENT_DOWN = 'ADJUSTMENT_DOWN'
+  ADJUSTMENT = 'ADJUSTMENT',
+  DONATION = 'DONATION',
+  DEFEATED = 'DEFEATED',
+  LOSS = 'LOSS',
+  INTERNAL_USAGE = 'INTERNAL_USAGE'
 }
 
 export interface IInventoryTransactionFather extends IGenericObject{
   affectedAmount?: number
   transactionType?: TransactionType
+  transactionReason?: TransactionReason
 }
 
 export interface IInventoryTransactionFullRelated extends IInventoryTransactionFather{

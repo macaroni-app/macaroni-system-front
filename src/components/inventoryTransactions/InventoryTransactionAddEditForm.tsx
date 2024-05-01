@@ -55,16 +55,28 @@ const InventoryTransactionAddEditForm = (props: Props) => {
           inventoryTransactionToUpdate?.affectedAmount || undefined,
         transactionType:
           inventoryTransactionToUpdate?.transactionType || undefined,
+        transactionReason:
+          inventoryTransactionToUpdate?.transactionReason || undefined,
       },
     })
 
   const getTransactinTypeOptions = () => {
     return [
+      { _id: "UP", name: "Aumentar" },
+      { _id: "DOWN", name: "Disminuir" },
+    ]
+  }
+
+  const getTransactinReasonOptions = () => {
+    return [
       { _id: "BUY", name: "Compra" },
       { _id: "SELL", name: "Venta" },
       { _id: "RETURN", name: "Devolución" },
-      { _id: "ADJUSTMENT_UP", name: "Ajustar +" },
-      { _id: "ADJUSTMENT_DOWN", name: "Ajustar -" },
+      { _id: "ADJUSTMENT", name: "Ajuste" },
+      { _id: "DONATION", name: "Donación" },
+      { _id: "DEFEATED", name: "Vencido" },
+      { _id: "LOSS", name: "Pérdida" },
+      { _id: "INTERNAL_USAGE", name: "Uso interno" },
     ]
   }
 
@@ -114,6 +126,21 @@ const InventoryTransactionAddEditForm = (props: Props) => {
                         label={"Tipo de transacción"}
                         control={control}
                         data={getTransactinTypeOptions()}
+                        isRequired={true}
+                        noOptionsMessage={getNoOptionMessage()}
+                      />
+                    </GridItem>
+                  </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <MySelect
+                        formState={formState}
+                        register={register}
+                        field={"transactionReason"}
+                        placeholder={"Seleccionar motivo ..."}
+                        label={"Motivo de la transacción"}
+                        control={control}
+                        data={getTransactinReasonOptions()}
                         isRequired={true}
                         noOptionsMessage={getNoOptionMessage()}
                       />
