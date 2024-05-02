@@ -243,7 +243,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                           sale.status === "CANCELLED" ? "red" : "green"
                         }
                       >
-                        {sale.status === "CANCELLED" ? "Cancelado" : "Pagado"}
+                        {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
                       </Badge>
                     </Flex>
                     {/* <Text fontSize="xs" align="start">

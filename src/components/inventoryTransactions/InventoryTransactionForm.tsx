@@ -66,6 +66,9 @@ const InventoryTransactionForm = () => {
       let response
       if (!inventoryTransactionId) {
         response = await addNewInventoryTransaction(inventoryTransaction)
+
+        console.log(inventoryTransaction)
+
         if (response.isStored) {
           showMessage(
             RECORD_CREATED,
