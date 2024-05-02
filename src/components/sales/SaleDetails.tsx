@@ -27,7 +27,7 @@ import { useNavigate, useParams } from "react-router-dom"
 // types
 import { ISaleFullRelated } from "./types"
 
-import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
@@ -99,9 +99,9 @@ const SaleDetails = () => {
     navigate("/sales")
   }
 
-  const handleEditProduct = () => {
-    navigate(`/sales/${sale._id}/edit`)
-  }
+  // const handleEditProduct = () => {
+  //   navigate(`/sales/${sale._id}/edit`)
+  // }
 
   return (
     <>
@@ -123,14 +123,14 @@ const SaleDetails = () => {
                   Volver
                 </Button>
                 <Spacer />
-                <Button
+                {/* <Button
                   onClick={() => handleEditProduct()}
                   colorScheme="purple"
                   variant="solid"
                 >
                   <EditIcon boxSize={3} me={2} />
                   Editar
-                </Button>
+                </Button> */}
               </Flex>
             </CardBody>
           </Card>

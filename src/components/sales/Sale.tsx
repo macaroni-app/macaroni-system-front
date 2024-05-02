@@ -80,9 +80,9 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
   // const { deleteManySaleItem } = useDeleteManySaleItem()
   const { showMessage } = useMessage()
 
-  const handleEdit = () => {
-    navigate(`${sale._id}/edit`)
-  }
+  // const handleEdit = () => {
+  //   navigate(`${sale._id}/edit`)
+  // }
 
   const handleDetails = () => {
     navigate(`/sales/${sale._id}/details`)
@@ -107,7 +107,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
   const handleDelete = async () => {
     if (sale.status === "CANCELLED") {
       showMessage(
-        "Ya esta cancelada la venta",
+        "Ya esta anulada la venta",
         AlertStatus.Error,
         AlertColorScheme.Red
       )
@@ -308,7 +308,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                               >
                                 Ver detalles
                               </Button>
-                              <Button
+                              {/* <Button
                                 onClick={() => handleEdit()}
                                 variant={"blue"}
                                 colorScheme="blue"
@@ -321,7 +321,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                                 }}
                               >
                                 Editar
-                              </Button>
+                              </Button> */}
                               <Button
                                 onClick={onOpen}
                                 variant={"blue"}
@@ -334,7 +334,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                                   bg: "purple.100",
                                 }}
                               >
-                                Cancelar
+                                Anular
                               </Button>
                             </VStack>
                           </PopoverBody>
@@ -355,11 +355,11 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Cancelar venta</ModalHeader>
+              <ModalHeader>Anular venta</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <Text>
-                  ¿Estás seguro de cancelar la venta{" "}
+                  ¿Estás seguro de anular la venta{" "}
                   <Text fontWeight={"bold"} as={"span"}>
                     {sale.client?.name}?
                   </Text>
@@ -372,7 +372,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                   mr={3}
                   onClick={() => handleDelete()}
                 >
-                  Cancelar
+                  Anular
                 </Button>
                 <Button
                   isDisabled={isLoading}
