@@ -50,9 +50,9 @@ const Inventory = ({ inventory }: Props) => {
 
   const { showMessage } = useMessage()
 
-  const handleEdit = () => {
-    navigate(`${inventory._id}/edit`)
-  }
+  // const handleEdit = () => {
+  //   navigate(`${inventory._id}/edit`)
+  // }
 
   const handleDelete = async () => {
     setIsLoading(true)
@@ -128,7 +128,7 @@ const Inventory = ({ inventory }: Props) => {
                       <PopoverArrow />
                       <PopoverBody p={0}>
                         <VStack spacing={1} align="stretch">
-                          <Button
+                          {/* <Button
                             onClick={() => handleEdit()}
                             variant={"blue"}
                             colorScheme="blue"
@@ -141,7 +141,7 @@ const Inventory = ({ inventory }: Props) => {
                             }}
                           >
                             Editar
-                          </Button>
+                          </Button> */}
                           <Button
                             onClick={onOpen}
                             variant={"blue"}

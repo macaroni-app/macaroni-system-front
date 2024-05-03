@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
 // types
-import { IInventoryTransactionLessRelated } from "./types"
+import { IInventoryTransactionLessRelated, TransactionType } from "./types"
 import { IAssetFullCategory } from "../assets/types"
 
 // components
@@ -14,12 +14,18 @@ import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
 import { useAssets } from "../../hooks/useAssets"
 import { useNewInventoryTransaction } from "../../hooks/useNewInventoryTransaction"
 import { useEditInventoryTransaction } from "../../hooks/useEditInventoryTransaction"
+import { useEditManyInventory } from "../../hooks/useEditManyInventory"
 
 import { useMessage } from "../../hooks/useMessage"
 import { Error, useError } from "../../hooks/useError"
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import {
+  IInventoryFullRelated,
+  IInventoryLessRelated,
+} from "../inventories/types"
+import { useInventories } from "../../hooks/useInventories"
 
 const InventoryTransactionForm = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -31,6 +37,19 @@ const InventoryTransactionForm = () => {
   const navigate = useNavigate()
 
   const { inventoryTransactionId } = useParams()
+
+  const { editManyInventory } = useEditManyInventory()
+
+  const queryInventories = useInventories({})
+  const inventories = queryInventories.data as IInventoryFullRelated[]
+
+  const inventoryByAssetId = new Map<string, IInventoryFullRelated>()
+
+  inventories?.forEach((inventory) => {
+    if (inventory.asset?._id !== undefined) {
+      inventoryByAssetId.set(inventory?.asset?._id, inventory)
+    }
+  })
 
   const queryAssets = useAssets({})
   const assets = queryAssets?.data as IAssetFullCategory[]
@@ -65,16 +84,64 @@ const InventoryTransactionForm = () => {
     try {
       let response
       if (!inventoryTransactionId) {
-        response = await addNewInventoryTransaction(inventoryTransaction)
+        // Todo: actualizar el inventario del insumo
 
-        console.log(inventoryTransaction)
+        let editInventoryResponse
 
-        if (response.isStored) {
-          showMessage(
-            RECORD_CREATED,
-            AlertStatus.Success,
-            AlertColorScheme.Purple
-          )
+        let inventory = inventoryByAssetId.get(
+          inventoryTransaction.asset ? inventoryTransaction.asset : ""
+        )
+
+        let inventoryUpdated: IInventoryLessRelated = {
+          asset: inventory?.asset?._id,
+          id: inventory?._id,
+          quantityAvailable: inventory?.quantityAvailable,
+        }
+
+        let inventoriesToUpdate: IInventoryLessRelated[] = []
+
+        if (inventoryTransaction.transactionType === TransactionType.UP) {
+          // Todo: si es up hay que aumentar el inventario en la cantidad afectada del insumo
+          if (
+            inventoryUpdated.quantityAvailable !== undefined &&
+            inventoryTransaction.affectedAmount !== undefined
+          ) {
+            inventoryUpdated.quantityAvailable =
+              inventoryUpdated?.quantityAvailable +
+              inventoryTransaction?.affectedAmount
+          }
+
+          inventoriesToUpdate.push(inventoryUpdated)
+
+          editInventoryResponse = await editManyInventory(inventoriesToUpdate)
+        }
+
+        if (inventoryTransaction.transactionType === TransactionType.DOWN) {
+          // Todo: si es down hay que disminuir el inventario en la cantidad afectada del insumo
+          if (
+            inventoryUpdated.quantityAvailable !== undefined &&
+            inventoryTransaction.affectedAmount !== undefined
+          ) {
+            inventoryUpdated.quantityAvailable =
+              inventoryUpdated?.quantityAvailable -
+              inventoryTransaction?.affectedAmount
+          }
+
+          inventoriesToUpdate.push(inventoryUpdated)
+
+          editInventoryResponse = await editManyInventory(inventoriesToUpdate)
+        }
+
+        if (editInventoryResponse.isUpdated) {
+          response = await addNewInventoryTransaction(inventoryTransaction)
+
+          if (response.isStored) {
+            showMessage(
+              RECORD_CREATED,
+              AlertStatus.Success,
+              AlertColorScheme.Purple
+            )
+          }
         }
       } else {
         response = await editInventoryTransaction({

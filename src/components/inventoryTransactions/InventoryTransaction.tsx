@@ -93,7 +93,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   }
 
   const getColorSchemeBaseOnTransactionType = (transactionType: string) => {
-    return transactionType === "DOWN" ? "green" : "red"
+    return transactionType === "DOWN" ? "red" : "green"
   }
 
   const getLabelBaseOnTransactionType = (transactionReason: string) => {
