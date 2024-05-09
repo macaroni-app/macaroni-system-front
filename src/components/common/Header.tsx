@@ -26,15 +26,24 @@ import {
 import { useLogout } from "../../hooks/useLogout"
 
 import { useNavigate } from "react-router-dom"
+import { ROLES } from "./roles"
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+interface NavProp {
+  roles: number[]
+}
 
 interface INavType {
   label: string
   href: string
+  permissions: number[]
   children?: INavType[]
 }
 
 const Header = (): JSX.Element => {
   const { isOpen, onToggle } = useDisclosure()
+  const { auth } = useAuthContext() as IUserContext
 
   const { logout } = useLogout()
 
@@ -94,7 +103,7 @@ const Header = (): JSX.Element => {
           </Flex>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
-            <DesktopNav />
+            <DesktopNav roles={auth?.roles !== undefined ? auth?.roles : []} />
           </Flex>
         </Flex>
 
@@ -120,13 +129,13 @@ const Header = (): JSX.Element => {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav roles={auth.roles !== undefined ? auth.roles : []} />
       </Collapse>
     </Box>
   )
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ roles }: NavProp) => {
   const linkColor = useColorModeValue("gray.600", "gray.200")
   const linkHoverColor = useColorModeValue("gray.800", "white")
   // const popoverContentBgColor = useColorModeValue("white", "gray.800");
@@ -135,7 +144,12 @@ const DesktopNav = () => {
   return (
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => {
-        if (navItem) {
+        if (
+          navItem &&
+          roles
+            ?.map((role) => navItem.permissions.includes(role))
+            .find((val) => val)
+        ) {
           return (
             <Box key={navItem.label}>
               {/* <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -233,7 +247,7 @@ const DesktopNav = () => {
 //   );
 // };
 
-const MobileNav = () => {
+const MobileNav = ({ roles }: NavProp) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
@@ -241,7 +255,12 @@ const MobileNav = () => {
       display={{ md: "none" }}
     >
       {NAV_ITEMS.map((navItem) => {
-        if (navItem) {
+        if (
+          navItem &&
+          roles
+            ?.map((role) => navItem.permissions.includes(role))
+            .find((val) => val)
+        ) {
           return <MobileNavItem key={navItem.label} {...navItem} />
         }
       })}
@@ -317,38 +336,47 @@ const NAV_ITEMS: INavType[] = [
   {
     label: "Ventas",
     href: "/sales",
+    permissions: [ROLES.ADMIN, ROLES.SELLER],
   },
   {
     label: "Productos",
     href: "/products",
+    permissions: [ROLES.ADMIN, ROLES.SELLER],
   },
   {
     label: "Insumos",
     href: "/assets",
+    permissions: [ROLES.ADMIN, ROLES.SELLER],
   },
   {
     label: "Categorias",
     href: "/categories",
+    permissions: [ROLES.ADMIN],
   },
   {
     label: "Tipos de productos",
     href: "/productTypes",
+    permissions: [ROLES.ADMIN],
   },
   {
     label: "Inventarios",
     href: "/inventories",
+    permissions: [ROLES.ADMIN, ROLES.SELLER],
   },
   {
     label: "Historial inventario",
     href: "/inventoryTransactions",
+    permissions: [ROLES.ADMIN, ROLES.SELLER],
   },
   {
     label: "Clientes",
     href: "/clients",
+    permissions: [ROLES.ADMIN],
   },
   {
     label: "Métodos de pagos",
     href: "/paymentMethods",
+    permissions: [ROLES.ADMIN],
   },
 ]
 
