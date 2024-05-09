@@ -55,8 +55,8 @@ const Login = (): JSX.Element => {
     try {
       const response = await loginService.login({ ...credentials })
       const accessToken = response?.data?.accessToken
-      console.log(accessToken)
-      setAuth({ accessToken })
+      const roles = response?.data?.roles
+      setAuth({ accessToken, roles })
       navigate(from, { replace: true })
     } catch (error) {
       // if (!error?.response) {

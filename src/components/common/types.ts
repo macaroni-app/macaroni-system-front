@@ -4,6 +4,12 @@ export interface IFilters {
   }
 }
 
+interface ICreatedBy {
+  id: string
+  firstName: string
+  lastName: string
+}
+
 export interface IGenericObject {
   id?: string
   _id?: string
@@ -12,6 +18,6 @@ export interface IGenericObject {
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
-  createdBy?: string
+  createdBy?: ICreatedBy
   updatedBy?: string
 }

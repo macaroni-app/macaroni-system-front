@@ -55,9 +55,9 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
 
   const { showMessage } = useMessage()
 
-  const handleEdit = () => {
-    navigate(`${inventoryTransaction._id}/edit`)
-  }
+  // const handleEdit = () => {
+  //   navigate(`${inventoryTransaction._id}/edit`)
+  // }
 
   const handleDelete = async () => {
     setIsLoading(true)
@@ -156,6 +156,13 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                     {inventoryTransaction?.affectedAmount}
                   </Text>
                 </Text>
+                <Text fontSize="xs" align="start">
+                  Realizada por:{" "}
+                  <Text fontWeight={"bold"} as={"span"}>
+                    {inventoryTransaction?.createdBy?.firstName}{" "}
+                    {inventoryTransaction?.createdBy?.lastName}
+                  </Text>
+                </Text>
               </Flex>
             </GridItem>
 
@@ -182,7 +189,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                       <PopoverArrow />
                       <PopoverBody p={0}>
                         <VStack spacing={1} align="stretch">
-                          <Button
+                          {/* <Button
                             onClick={() => handleEdit()}
                             variant={"blue"}
                             colorScheme="blue"
@@ -195,7 +202,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                             }}
                           >
                             Editar
-                          </Button>
+                          </Button> */}
                           <Button
                             onClick={onOpen}
                             variant={"blue"}

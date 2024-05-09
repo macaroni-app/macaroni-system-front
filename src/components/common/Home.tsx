@@ -39,6 +39,9 @@ import Clients from "../clients/Clients"
 import ClientForm from "../clients/ClientForm"
 import PaymentMethods from "../paymentMethods/PaymentMethods"
 import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
+import ProtectedRoute from "../auth/ProtectedRoute"
+import Unauthorized from "./Unauthorized"
+import { ROLES } from "./roles"
 // import PageNotFound from "./PageNotFound"
 
 const Home = () => {
@@ -57,313 +60,245 @@ const Home = () => {
       )}
       <Header />
       <Routes>
+        {/* SALES */}
         <Route
-          path="/sales"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Sales />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/sales/add" element={<SaleForm />} />
-        <Route path="/sales/:saleId/details" element={<SaleDetails />} />
-        {/* <Route path="/sales/:saleId/edit" element={<ProductForm />} />
-        <Route path="/sales/:saleId/details" element={<ProductDetails />} /> */}
+        >
+          <Route
+            path="/sales"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Sales />
+                </GridItem>
+              </Grid>
+            }
+          />
+          <Route path="/sales/add" element={<SaleForm />} />
+          <Route path="/sales/:saleId/details" element={<SaleDetails />} />
+        </Route>
+        {/* ASSETS */}
         <Route
-          path="/assets"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Assets />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/assets/add" element={<AssetForm />} />
-        <Route path="/assets/:assetId/edit" element={<AssetForm />} />
-
+        >
+          <Route
+            path="/assets"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Assets />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/assets/add" element={<AssetForm />} />
+          <Route path="/assets/:assetId/edit" element={<AssetForm />} />
+        </Route>
+        {/* CATEGORIES */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route
+            path="/categories"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Categories />
+                </GridItem>
+              </Grid>
+            }
+          />
+          <Route path="/categories/add" element={<CategoryForm />} />
+          <Route
+            path="/categories/:categoryId/edit"
+            element={<CategoryForm />}
+          />
+        </Route>
+        {/* PRODUCT_TYPES */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route
+            path="/productTypes"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <ProductTypes />
+                </GridItem>
+              </Grid>
+            }
+          />
+          <Route path="/productTypes/add" element={<ProductTypeForm />} />
+          <Route
+            path="/productTypes/:productTypeId/edit"
+            element={<ProductTypeForm />}
+          />
+        </Route>
+        {/* PRODUCTS */}
         <Route
-          path="/categories"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Categories />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/categories/add" element={<CategoryForm />} />
-        <Route path="/categories/:categoryId/edit" element={<CategoryForm />} />
+        >
+          <Route
+            path="/products"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Products />
+                </GridItem>
+              </Grid>
+            }
+          />
+          <Route
+            path="/products/:productId/details"
+            element={<ProductDetails />}
+          />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/products/add" element={<ProductForm />} />
+          <Route path="/products/:productId/edit" element={<ProductForm />} />
+        </Route>
+        {/* INVENTORIES */}
         <Route
-          path="/productTypes"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <ProductTypes />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/productTypes/add" element={<ProductTypeForm />} />
+        >
+          <Route
+            path="/inventories"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Inventories />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/inventories/add" element={<InventoryForm />} />
+          <Route
+            path="/inventories/:inventoryId/edit"
+            element={<InventoryForm />}
+          />
+        </Route>
+        {/* INVENTORY TRANSACTIONS */}
         <Route
-          path="/productTypes/:productTypeId/edit"
-          element={<ProductTypeForm />}
-        />
-
-        <Route
-          path="/products"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Products />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/products/add" element={<ProductForm />} />
-        <Route path="/products/:productId/edit" element={<ProductForm />} />
+        >
+          <Route
+            path="/inventoryTransactions"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <InventoryTransactions />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route
+            path="/inventoryTransactions/add"
+            element={<InventoryTransactionForm />}
+          />
+          <Route
+            path="/inventoryTransactions/:inventoryTransactionId/edit"
+            element={<InventoryTransactionForm />}
+          />
+        </Route>
+        {/* CLIENTS */}
         <Route
-          path="/products/:productId/details"
-          element={<ProductDetails />}
-        />
-        <Route
-          path="/inventories"
           element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Inventories />
-              </GridItem>
-            </Grid>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
           }
-        />
-        <Route path="/inventories/add" element={<InventoryForm />} />
-        <Route
-          path="/inventories/:inventoryId/edit"
-          element={<InventoryForm />}
-        />
-        <Route
-          path="/inventoryTransactions"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <InventoryTransactions />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route
-          path="/inventoryTransactions/add"
-          element={<InventoryTransactionForm />}
-        />
-        <Route
-          path="/inventoryTransactions/:inventoryTransactionId/edit"
-          element={<InventoryTransactionForm />}
-        />
-        <Route
-          path="/clients"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Clients />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/clients/add" element={<ClientForm />} />
-        <Route path="/clients/:clientId/edit" element={<ClientForm />} />
-        <Route
-          path="/paymentMethods"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <PaymentMethods />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/paymentMethods/add" element={<PaymentMethodForm />} />
-        <Route
-          path="/paymentMethods/:paymentMethodId/edit"
-          element={<PaymentMethodForm />}
-        />
+        >
+          <Route
+            path="/clients"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Clients />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/clients/add" element={<ClientForm />} />
+          <Route path="/clients/:clientId/edit" element={<ClientForm />} />
+        </Route>
+        {/* PAYMENT_METHODS */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          <Route
+            path="/paymentMethods"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <PaymentMethods />
+                </GridItem>
+              </Grid>
+            }
+          />
+          <Route path="/paymentMethods/add" element={<PaymentMethodForm />} />
+          <Route
+            path="/paymentMethods/:paymentMethodId/edit"
+            element={<PaymentMethodForm />}
+          />
+        </Route>
+        {/* UNAUTHORIZED */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
-      {/*
-
-        <Route
-          path="/products/:productId/details"
-          element={<ProductDetails />}
-        />
-        <Route
-          path="/clients"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Clients />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/clients/add" element={<ClientForm />} />
-        <Route path="/clients/:clientId/edit" element={<ClientForm />} />
-
-        <Route
-          path="/methodPayments"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <MethodPayments />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/methodPayments/add" element={<MethodPaymentForm />} />
-        <Route
-          path="/methodPayments/:methodPaymentId/edit"
-          element={<MethodPaymentForm />}
-        />
-
-        <Route
-          path="/"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Sales />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/add" element={<SaleForm />} />
-        <Route path="/:saleId/edit" element={<SaleForm />} />
-        <Route path="/:saleId/details" element={<SaleDetails />} />
-        <Route
-          path="/debts"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Debts />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route path="/debts/add" element={<DebtForm />} />
-        <Route path="/debts/:debtId/edit" element={<DebtForm />} />
-        <Route
-          path="/reports"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <BarChart />
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route
-          path="/products-sold"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <Card variant="outline" mb={3}>
-                  <CardBody>
-                    <HistorySales />
-                  </CardBody>
-                </Card>
-              </GridItem>
-            </Grid>
-          }
-        />
-        <Route
-          path="/*"
-          element={
-            <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={10}>
-              <GridItem
-                as="main"
-                colSpan={{ base: 10, md: 10, lg: 8 }}
-                colStart={{ base: 2, md: 2, lg: 3 }}
-                mb={10}
-              >
-                <PageNotFound />
-              </GridItem>
-            </Grid>
-          }
-        />
-      </Routes> */}
     </>
   )
 }
