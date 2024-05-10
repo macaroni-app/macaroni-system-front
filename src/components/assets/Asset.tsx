@@ -40,12 +40,19 @@ import {
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
+
 interface Props {
   asset: IAssetFullCategory
 }
 
 const Asset = ({ asset }: Props): JSX.Element => {
   const navigate = useNavigate()
+
+  const { auth } = useAuthContext() as IUserContext
 
   const { deleteAsset } = useDeleteAsset()
   const { showMessage } = useMessage()
@@ -120,74 +127,80 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
-                <Popover placement="bottom-start">
-                  <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      aria-label="some"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                    />
-                  </PopoverTrigger>
-                  <Portal>
-                    <PopoverContent width="3xs">
-                      <PopoverArrow />
-                      <PopoverBody p={0}>
-                        <VStack spacing={1} align="stretch">
-                          <Button
-                            onClick={() => handleDetails()}
-                            variant="blue"
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Ver detalles
-                          </Button>
-                          <Button
-                            onClick={() => handleEdit()}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            onClick={onOpen}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Borrar
-                          </Button>
-                        </VStack>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Portal>
-                </Popover>
+                {auth?.roles
+                  ?.map((role) => role === ROLES.ADMIN)
+                  .find((val) => val) && (
+                  <>
+                    <Popover placement="bottom-start">
+                      <PopoverTrigger>
+                        <IconButton
+                          alignSelf="end"
+                          variant={"link"}
+                          colorScheme="blackAlpha"
+                          aria-label="some"
+                          size="md"
+                          icon={
+                            <>
+                              <AddIcon boxSize="3" />
+                              <ChevronDownIcon boxSize="4" />
+                            </>
+                          }
+                        />
+                      </PopoverTrigger>
+                      <Portal>
+                        <PopoverContent width="3xs">
+                          <PopoverArrow />
+                          <PopoverBody p={0}>
+                            <VStack spacing={1} align="stretch">
+                              <Button
+                                onClick={() => handleDetails()}
+                                variant="blue"
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Ver detalles
+                              </Button>
+                              <Button
+                                onClick={() => handleEdit()}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                onClick={onOpen}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Borrar
+                              </Button>
+                            </VStack>
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Portal>
+                    </Popover>
+                  </>
+                )}
               </Flex>
             </GridItem>
           </Grid>

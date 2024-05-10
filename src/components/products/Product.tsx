@@ -49,12 +49,19 @@ import {
 import { PRODUCT_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
+
 interface Props {
   product: IProductFullRelated
 }
 
 const Product = ({ product }: Props) => {
   const navigate = useNavigate()
+
+  const { auth } = useAuthContext() as IUserContext
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -203,34 +210,40 @@ const Product = ({ product }: Props) => {
                               >
                                 Ver detalles
                               </Button>
-                              <Button
-                                onClick={() => handleEdit()}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                onClick={onOpen}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Borrar
-                              </Button>
+                              {auth?.roles
+                                ?.map((role) => role === ROLES.ADMIN)
+                                .find((val) => val) && (
+                                <>
+                                  <Button
+                                    onClick={() => handleEdit()}
+                                    variant={"blue"}
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Editar
+                                  </Button>
+                                  <Button
+                                    onClick={onOpen}
+                                    variant={"blue"}
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Borrar
+                                  </Button>
+                                </>
+                              )}
                             </VStack>
                           </PopoverBody>
                         </PopoverContent>

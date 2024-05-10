@@ -22,10 +22,17 @@ import { useInventories } from "../../hooks/useInventories"
 import { IInventoryFullRelated } from "./types"
 // import { useError } from "../../hooks/useError"
 
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
+
 const Inventories = (): JSX.Element => {
   const queryInventories = useInventories({})
 
   const navigate = useNavigate()
+
+  const { auth } = useAuthContext() as IUserContext
 
   // const { throwError } = useError()
 
@@ -135,14 +142,18 @@ const Inventories = (): JSX.Element => {
                 {inventoryList?.length} inventarios
               </Text>
               <Spacer />
-              <Button
-                onClick={() => handleAddInventory()}
-                colorScheme="purple"
-                variant="solid"
-              >
-                <AddIcon boxSize={3} me={2} />
-                Agregar inventario
-              </Button>
+              {auth?.roles
+                ?.map((role) => role === ROLES.ADMIN)
+                .find((val) => val) && (
+                <Button
+                  onClick={() => handleAddInventory()}
+                  colorScheme="purple"
+                  variant="solid"
+                >
+                  <AddIcon boxSize={3} me={2} />
+                  Agregar inventario
+                </Button>
+              )}
             </Flex>
           </CardBody>
         </Card>

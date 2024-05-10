@@ -31,8 +31,15 @@ import Asset from "./Asset"
 // import Dashboard from "../reports/Dashboard"
 import WithoutResults from "../common/WithoutResults"
 
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
+
 const Assets = (): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>("")
+
+  const { auth } = useAuthContext() as IUserContext
 
   const { throwError } = useError()
 
@@ -92,14 +99,18 @@ const Assets = (): JSX.Element => {
                   {assetList?.length} insumos
                 </Text>
                 <Spacer />
-                <Button
-                  onClick={() => handleAddAsset()}
-                  colorScheme="purple"
-                  variant="solid"
-                >
-                  <AddIcon boxSize={3} me={2} />
-                  Agregar insumo
-                </Button>
+                {auth?.roles
+                  ?.map((role) => role === ROLES.ADMIN)
+                  .find((val) => val) && (
+                  <Button
+                    onClick={() => handleAddAsset()}
+                    colorScheme="purple"
+                    variant="solid"
+                  >
+                    <AddIcon boxSize={3} me={2} />
+                    Agregar insumo
+                  </Button>
+                )}
               </Flex>
             </CardBody>
           </Card>

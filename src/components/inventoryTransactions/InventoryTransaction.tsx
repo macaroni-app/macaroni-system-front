@@ -42,12 +42,19 @@ import { IInventoryTransactionFullRelated } from "./types"
 
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
+
 interface Props {
   inventoryTransaction: IInventoryTransactionFullRelated
 }
 
 const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   const navigate = useNavigate()
+
+  const { auth } = useAuthContext() as IUserContext
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -168,28 +175,32 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                <Popover placement="bottom-start">
-                  <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      aria-label="some"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                    />
-                  </PopoverTrigger>
-                  <Portal>
-                    <PopoverContent width="3xs">
-                      <PopoverArrow />
-                      <PopoverBody p={0}>
-                        <VStack spacing={1} align="stretch">
-                          {/* <Button
+                {auth?.roles
+                  ?.map((role) => role === ROLES.ADMIN)
+                  .find((val) => val) && (
+                  <>
+                    <Popover placement="bottom-start">
+                      <PopoverTrigger>
+                        <IconButton
+                          alignSelf="end"
+                          variant={"link"}
+                          colorScheme="blackAlpha"
+                          aria-label="some"
+                          size="md"
+                          icon={
+                            <>
+                              <AddIcon boxSize="3" />
+                              <ChevronDownIcon boxSize="4" />
+                            </>
+                          }
+                        />
+                      </PopoverTrigger>
+                      <Portal>
+                        <PopoverContent width="3xs">
+                          <PopoverArrow />
+                          <PopoverBody p={0}>
+                            <VStack spacing={1} align="stretch">
+                              {/* <Button
                             onClick={() => handleEdit()}
                             variant={"blue"}
                             colorScheme="blue"
@@ -203,25 +214,27 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                           >
                             Editar
                           </Button> */}
-                          <Button
-                            onClick={onOpen}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Borrar
-                          </Button>
-                        </VStack>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Portal>
-                </Popover>
+                              <Button
+                                onClick={onOpen}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Borrar
+                              </Button>
+                            </VStack>
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Portal>
+                    </Popover>
+                  </>
+                )}
               </Flex>
             </GridItem>
           </Grid>

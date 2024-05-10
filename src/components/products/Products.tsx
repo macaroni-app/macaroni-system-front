@@ -29,16 +29,21 @@ import Product from "./Product"
 // import { useDebts } from "../../hooks/useDebts";
 import { useProducts } from "../../hooks/useProducts"
 import { useProductItems } from "../../hooks/useProductItems"
+import { useAuthContext } from "../../hooks/useAuthContext"
 // import { useTodayDate } from "../../hooks/useTodayDate";
 // import { useError } from "../../hooks/useError"
 
 // types
 import { IProductFullRelated, IProductItemFullRelated } from "./types"
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
+  const { auth } = useAuthContext() as IUserContext
   const queryProducts = useProducts({})
   const queryProductItems = useProductItems({})
   // const {
@@ -103,14 +108,18 @@ const Products = () => {
                 {saleList?.length} productos
               </Text>
               <Spacer />
-              <Button
-                onClick={() => handleAddProduct()}
-                colorScheme="purple"
-                variant="solid"
-              >
-                <AddIcon boxSize={3} me={2} />
-                Nuevo producto
-              </Button>
+              {auth?.roles
+                ?.map((role) => role === ROLES.ADMIN)
+                .find((val) => val) && (
+                <Button
+                  onClick={() => handleAddProduct()}
+                  colorScheme="purple"
+                  variant="solid"
+                >
+                  <AddIcon boxSize={3} me={2} />
+                  Nuevo producto
+                </Button>
+              )}
             </Flex>
           </CardBody>
         </Card>

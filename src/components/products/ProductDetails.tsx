@@ -35,9 +35,16 @@ import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons"
 // custom hooks
 import { useProductItems } from "../../hooks/useProductItems"
 import { useProducts } from "../../hooks/useProducts"
+import { useAuthContext } from "../../hooks/useAuthContext"
+
+import { IUserContext } from "../../context/types"
+
+import { ROLES } from "../common/roles"
 
 const ProductDetails = () => {
   const { productId } = useParams()
+
+  const { auth } = useAuthContext() as IUserContext
 
   const queryProducts = useProducts({})
 
@@ -122,14 +129,19 @@ const ProductDetails = () => {
                   Volver
                 </Button>
                 <Spacer />
-                <Button
-                  onClick={() => handleEditProduct()}
-                  colorScheme="purple"
-                  variant="solid"
-                >
-                  <EditIcon boxSize={3} me={2} />
-                  Editar
-                </Button>
+
+                {auth?.roles
+                  ?.map((role) => role === ROLES.ADMIN)
+                  .find((val) => val) && (
+                  <Button
+                    onClick={() => handleEditProduct()}
+                    colorScheme="purple"
+                    variant="solid"
+                  >
+                    <EditIcon boxSize={3} me={2} />
+                    Editar
+                  </Button>
+                )}
               </Flex>
             </CardBody>
           </Card>
