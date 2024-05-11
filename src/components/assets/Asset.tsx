@@ -5,6 +5,7 @@ import { useState } from "react"
 // custom hooks
 import { useDeleteAsset } from "../../hooks/useDeleteAsset"
 import { useMessage } from "../../hooks/useMessage"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 // types
 import { IAssetFullCategory } from "./types"
@@ -40,9 +41,6 @@ import {
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
-
 import { ROLES } from "../common/roles"
 
 interface Props {
@@ -52,7 +50,7 @@ interface Props {
 const Asset = ({ asset }: Props): JSX.Element => {
   const navigate = useNavigate()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const { deleteAsset } = useDeleteAsset()
   const { showMessage } = useMessage()
@@ -127,9 +125,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>

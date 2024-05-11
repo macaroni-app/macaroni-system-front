@@ -5,6 +5,7 @@ import { ChangeEvent, useState } from "react"
 // custom hooks
 import { useAssets } from "../../hooks/useAssets"
 import { useError } from "../../hooks/useError"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 // types
 import { IAssetFullCategory } from "./types"
@@ -31,15 +32,12 @@ import Asset from "./Asset"
 // import Dashboard from "../reports/Dashboard"
 import WithoutResults from "../common/WithoutResults"
 
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
-
 import { ROLES } from "../common/roles"
 
 const Assets = (): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>("")
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const { throwError } = useError()
 
@@ -99,9 +97,7 @@ const Assets = (): JSX.Element => {
                   {assetList?.length} insumos
                 </Text>
                 <Spacer />
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole([ROLES.ADMIN]) && (
                   <Button
                     onClick={() => handleAddAsset()}
                     colorScheme="purple"

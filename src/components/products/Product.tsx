@@ -49,10 +49,8 @@ import {
 import { PRODUCT_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
-
 import { ROLES } from "../common/roles"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 interface Props {
   product: IProductFullRelated
@@ -61,7 +59,7 @@ interface Props {
 const Product = ({ product }: Props) => {
   const navigate = useNavigate()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -210,9 +208,7 @@ const Product = ({ product }: Props) => {
                               >
                                 Ver detalles
                               </Button>
-                              {auth?.roles
-                                ?.map((role) => role === ROLES.ADMIN)
-                                .find((val) => val) && (
+                              {checkRole([ROLES.ADMIN]) && (
                                 <>
                                   <Button
                                     onClick={() => handleEdit()}

@@ -22,17 +22,15 @@ import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
 import { IInventoryTransactionFullRelated } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
-
 import { ROLES } from "../common/roles"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 const InventoryTransactions = (): JSX.Element => {
   const queryInventoryTransactions = useInventoryTransactions({})
 
   const navigate = useNavigate()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   // const { throwError } = useError()
 
@@ -149,9 +147,7 @@ const InventoryTransactions = (): JSX.Element => {
                   {inventoryTransactionList?.length} transacciones de inventario
                 </Text>
                 <Spacer />
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole([ROLES.ADMIN]) && (
                   <Button
                     onClick={() => handleAddInventoryTransaction()}
                     colorScheme="purple"

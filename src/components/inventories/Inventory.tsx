@@ -37,10 +37,8 @@ import { IInventoryFullRelated } from "./types"
 
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
-
 import { ROLES } from "../common/roles"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 interface Props {
   inventory: IInventoryFullRelated
@@ -49,7 +47,7 @@ interface Props {
 const Inventory = ({ inventory }: Props) => {
   const navigate = useNavigate()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -114,9 +112,7 @@ const Inventory = ({ inventory }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>

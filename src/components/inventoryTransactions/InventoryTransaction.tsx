@@ -37,13 +37,11 @@ import {
 
 import { useDeleteInventoryTransaction } from "../../hooks/useDeleteInventoryTransaction"
 import { useMessage } from "../../hooks/useMessage"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 import { IInventoryTransactionFullRelated } from "./types"
 
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
-
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { IUserContext } from "../../context/types"
 
 import { ROLES } from "../common/roles"
 
@@ -54,7 +52,7 @@ interface Props {
 const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   const navigate = useNavigate()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -175,9 +173,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
