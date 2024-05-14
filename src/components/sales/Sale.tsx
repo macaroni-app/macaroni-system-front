@@ -36,8 +36,8 @@ import { useMessage } from "../../hooks/useMessage"
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
-// import { format } from "date-fns"
-// import { es } from "date-fns/locale"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
 // types
 import {
@@ -246,15 +246,21 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                         {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
                       </Badge>
                     </Flex>
-                    {/* <Text fontSize="xs" align="start">
-                      Vendedor: {sale?.createdBy?.firstName}{" "}
-                      {sale?.createdBy?.lastName}
+                    <Text fontSize="xs" align="start">
+                      Realizada por:{" "}
+                      <Text fontWeight={"bold"} as={"span"}>
+                        {sale?.createdBy?.firstName} {sale?.createdBy?.lastName}
+                      </Text>
                     </Text>
                     <Text color={"gray.500"} fontSize="xs" align="start">
-                      {format(new Date(sale?.createdAt), "eeee dd yyyy", {
-                        locale: es,
-                      })}
-                    </Text> */}
+                      {format(
+                        new Date(sale?.createdAt ? sale?.createdAt : ""),
+                        "eeee dd yyyy",
+                        {
+                          locale: es,
+                        }
+                      )}
+                    </Text>
                   </Flex>
                 </GridItem>
 

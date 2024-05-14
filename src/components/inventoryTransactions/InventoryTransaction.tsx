@@ -35,6 +35,9 @@ import {
   TriangleDownIcon,
 } from "@chakra-ui/icons"
 
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+
 import { useDeleteInventoryTransaction } from "../../hooks/useDeleteInventoryTransaction"
 import { useMessage } from "../../hooks/useMessage"
 import { useCheckRole } from "../../hooks/useCheckRole"
@@ -167,6 +170,19 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                     {inventoryTransaction?.createdBy?.firstName}{" "}
                     {inventoryTransaction?.createdBy?.lastName}
                   </Text>
+                </Text>
+                <Text color={"gray.500"} fontSize="xs" align="start">
+                  {format(
+                    new Date(
+                      inventoryTransaction?.createdAt
+                        ? inventoryTransaction?.createdAt
+                        : ""
+                    ),
+                    "eeee dd yyyy",
+                    {
+                      locale: es,
+                    }
+                  )}
                 </Text>
               </Flex>
             </GridItem>
