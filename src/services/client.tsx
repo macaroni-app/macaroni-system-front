@@ -54,6 +54,13 @@ const clientService = {
     )
     return data
   },
+  deactivate: async (id: string, axiosPrivate: AxiosInstance) => {
+    const { data } = await axiosPrivate.put(`${CLIENT_URL}/deactivate/${id}`, {
+      withCredentials: true,
+    })
+
+    return data
+  },
 }
 
 export default clientService

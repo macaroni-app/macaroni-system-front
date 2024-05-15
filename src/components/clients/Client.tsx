@@ -22,6 +22,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Badge,
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -30,6 +31,7 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 
 import { useDeleteClient } from "../../hooks/useDeleteClient"
+import { useDeactivateClient } from "../../hooks/useDeactivateClient"
 import { useMessage } from "../../hooks/useMessage"
 
 import { IClient } from "./types"
@@ -45,10 +47,43 @@ const Client = ({ client }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const { deleteClient } = useDeleteClient()
+  const { deactivateClient } = useDeactivateClient()
   const { showMessage } = useMessage()
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleEdit = () => {
     navigate(`${client._id}/edit`)
+  }
+
+  const handleDeactivate = async () => {
+    setIsLoading(true)
+
+    if (client === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    let response = undefined
+
+    if (client !== undefined && client._id !== undefined) {
+      response = await deactivateClient(client._id)
+    }
+
+    if (response?.isDeactivated) {
+      showMessage(
+        "Cliente desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+    }
+
+    if (!response?.isDeactivated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+    navigate("/clients")
   }
 
   const handleDelete = async () => {
@@ -81,8 +116,6 @@ const Client = ({ client }: Props) => {
     navigate("/clients")
   }
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
   return (
     <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
@@ -90,9 +123,16 @@ const Client = ({ client }: Props) => {
           <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
             <GridItem colSpan={5}>
               <Flex direction="column" gap={2}>
-                <Text fontSize="xl" align="start">
+                <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
                   {client.name}
                 </Text>
+                <Badge
+                  variant="subtle"
+                  colorScheme={client?.isActive ? "purple" : "red"}
+                  alignSelf={"start"}
+                >
+                  {client?.isActive ? "Activo" : "Inactivo"}
+                </Badge>
               </Flex>
             </GridItem>
 
@@ -132,6 +172,20 @@ const Client = ({ client }: Props) => {
                             }}
                           >
                             Editar
+                          </Button>
+                          <Button
+                            onClick={() => handleDeactivate()}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            Desactivar
                           </Button>
                           <Button
                             onClick={onOpen}
