@@ -45,6 +45,7 @@ const Client = ({ client }: Props) => {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
+  const [deleteModal, setDeleteModal] = useState(false)
 
   const { deleteClient } = useDeleteClient()
   const { showMessage } = useMessage()
@@ -80,12 +81,15 @@ const Client = ({ client }: Props) => {
         AlertColorScheme.Purple
       )
       setIsLoading(false)
+      onClose()
     }
 
     if (!response?.isUpdated) {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
+
+    setDeleteModal(false)
     navigate("/clients")
   }
 
@@ -116,6 +120,7 @@ const Client = ({ client }: Props) => {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
+    setDeleteModal(false)
     navigate("/clients")
   }
 
@@ -177,11 +182,10 @@ const Client = ({ client }: Props) => {
                             Editar
                           </Button>
                           <Button
-                            onClick={() =>
-                              handleChangeIsActive(
-                                client.isActive ? false : true
-                              )
-                            }
+                            onClick={() => {
+                              setDeleteModal(false)
+                              onOpen()
+                            }}
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -195,7 +199,10 @@ const Client = ({ client }: Props) => {
                             {client.isActive ? "Desactivar" : "Activar"}
                           </Button>
                           <Button
-                            onClick={onOpen}
+                            onClick={() => {
+                              setDeleteModal(true)
+                              onOpen()
+                            }}
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -218,38 +225,79 @@ const Client = ({ client }: Props) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal
-        closeOnOverlayClick={false}
-        size={{ base: "xs", md: "lg" }}
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Borrar cliente</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              ¿Estás seguro de eliminar el cliente{" "}
-              <Text as={"b"}>{client.name}</Text>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              colorScheme="red"
-              mr={3}
-              onClick={() => handleDelete()}
-            >
-              Borrar
-            </Button>
-            <Button onClick={onClose} variant="ghost">
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {deleteModal && (
+        <Modal
+          closeOnOverlayClick={false}
+          size={{ base: "xs", md: "lg" }}
+          isOpen={isOpen}
+          onClose={onClose}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Borrar cliente</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <p>
+                ¿Estás seguro de eliminar el cliente{" "}
+                <Text as={"b"}>{client.name}</Text>?
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                isLoading={isLoading}
+                colorScheme="red"
+                mr={3}
+                onClick={() => handleDelete()}
+              >
+                Borrar
+              </Button>
+              <Button onClick={onClose} variant="ghost">
+                Cancelar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+      {!deleteModal && (
+        <Modal
+          closeOnOverlayClick={false}
+          size={{ base: "xs", md: "lg" }}
+          isOpen={isOpen}
+          onClose={onClose}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              {" "}
+              {client.isActive ? "Desactivar cliente" : "Activar cliente"}
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <p>
+                ¿Estás seguro de {client.isActive ? "desactivar" : "activar"} el
+                cliente <Text as={"b"}>{client.name}</Text>?
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                isLoading={isLoading}
+                colorScheme="red"
+                mr={3}
+                onClick={() =>
+                  handleChangeIsActive(client.isActive ? false : true)
+                }
+              >
+                {client.isActive ? "Desactivar" : "Activar"}
+              </Button>
+              <Button onClick={onClose} variant="ghost">
+                Cancelar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
     </GridItem>
   )
 }
