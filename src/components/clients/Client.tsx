@@ -31,7 +31,7 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 
 import { useDeleteClient } from "../../hooks/useDeleteClient"
-import { useDeactivateClient } from "../../hooks/useDeactivateClient"
+import { useChangeIsActiveClient } from "../../hooks/useChangeIsActiveClient"
 import { useMessage } from "../../hooks/useMessage"
 
 import { IClient } from "./types"
@@ -47,8 +47,8 @@ const Client = ({ client }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const { deleteClient } = useDeleteClient()
-  const { deactivateClient } = useDeactivateClient()
   const { showMessage } = useMessage()
+  const { changeIsActiveClient } = useChangeIsActiveClient()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -56,7 +56,7 @@ const Client = ({ client }: Props) => {
     navigate(`${client._id}/edit`)
   }
 
-  const handleDeactivate = async () => {
+  const handleChangeIsActive = async (isActive: boolean) => {
     setIsLoading(true)
 
     if (client === undefined) {
@@ -67,19 +67,22 @@ const Client = ({ client }: Props) => {
     let response = undefined
 
     if (client !== undefined && client._id !== undefined) {
-      response = await deactivateClient(client._id)
+      response = await changeIsActiveClient({
+        clientId: client._id,
+        isActive,
+      })
     }
 
-    if (response?.isDeactivated) {
+    if (response?.isUpdated) {
       showMessage(
-        "Cliente desactivado.",
+        isActive ? "Cliente activado." : "Cliente desactivado.",
         AlertStatus.Success,
         AlertColorScheme.Purple
       )
       setIsLoading(false)
     }
 
-    if (!response?.isDeactivated) {
+    if (!response?.isUpdated) {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
@@ -174,7 +177,11 @@ const Client = ({ client }: Props) => {
                             Editar
                           </Button>
                           <Button
-                            onClick={() => handleDeactivate()}
+                            onClick={() =>
+                              handleChangeIsActive(
+                                client.isActive ? false : true
+                              )
+                            }
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -185,7 +192,7 @@ const Client = ({ client }: Props) => {
                               bg: "purple.100",
                             }}
                           >
-                            Desactivar
+                            {client.isActive ? "Desactivar" : "Activar"}
                           </Button>
                           <Button
                             onClick={onOpen}

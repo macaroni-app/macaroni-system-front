@@ -54,10 +54,18 @@ const clientService = {
     )
     return data
   },
-  deactivate: async (id: string, axiosPrivate: AxiosInstance) => {
-    const { data } = await axiosPrivate.put(`${CLIENT_URL}/deactivate/${id}`, {
-      withCredentials: true,
-    })
+  changeIsActive: async (
+    id: string,
+    isActive: boolean,
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${CLIENT_URL}/soft-delete/${id}`,
+      { isActive },
+      {
+        withCredentials: true,
+      }
+    )
 
     return data
   },
