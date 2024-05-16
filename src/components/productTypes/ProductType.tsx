@@ -15,14 +15,10 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Badge,
 } from "@chakra-ui/react"
+
+import CustomModal from "../common/CustomModal"
 
 import { useNavigate } from "react-router-dom"
 
@@ -31,6 +27,7 @@ import { useState } from "react"
 
 import { useDeleteProductType } from "../../hooks/useDeleteProductType"
 import { useMessage } from "../../hooks/useMessage"
+import { useChangeIsActiveProductType } from "../../hooks/useChangeIsActiveProductType"
 
 import { IProductTypeType } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
@@ -44,11 +41,53 @@ const ProductType = ({ productType }: Props) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
+  const [deleteModal, setDeleteModal] = useState(false)
+
   const { deleteProductType } = useDeleteProductType()
   const { showMessage } = useMessage()
 
+  const { changeIsActiveProductType } = useChangeIsActiveProductType()
+
   const handleEdit = () => {
     navigate(`${productType._id}/edit`)
+  }
+
+  const handleChangeIsActive = async (isActive: boolean) => {
+    setIsLoading(true)
+
+    if (productType === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    let response = undefined
+
+    if (productType !== undefined && productType._id !== undefined) {
+      response = await changeIsActiveProductType({
+        productTypeId: productType._id,
+        isActive,
+      })
+    }
+
+    if (response?.isUpdated) {
+      showMessage(
+        isActive
+          ? "Tipo de producto activado."
+          : "Tipo de producto desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    setDeleteModal(false)
+    navigate("/productTypes")
   }
 
   const handleDelete = async () => {
@@ -78,6 +117,8 @@ const ProductType = ({ productType }: Props) => {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
+
+    setDeleteModal(false)
     navigate("/productTypes")
   }
 
@@ -93,6 +134,13 @@ const ProductType = ({ productType }: Props) => {
                 <Text fontSize="xl" align="start">
                   {productType.name}
                 </Text>
+                <Badge
+                  variant="subtle"
+                  colorScheme={productType?.isActive ? "purple" : "red"}
+                  alignSelf={"start"}
+                >
+                  {productType?.isActive ? "Activo" : "Inactivo"}
+                </Badge>
               </Flex>
             </GridItem>
 
@@ -134,7 +182,27 @@ const ProductType = ({ productType }: Props) => {
                             Editar
                           </Button>
                           <Button
-                            onClick={onOpen}
+                            onClick={() => {
+                              setDeleteModal(false)
+                              onOpen()
+                            }}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            {productType.isActive ? "Desactivar" : "Activar"}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setDeleteModal(true)
+                              onOpen()
+                            }}
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -157,38 +225,17 @@ const ProductType = ({ productType }: Props) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal
-        closeOnOverlayClick={false}
-        size={{ base: "xs", md: "lg" }}
+      <CustomModal
+        deleteModal={deleteModal}
+        handleChangeIsActive={handleChangeIsActive}
+        handleDelete={handleDelete}
+        isLoading={isLoading}
         isOpen={isOpen}
+        model={productType}
+        modelName="Tipo de producto"
         onClose={onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Borrar tipo de producto</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              ¿Estás seguro de eliminar el tipo de producto{" "}
-              <Text as={"b"}>{productType.name}</Text>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              colorScheme="red"
-              mr={3}
-              onClick={() => handleDelete()}
-            >
-              Borrar
-            </Button>
-            <Button onClick={onClose} variant="ghost">
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        key={productType._id}
+      />
     </GridItem>
   )
 }

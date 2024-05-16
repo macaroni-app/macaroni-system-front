@@ -114,6 +114,7 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
+    setDeleteModal(false)
     navigate("/paymentMethods")
   }
 
