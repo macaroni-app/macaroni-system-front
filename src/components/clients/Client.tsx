@@ -15,15 +15,10 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Badge,
 } from "@chakra-ui/react"
+
+import CustomModal from "../common/CustomModal"
 
 import { useNavigate } from "react-router-dom"
 
@@ -225,79 +220,17 @@ const Client = ({ client }: Props) => {
           </Grid>
         </CardBody>
       </Card>
-      {deleteModal && (
-        <Modal
-          closeOnOverlayClick={false}
-          size={{ base: "xs", md: "lg" }}
-          isOpen={isOpen}
-          onClose={onClose}
-          isCentered
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Borrar cliente</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <p>
-                ¿Estás seguro de eliminar el cliente{" "}
-                <Text as={"b"}>{client.name}</Text>?
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                isLoading={isLoading}
-                colorScheme="red"
-                mr={3}
-                onClick={() => handleDelete()}
-              >
-                Borrar
-              </Button>
-              <Button onClick={onClose} variant="ghost">
-                Cancelar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
-      {!deleteModal && (
-        <Modal
-          closeOnOverlayClick={false}
-          size={{ base: "xs", md: "lg" }}
-          isOpen={isOpen}
-          onClose={onClose}
-          isCentered
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              {" "}
-              {client.isActive ? "Desactivar cliente" : "Activar cliente"}
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <p>
-                ¿Estás seguro de {client.isActive ? "desactivar" : "activar"} el
-                cliente <Text as={"b"}>{client.name}</Text>?
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                isLoading={isLoading}
-                colorScheme="red"
-                mr={3}
-                onClick={() =>
-                  handleChangeIsActive(client.isActive ? false : true)
-                }
-              >
-                {client.isActive ? "Desactivar" : "Activar"}
-              </Button>
-              <Button onClick={onClose} variant="ghost">
-                Cancelar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
+      <CustomModal
+        deleteModal={deleteModal}
+        handleChangeIsActive={handleChangeIsActive}
+        handleDelete={handleDelete}
+        isLoading={isLoading}
+        isOpen={isOpen}
+        model={client}
+        modelName="Cliente"
+        onClose={onClose}
+        key={client._id}
+      />
     </GridItem>
   )
 }

@@ -15,13 +15,7 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Badge,
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -31,9 +25,12 @@ import { useState } from "react"
 
 import { useDeleteCategory } from "../../hooks/useDeleteCategory"
 import { useMessage } from "../../hooks/useMessage"
+import { useChangeIsActiveCategory } from "../../hooks/useChangeIsActiveCategory"
 
 import { ICategory } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+
+import CustomModal from "../common/CustomModal"
 
 interface Props {
   category: ICategory
@@ -44,11 +41,50 @@ const Category = ({ category }: Props) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
+  const [deleteModal, setDeleteModal] = useState(false)
+
   const { deleteCategory } = useDeleteCategory()
   const { showMessage } = useMessage()
+  const { changeIsActiveCategory } = useChangeIsActiveCategory()
 
   const handleEdit = () => {
     navigate(`${category._id}/edit`)
+  }
+
+  const handleChangeIsActive = async (isActive: boolean) => {
+    setIsLoading(true)
+
+    if (category === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    let response = undefined
+
+    if (category !== undefined && category._id !== undefined) {
+      response = await changeIsActiveCategory({
+        categoryId: category._id,
+        isActive,
+      })
+    }
+
+    if (response?.isUpdated) {
+      showMessage(
+        isActive ? "Categoria activada." : "Categoria desactivada.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    setDeleteModal(false)
+    navigate("/categories")
   }
 
   const handleDelete = async () => {
@@ -78,6 +114,8 @@ const Category = ({ category }: Props) => {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
+
+    setDeleteModal(false)
     navigate("/categories")
   }
 
@@ -93,6 +131,13 @@ const Category = ({ category }: Props) => {
                 <Text fontSize="xl" align="start">
                   {category.name}
                 </Text>
+                <Badge
+                  variant="subtle"
+                  colorScheme={category?.isActive ? "purple" : "red"}
+                  alignSelf={"start"}
+                >
+                  {category?.isActive ? "Activo" : "Inactivo"}
+                </Badge>
               </Flex>
             </GridItem>
 
@@ -134,7 +179,27 @@ const Category = ({ category }: Props) => {
                             Editar
                           </Button>
                           <Button
-                            onClick={onOpen}
+                            onClick={() => {
+                              setDeleteModal(false)
+                              onOpen()
+                            }}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            {category.isActive ? "Desactivar" : "Activar"}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setDeleteModal(true)
+                              onOpen()
+                            }}
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -157,38 +222,17 @@ const Category = ({ category }: Props) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal
-        closeOnOverlayClick={false}
-        size={{ base: "xs", md: "lg" }}
+      <CustomModal
+        deleteModal={deleteModal}
+        handleChangeIsActive={handleChangeIsActive}
+        isLoading={isLoading}
+        handleDelete={handleDelete}
         isOpen={isOpen}
+        model={category}
         onClose={onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Borrar categoria</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              ¿Estás seguro de eliminar el categoria{" "}
-              <Text as={"b"}>{category.name}</Text>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              colorScheme="red"
-              mr={3}
-              onClick={() => handleDelete()}
-            >
-              Borrar
-            </Button>
-            <Button onClick={onClose} variant="ghost">
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        modelName={"categoria"}
+        key={category._id}
+      />
     </GridItem>
   )
 }
