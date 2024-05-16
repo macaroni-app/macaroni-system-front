@@ -31,7 +31,7 @@ import {
   Badge,
 } from "@chakra-ui/react"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import { ChevronDownIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { ROLES } from "../common/roles"
@@ -128,39 +128,35 @@ const Asset = ({ asset }: Props): JSX.Element => {
     <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
         <CardBody>
-          <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
-            <GridItem colSpan={5}>
+          <Grid templateColumns="repeat(5, 1fr)" gap={2} alignItems={"center"}>
+            <GridItem>
               <Flex direction="column" gap={2}>
                 <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
                   {asset.name}
                 </Text>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 <Badge
                   variant="subtle"
-                  colorScheme="purple"
-                  alignSelf={"start"}
-                >
-                  {asset?.category?.name}
-                </Badge>
-                <Badge
-                  variant="subtle"
-                  colorScheme={asset?.isActive ? "purple" : "red"}
-                  alignSelf={"start"}
+                  colorScheme={asset?.isActive ? "green" : "gray"}
                 >
                   {asset?.isActive ? "Activo" : "Inactivo"}
                 </Badge>
-                {/* <Text fontSize="xs" align="start">
-                  Stock:{" "}
-                  <Text fontWeight={"bold"} as={"span"}>
-                    Stock
-                  </Text>
-                </Text> */}
               </Flex>
             </GridItem>
-
-            <GridItem colSpan={1} colStart={6}>
-              <Flex direction="column" gap={2}>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
+                <Badge variant="subtle" colorScheme="purple">
+                  {asset?.category?.name}
+                </Badge>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 {asset.costPrice !== undefined && (
-                  <Text as="b" alignSelf="end">
+                  <Text as="b">
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       minimumFractionDigits: 2,
@@ -170,6 +166,10 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">

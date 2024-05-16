@@ -198,6 +198,43 @@ const Assets = (): JSX.Element => {
         queryAssets?.data?.length > 0 &&
         !queryAssets?.isLoading && (
           <Grid mt={5}>
+            <GridItem>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Grid
+                    templateColumns="repeat(5, 1fr)"
+                    gap={2}
+                    alignItems={"center"}
+                  >
+                    <GridItem>
+                      <Flex direction="column" gap={2}>
+                        <Text fontWeight="bold">Insumo</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Estado</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Categoria</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Precio de costo</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"end"}>
+                        <Text fontWeight="bold">Acciones</Text>
+                      </Flex>
+                    </GridItem>
+                  </Grid>
+                </CardBody>
+              </Card>
+            </GridItem>
             <GridItem>{assetList}</GridItem>
           </Grid>
         )}

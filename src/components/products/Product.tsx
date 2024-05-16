@@ -170,38 +170,33 @@ const Product = ({ product }: Props) => {
                 gap={2}
                 alignItems="center"
               >
-                <GridItem colSpan={5}>
+                <GridItem>
                   <Flex direction="column" gap={2}>
-                    <Flex alignItems={"center"}>
-                      <Text fontSize="lg" align="start" mr={2}>
-                        {product.name}
-                      </Text>
-                      <Badge variant={"subtle"} colorScheme={"green"}>
-                        {product.productType?.name}
-                      </Badge>
-                    </Flex>
+                    <Text fontSize="lg" align="start" mr={2}>
+                      {product.name}
+                    </Text>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge
                       variant="subtle"
                       colorScheme={product?.isActive ? "purple" : "red"}
-                      alignSelf={"start"}
                     >
                       {product?.isActive ? "Activo" : "Inactivo"}
                     </Badge>
-                    {/* <Text fontSize="xs" align="start">
-                      Vendedor: {sale?.createdBy?.firstName}{" "}
-                      {sale?.createdBy?.lastName}
-                    </Text> */}
-                    {/* <Text color={"gray.500"} fontSize="xs" align="start">
-                      {format(new Date(sale?.createdAt), "eeee dd yyyy", {
-                        locale: es,
-                      })}
-                    </Text> */}
                   </Flex>
                 </GridItem>
-
-                <GridItem colSpan={1} colStart={6}>
-                  <Flex direction="column" gap={2}>
-                    <Text as="b" alignSelf="end">
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Badge variant={"subtle"} colorScheme={"green"}>
+                      {product.productType?.name}
+                    </Badge>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Text as="b">
                       {product?.retailsalePrice
                         ? new Intl.NumberFormat("en-US", {
                             style: "currency",
@@ -218,6 +213,31 @@ const Product = ({ product }: Props) => {
                             currency: "USD",
                           }).format(0)}
                     </Text>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Text as="b">
+                      {product?.wholesalePrice
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(
+                            Number.parseFloat(
+                              product?.wholesalePrice.toString()
+                            )
+                          )
+                        : new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(0)}
+                    </Text>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2}>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
                         <IconButton
