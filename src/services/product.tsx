@@ -57,6 +57,21 @@ const productService = {
     )
     return data
   },
+  changeIsActive: async (
+    id: string,
+    isActive: boolean,
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${PRODUCT_URL}/soft-delete/${id}`,
+      { isActive },
+      {
+        withCredentials: true,
+      }
+    )
+
+    return data
+  },
 }
 
 export default productService

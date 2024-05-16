@@ -17,13 +17,6 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Badge,
 } from "@chakra-ui/react"
 
@@ -39,6 +32,8 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 // import { format } from "date-fns";
 // import { es } from "date-fns/locale";
 
+import CustomModal from "../common/CustomModal"
+
 // types
 import {
   IProductFullRelated,
@@ -51,6 +46,7 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { ROLES } from "../common/roles"
 import { useCheckRole } from "../../hooks/useCheckRole"
+import { useChangeIsActiveProduct } from "../../hooks/useChangeIsActiveProduct"
 
 interface Props {
   product: IProductFullRelated
@@ -62,13 +58,53 @@ const Product = ({ product }: Props) => {
   const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
+  const [deleteModal, setDeleteModal] = useState(false)
 
   const { deleteProduct } = useDeleteProduct()
   const { deleteManyProductItem } = useDeleteManyProductItem()
   const { showMessage } = useMessage()
+  const { changeIsActiveProduct } = useChangeIsActiveProduct()
 
   const handleEdit = () => {
     navigate(`${product._id}/edit`)
+  }
+
+  const handleChangeIsActive = async (isActive: boolean) => {
+    setIsLoading(true)
+
+    if (product === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+      setDeleteModal(false)
+    }
+
+    let response = undefined
+
+    if (product !== undefined && product._id !== undefined) {
+      response = await changeIsActiveProduct({
+        productId: product._id,
+        isActive,
+      })
+    }
+
+    if (response?.isUpdated) {
+      showMessage(
+        isActive ? "Producto activado." : "Producto desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+      setDeleteModal(false)
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+      setDeleteModal(false)
+    }
+
+    navigate("/products")
   }
 
   const handleDetails = () => {
@@ -117,6 +153,8 @@ const Product = ({ product }: Props) => {
           AlertStatus.Success,
           AlertColorScheme.Purple
         )
+
+        setDeleteModal(false)
       }
     }
   }
@@ -142,6 +180,13 @@ const Product = ({ product }: Props) => {
                         {product.productType?.name}
                       </Badge>
                     </Flex>
+                    <Badge
+                      variant="subtle"
+                      colorScheme={product?.isActive ? "purple" : "red"}
+                      alignSelf={"start"}
+                    >
+                      {product?.isActive ? "Activo" : "Inactivo"}
+                    </Badge>
                     {/* <Text fontSize="xs" align="start">
                       Vendedor: {sale?.createdBy?.firstName}{" "}
                       {sale?.createdBy?.lastName}
@@ -225,7 +270,29 @@ const Product = ({ product }: Props) => {
                                     Editar
                                   </Button>
                                   <Button
-                                    onClick={onOpen}
+                                    onClick={() => {
+                                      setDeleteModal(false)
+                                      onOpen()
+                                    }}
+                                    variant={"blue"}
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    {product.isActive
+                                      ? "Desactivar"
+                                      : "Activar"}
+                                  </Button>
+                                  <Button
+                                    onClick={() => {
+                                      setDeleteModal(true)
+                                      onOpen()
+                                    }}
                                     variant={"blue"}
                                     colorScheme="blue"
                                     justifyContent={"start"}
@@ -250,44 +317,17 @@ const Product = ({ product }: Props) => {
               </Grid>
             </CardBody>
           </Card>
-          <Modal
-            closeOnOverlayClick={false}
-            size={{ base: "xs", md: "lg" }}
+          <CustomModal
+            deleteModal={deleteModal}
+            handleChangeIsActive={handleChangeIsActive}
+            handleDelete={handleDelete}
+            isLoading={isLoading}
             isOpen={isOpen}
+            model={product}
+            modelName="Producto"
             onClose={onClose}
-            isCentered
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Borrar venta</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <Text>
-                  ¿Estás seguro de eliminar el producto{" "}
-                  <Text fontWeight={"bold"} as={"span"}>
-                    {product.name}?
-                  </Text>
-                </Text>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  isLoading={isLoading}
-                  colorScheme="red"
-                  mr={3}
-                  onClick={() => handleDelete()}
-                >
-                  Borrar
-                </Button>
-                <Button
-                  isDisabled={isLoading}
-                  onClick={onClose}
-                  variant="ghost"
-                >
-                  Cancelar
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
+            key={product._id}
+          />
         </GridItem>
       )}
     </>
