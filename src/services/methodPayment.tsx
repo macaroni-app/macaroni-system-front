@@ -61,6 +61,21 @@ const paymentMethodService = {
     )
     return data
   },
+  changeIsActive: async (
+    id: string,
+    isActive: boolean,
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${PAYMENT_METHOD_URL}/soft-delete/${id}`,
+      { isActive },
+      {
+        withCredentials: true,
+      }
+    )
+
+    return data
+  },
 }
 
 export default paymentMethodService

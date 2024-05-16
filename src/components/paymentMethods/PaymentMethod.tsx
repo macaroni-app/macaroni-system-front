@@ -15,13 +15,7 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Badge,
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -31,9 +25,11 @@ import { useState } from "react"
 
 import { useDeletePaymentMethod } from "../../hooks/useDeletePaymentMethod"
 import { useMessage } from "../../hooks/useMessage"
+import { useChangeIsActivePaymentMethod } from "../../hooks/useChangeIsActivePaymentMethod"
 
 import { IPaymentMethod } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import CustomModal from "../common/CustomModal"
 
 interface Props {
   paymentMethod: IPaymentMethod
@@ -44,11 +40,51 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
+  const [deleteModal, setDeleteModal] = useState(false)
+
   const { deletePaymentMethod } = useDeletePaymentMethod()
   const { showMessage } = useMessage()
 
+  const { changeIsActivePaymentMethod } = useChangeIsActivePaymentMethod()
+
   const handleEdit = () => {
     navigate(`${paymentMethod._id}/edit`)
+  }
+
+  const handleChangeIsActive = async (isActive: boolean) => {
+    setIsLoading(true)
+
+    if (paymentMethod === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    let response = undefined
+
+    if (paymentMethod !== undefined && paymentMethod._id !== undefined) {
+      response = await changeIsActivePaymentMethod({
+        methodPaymentId: paymentMethod._id,
+        isActive,
+      })
+    }
+
+    if (response?.isUpdated) {
+      showMessage(
+        isActive ? "Método de pago activado." : "Método de pago desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
+
+    setDeleteModal(false)
+    navigate("/paymentMethods")
   }
 
   const handleDelete = async () => {
@@ -93,6 +129,13 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
                 <Text fontSize="xl" align="start">
                   {paymentMethod.name}
                 </Text>
+                <Badge
+                  variant="subtle"
+                  colorScheme={paymentMethod?.isActive ? "purple" : "red"}
+                  alignSelf={"start"}
+                >
+                  {paymentMethod?.isActive ? "Activo" : "Inactivo"}
+                </Badge>
               </Flex>
             </GridItem>
 
@@ -134,7 +177,27 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
                             Editar
                           </Button>
                           <Button
-                            onClick={onOpen}
+                            onClick={() => {
+                              setDeleteModal(false)
+                              onOpen()
+                            }}
+                            variant={"blue"}
+                            colorScheme="blue"
+                            justifyContent={"start"}
+                            size="md"
+                            _hover={{
+                              textDecoration: "none",
+                              color: "purple",
+                              bg: "purple.100",
+                            }}
+                          >
+                            {paymentMethod.isActive ? "Desactivar" : "Activar"}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setDeleteModal(true)
+                              onOpen()
+                            }}
                             variant={"blue"}
                             colorScheme="blue"
                             justifyContent={"start"}
@@ -157,38 +220,17 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal
-        closeOnOverlayClick={false}
-        size={{ base: "xs", md: "lg" }}
+      <CustomModal
+        deleteModal={deleteModal}
+        handleChangeIsActive={handleChangeIsActive}
+        handleDelete={handleDelete}
+        isLoading={isLoading}
         isOpen={isOpen}
+        model={paymentMethod}
+        modelName="Método de pago"
         onClose={onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Borrar método de pago</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              ¿Estás seguro de eliminar el método de pago{" "}
-              <Text as={"b"}>{paymentMethod.name}</Text>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              colorScheme="red"
-              mr={3}
-              onClick={() => handleDelete()}
-            >
-              Borrar
-            </Button>
-            <Button onClick={onClose} variant="ghost">
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        key={paymentMethod._id}
+      />
     </GridItem>
   )
 }
