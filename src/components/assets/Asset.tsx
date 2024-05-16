@@ -28,13 +28,6 @@ import {
   PopoverBody,
   VStack,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Badge,
 } from "@chakra-ui/react"
 
@@ -42,6 +35,9 @@ import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { ROLES } from "../common/roles"
+import { useChangeIsActiveAsset } from "../../hooks/useChangeIsActiveAsset"
+
+import CustomModal from "../common/CustomModal"
 
 interface Props {
   asset: IAssetFullCategory
@@ -54,8 +50,10 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
   const { deleteAsset } = useDeleteAsset()
   const { showMessage } = useMessage()
+  const { changeIsActiveAsset } = useChangeIsActiveAsset()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [deleteModal, setDeleteModal] = useState(false)
 
   const handleEdit = () => {
     navigate(`${asset._id}/edit`)
@@ -63,6 +61,44 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
   const handleDetails = () => {
     navigate(`/assets/${asset._id}/details`)
+  }
+
+  const handleChangeIsActive = async (isActive: boolean) => {
+    setIsLoading(true)
+
+    if (asset === undefined) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+      setDeleteModal(false)
+    }
+
+    let response = undefined
+
+    if (asset !== undefined && asset._id !== undefined) {
+      response = await changeIsActiveAsset({
+        assetId: asset._id,
+        isActive,
+      })
+    }
+
+    if (response?.isUpdated) {
+      showMessage(
+        isActive ? "Insumo activado." : "Insumo desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+      setDeleteModal(false)
+    }
+
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+      setDeleteModal(false)
+    }
+
+    navigate("/assets")
   }
 
   const handleDelete = async () => {
@@ -75,11 +111,13 @@ const Asset = ({ asset }: Props): JSX.Element => {
         AlertColorScheme.Purple
       )
       setIsLoading(false)
+      setDeleteModal(false)
     }
 
     if (!response?.isDeleted) {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
+      setDeleteModal(false)
     }
     navigate("/assets")
   }
@@ -102,6 +140,13 @@ const Asset = ({ asset }: Props): JSX.Element => {
                   alignSelf={"start"}
                 >
                   {asset?.category?.name}
+                </Badge>
+                <Badge
+                  variant="subtle"
+                  colorScheme={asset?.isActive ? "purple" : "red"}
+                  alignSelf={"start"}
+                >
+                  {asset?.isActive ? "Activo" : "Inactivo"}
                 </Badge>
                 {/* <Text fontSize="xs" align="start">
                   Stock:{" "}
@@ -177,7 +222,27 @@ const Asset = ({ asset }: Props): JSX.Element => {
                                 Editar
                               </Button>
                               <Button
-                                onClick={onOpen}
+                                onClick={() => {
+                                  setDeleteModal(false)
+                                  onOpen()
+                                }}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                {asset.isActive ? "Desactivar" : "Activar"}
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  setDeleteModal(true)
+                                  onOpen()
+                                }}
                                 variant={"blue"}
                                 colorScheme="blue"
                                 justifyContent={"start"}
@@ -202,38 +267,17 @@ const Asset = ({ asset }: Props): JSX.Element => {
           </Grid>
         </CardBody>
       </Card>
-      <Modal
-        closeOnOverlayClick={false}
-        isCentered
-        size={{ base: "xs", md: "lg" }}
+      <CustomModal
+        deleteModal={deleteModal}
+        handleChangeIsActive={handleChangeIsActive}
+        handleDelete={handleDelete}
+        isLoading={isLoading}
         isOpen={isOpen}
+        model={asset}
+        modelName="Insumo"
         onClose={onClose}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Borrar insumo</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              ¿Estás seguro de eliminar el insumo{" "}
-              <Text as={"b"}>{asset.name}</Text>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              colorScheme="red"
-              mr={3}
-              onClick={() => handleDelete()}
-            >
-              Borrar
-            </Button>
-            <Button onClick={onClose} variant="ghost">
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        key={asset._id}
+      />
     </GridItem>
   )
 }
