@@ -191,6 +191,53 @@ const Sales = () => {
           colSpan={{ base: 12, md: 12, lg: 12 }}
           colStart={{ base: 1, md: 1, lg: 1 }}
         >
+          {!querySales?.isLoading && !querySales?.isError && (
+            <Card variant="outline" mb={3}>
+              <CardBody>
+                <Grid
+                  templateColumns="repeat(6, 1fr)"
+                  gap={2}
+                  alignItems={"center"}
+                >
+                  <GridItem>
+                    <Flex direction="column" gap={2}>
+                      <Text fontWeight="bold">Cliente</Text>
+                    </Flex>
+                  </GridItem>
+                  <GridItem>
+                    <Flex direction="column" gap={2} placeItems={"center"}>
+                      <Text fontWeight="bold">Estado</Text>
+                    </Flex>
+                  </GridItem>
+                  <GridItem>
+                    <Flex direction="column" gap={2} placeItems={"center"}>
+                      <Text fontWeight="bold">Realizado por</Text>
+                    </Flex>
+                  </GridItem>
+                  <GridItem>
+                    <Flex direction="column" gap={2} placeItems={"center"}>
+                      <Text fontWeight="bold">Fecha</Text>
+                    </Flex>
+                  </GridItem>
+                  <GridItem>
+                    <Flex direction="column" gap={2} placeItems={"center"}>
+                      <Text fontWeight="bold">Monto total</Text>
+                    </Flex>
+                  </GridItem>
+                  <GridItem>
+                    <Flex direction="column" gap={2} placeItems={"end"}>
+                      <Text fontWeight="bold">Acciones</Text>
+                    </Flex>
+                  </GridItem>
+                </Grid>
+              </CardBody>
+            </Card>
+          )}
+        </GridItem>
+        <GridItem
+          colSpan={{ base: 12, md: 12, lg: 12 }}
+          colStart={{ base: 1, md: 1, lg: 1 }}
+        >
           {querySales?.data?.length !== undefined &&
             querySales?.data?.length > 0 &&
             !querySales?.isLoading &&

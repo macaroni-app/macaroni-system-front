@@ -231,27 +231,35 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                 gap={2}
                 alignItems="center"
               >
-                <GridItem colSpan={5}>
+                <GridItem>
                   <Flex direction="column" gap={2}>
-                    <Flex alignItems={"center"}>
-                      <Text fontSize="lg" align="start" mr={2}>
-                        {sale.client?.name}
-                      </Text>
-                      <Badge
-                        variant={"subtle"}
-                        colorScheme={
-                          sale.status === "CANCELLED" ? "red" : "green"
-                        }
-                      >
-                        {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
-                      </Badge>
-                    </Flex>
-                    <Text fontSize="xs" align="start">
-                      Realizada por:{" "}
-                      <Text fontWeight={"bold"} as={"span"}>
-                        {sale?.createdBy?.firstName} {sale?.createdBy?.lastName}
-                      </Text>
+                    <Text fontSize="lg" align="start" mr={2}>
+                      {sale.client?.name}
                     </Text>
+                  </Flex>
+                </GridItem>
+
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Badge
+                      variant={"subtle"}
+                      colorScheme={
+                        sale.status === "CANCELLED" ? "red" : "green"
+                      }
+                    >
+                      {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
+                    </Badge>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Text fontSize="xs" align="start">
+                      {sale?.createdBy?.firstName} {sale?.createdBy?.lastName}
+                    </Text>
+                  </Flex>
+                </GridItem>
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text color={"gray.500"} fontSize="xs" align="start">
                       {format(
                         new Date(sale?.createdAt ? sale?.createdAt : ""),
@@ -263,10 +271,9 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                     </Text>
                   </Flex>
                 </GridItem>
-
-                <GridItem colSpan={1} colStart={6}>
-                  <Flex direction="column" gap={2}>
-                    <Text as="b" alignSelf="end">
+                <GridItem>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Text as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
                             style: "currency",
@@ -279,6 +286,11 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                             currency: "USD",
                           }).format(0)}
                     </Text>
+                  </Flex>
+                </GridItem>
+
+                <GridItem>
+                  <Flex direction="column" gap={2}>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
                         <IconButton
