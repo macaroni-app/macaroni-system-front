@@ -8,6 +8,7 @@ import {
   Stack,
   Skeleton,
   Text,
+  GridItem,
 } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons"
 
@@ -166,7 +167,51 @@ const InventoryTransactions = (): JSX.Element => {
         queryInventoryTransactions?.data?.length !== undefined &&
         queryInventoryTransactions?.data?.length > 0 &&
         !queryInventoryTransactions?.isLoading && (
-          <Grid>{inventoryTransactionList}</Grid>
+          <Grid>
+            <GridItem mb={3}>
+              <Card variant="outline">
+                <CardBody>
+                  <Grid
+                    templateColumns="repeat(6, 1fr)"
+                    gap={2}
+                    alignItems={"center"}
+                  >
+                    <GridItem>
+                      <Flex direction="column" gap={2}>
+                        <Text fontWeight="bold">Insumo</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Tipo</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Cantidad afectada</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Realizado por</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"center"}>
+                        <Text fontWeight="bold">Fecha</Text>
+                      </Flex>
+                    </GridItem>
+                    <GridItem>
+                      <Flex direction="column" gap={2} placeItems={"end"}>
+                        <Text fontWeight="bold">Acciones</Text>
+                      </Flex>
+                    </GridItem>
+                  </Grid>
+                </CardBody>
+              </Card>
+            </GridItem>
+            {inventoryTransactionList}
+          </Grid>
         )}
       {!queryInventoryTransactions?.isError &&
         queryInventoryTransactions?.data?.length === 0 &&

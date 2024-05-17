@@ -127,50 +127,60 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <GridItem colSpan={5} mb={3}>
+    <GridItem mb={3}>
       <Card variant="outline">
         <CardBody>
           <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
-            <GridItem colSpan={5}>
+            <GridItem>
               <Flex direction="column" gap={2}>
                 <Flex alignItems={"center"}>
                   <Text fontSize="lg" align="start" mr={2}>
                     {inventoryTransaction?.asset?.name}
                   </Text>
-                  <Badge
-                    variant={"subtle"}
-                    colorScheme={getColorSchemeBaseOnTransactionType(
-                      inventoryTransaction.transactionType !== undefined
-                        ? inventoryTransaction.transactionType
-                        : ""
-                    )}
-                  >
-                    {getLabelBaseOnTransactionType(
-                      inventoryTransaction.transactionReason !== undefined
-                        ? inventoryTransaction.transactionReason
-                        : ""
-                    )}
-                    {inventoryTransaction.transactionType === "UP" && (
-                      <TriangleUpIcon boxSize={3} ms={2} mb={1} />
-                    )}
-                    {inventoryTransaction.transactionType === "DOWN" && (
-                      <TriangleDownIcon boxSize={3} ms={2} mb={1} />
-                    )}
-                  </Badge>
                 </Flex>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
+                <Badge
+                  variant={"subtle"}
+                  colorScheme={getColorSchemeBaseOnTransactionType(
+                    inventoryTransaction.transactionType !== undefined
+                      ? inventoryTransaction.transactionType
+                      : ""
+                  )}
+                >
+                  {getLabelBaseOnTransactionType(
+                    inventoryTransaction.transactionReason !== undefined
+                      ? inventoryTransaction.transactionReason
+                      : ""
+                  )}
+                  {inventoryTransaction.transactionType === "UP" && (
+                    <TriangleUpIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                  {inventoryTransaction.transactionType === "DOWN" && (
+                    <TriangleDownIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                </Badge>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text fontSize="xs" align="start">
-                  Cantidad afectada:{" "}
-                  <Text fontWeight={"bold"} as={"span"}>
-                    {inventoryTransaction?.affectedAmount}
-                  </Text>
+                  {inventoryTransaction?.affectedAmount}
                 </Text>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text fontSize="xs" align="start">
-                  Realizada por:{" "}
-                  <Text fontWeight={"bold"} as={"span"}>
-                    {inventoryTransaction?.createdBy?.firstName}{" "}
-                    {inventoryTransaction?.createdBy?.lastName}
-                  </Text>
+                  {inventoryTransaction?.createdBy?.firstName}{" "}
+                  {inventoryTransaction?.createdBy?.lastName}
                 </Text>
+              </Flex>
+            </GridItem>
+            <GridItem>
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text color={"gray.500"} fontSize="xs" align="start">
                   {format(
                     new Date(
@@ -186,8 +196,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                 </Text>
               </Flex>
             </GridItem>
-
-            <GridItem colSpan={1} colStart={6}>
+            <GridItem>
               <Flex direction="column" gap={2}>
                 {checkRole([ROLES.ADMIN]) && (
                   <>
