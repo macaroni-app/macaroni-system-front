@@ -181,7 +181,7 @@ const Product = ({ product }: Props) => {
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge
                       variant="subtle"
-                      colorScheme={product?.isActive ? "purple" : "red"}
+                      colorScheme={product?.isActive ? "green" : "red"}
                     >
                       {product?.isActive ? "Activo" : "Inactivo"}
                     </Badge>
@@ -189,7 +189,7 @@ const Product = ({ product }: Props) => {
                 </GridItem>
                 <GridItem>
                   <Flex direction="column" gap={2} placeItems={"center"}>
-                    <Badge variant={"subtle"} colorScheme={"green"}>
+                    <Badge variant={"subtle"} colorScheme={"purple"}>
                       {product.productType?.name}
                     </Badge>
                   </Flex>
