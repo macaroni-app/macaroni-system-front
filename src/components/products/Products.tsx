@@ -1,5 +1,3 @@
-// import { useState } from "react";
-
 import {
   Grid,
   Button,
@@ -10,14 +8,15 @@ import {
   Text,
   Stack,
   Skeleton,
-  // FormControl,
+  FormControl,
   // FormLabel,
-  // Input,
+  Input,
   GridItem,
 } from "@chakra-ui/react"
 import { AddIcon /* , SearchIcon */ } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
+import { ChangeEvent, useState } from "react"
 
 // components
 // import Dashboard from "../reports/Dashboard";
@@ -44,6 +43,8 @@ const Products = () => {
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
 
+  const [searchValue, setSearchValue] = useState<string>("")
+
   const { checkRole } = useCheckRole()
 
   const queryProducts = useProducts({})
@@ -63,6 +64,10 @@ const Products = () => {
     navigate("add")
   }
 
+  const handleSetSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value)
+  }
+
   const products = queryProducts?.data as IProductFullRelated[]
   const productItems = queryProductItems?.data as IProductItemFullRelated[]
 
@@ -74,13 +79,19 @@ const Products = () => {
   //   throwError(querySales?.error)
   // }
 
-  const saleList = products?.map((product) => {
-    if (product._id !== undefined && product.createdAt !== undefined) {
-      return (
-        <Product key={product?._id + product?.createdAt} product={product} />
-      )
-    }
-  })
+  const saleList = products
+    ?.filter((product) => {
+      if (product.name !== undefined) {
+        return product.name.toLowerCase().includes(searchValue.toLowerCase())
+      }
+    })
+    .map((product) => {
+      if (product._id !== undefined && product.createdAt !== undefined) {
+        return (
+          <Product key={product?._id + product?.createdAt} product={product} />
+        )
+      }
+    })
 
   return (
     <>
@@ -103,26 +114,44 @@ const Products = () => {
       )} */}
 
       {!queryProducts?.isError && !queryProducts?.isLoading && (
-        <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-          <CardBody>
-            <Flex placeItems={"center"}>
-              <Text color={"white"} fontWeight={"bold"}>
-                {saleList?.length} productos
-              </Text>
-              <Spacer />
-              {checkRole([ROLES.ADMIN]) && (
-                <Button
-                  onClick={() => handleAddProduct()}
-                  colorScheme="purple"
-                  variant="solid"
-                >
-                  <AddIcon boxSize={3} me={2} />
-                  Nuevo producto
-                </Button>
-              )}
-            </Flex>
-          </CardBody>
-        </Card>
+        <>
+          <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
+            <CardBody>
+              <Flex placeItems={"center"}>
+                <Text color={"white"} fontWeight={"bold"}>
+                  {saleList?.length} productos
+                </Text>
+                <Spacer />
+                {checkRole([ROLES.ADMIN]) && (
+                  <Button
+                    onClick={() => handleAddProduct()}
+                    colorScheme="purple"
+                    variant="solid"
+                  >
+                    <AddIcon boxSize={3} me={2} />
+                    Nuevo producto
+                  </Button>
+                )}
+              </Flex>
+            </CardBody>
+          </Card>
+          <Card variant="outline" mt={5} mb={3}>
+            <CardBody>
+              <Flex>
+                <FormControl>
+                  <Input
+                    name="searchValue"
+                    type="text"
+                    value={searchValue}
+                    onChange={(e) => handleSetSearchValue(e)}
+                    placeholder="Buscar producto ..."
+                    required
+                  />
+                </FormControl>
+              </Flex>
+            </CardBody>
+          </Card>
+        </>
       )}
 
       {queryProducts?.isLoading && (
