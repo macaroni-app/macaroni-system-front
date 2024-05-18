@@ -148,7 +148,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
             </GridItem>
             <GridItem>
               <Flex direction="column" gap={2} placeItems={"center"}>
-                <Badge variant="subtle" colorScheme="purple">
+                <Badge variant="outline" colorScheme="gray">
                   {asset?.category?.name}
                 </Badge>
               </Flex>
