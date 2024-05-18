@@ -201,7 +201,7 @@ const Sales = () => {
                 >
                   <GridItem>
                     <Flex direction="column" gap={2}>
-                      <Text fontWeight="bold">Cliente</Text>
+                      <Text fontWeight="bold">Nombre del cliente</Text>
                     </Flex>
                   </GridItem>
                   <GridItem>

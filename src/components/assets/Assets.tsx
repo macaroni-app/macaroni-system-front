@@ -208,7 +208,7 @@ const Assets = (): JSX.Element => {
                   >
                     <GridItem>
                       <Flex direction="column" gap={2}>
-                        <Text fontWeight="bold">Insumo</Text>
+                        <Text fontWeight="bold">Nombre del insumo</Text>
                       </Flex>
                     </GridItem>
                     <GridItem>

@@ -189,7 +189,7 @@ const Product = ({ product }: Props) => {
                 </GridItem>
                 <GridItem>
                   <Flex direction="column" gap={2} placeItems={"center"}>
-                    <Badge variant={"subtle"} colorScheme={"purple"}>
+                    <Badge variant={"subtle"} colorScheme={"gray"}>
                       {product.productType?.name}
                     </Badge>
                   </Flex>

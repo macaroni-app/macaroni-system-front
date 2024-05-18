@@ -178,7 +178,7 @@ const InventoryTransactions = (): JSX.Element => {
                   >
                     <GridItem>
                       <Flex direction="column" gap={2}>
-                        <Text fontWeight="bold">Insumo</Text>
+                        <Text fontWeight="bold">Nombre del insumo</Text>
                       </Flex>
                     </GridItem>
                     <GridItem>
@@ -198,7 +198,7 @@ const InventoryTransactions = (): JSX.Element => {
                     </GridItem>
                     <GridItem>
                       <Flex direction="column" gap={2} placeItems={"center"}>
-                        <Text fontWeight="bold">Fecha</Text>
+                        <Text fontWeight="bold">Fecha de creación</Text>
                       </Flex>
                     </GridItem>
                     <GridItem>
