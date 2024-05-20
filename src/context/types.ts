@@ -1,6 +1,8 @@
 export interface IAuth {
   accessToken?: string
   roles?: number[]
+  firstName?: string,
+  lastName?: string
 }
 
 export interface IUserContext {

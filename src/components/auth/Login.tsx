@@ -37,8 +37,19 @@ import {
   CardHeader,
   Heading,
 } from "@chakra-ui/react"
+import { jwtDecode } from "jwt-decode"
 
 // import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
+
+interface UserPayload {
+  email: string
+  exp: number
+  firstName: string
+  iat: number
+  id: string
+  lastName: string
+  roles: number[]
+}
 
 const Login = (): JSX.Element => {
   const navigate = useNavigate()
@@ -55,8 +66,17 @@ const Login = (): JSX.Element => {
     try {
       const response = await loginService.login({ ...credentials })
       const accessToken = response?.data?.accessToken
-      const roles = response?.data?.roles
-      setAuth({ accessToken, roles })
+
+      const decoded = jwtDecode(accessToken) as UserPayload
+
+      const roles = decoded?.roles as number[]
+
+      setAuth({
+        accessToken,
+        roles,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+      })
       navigate(from, { replace: true })
     } catch (error) {
       // if (!error?.response) {
