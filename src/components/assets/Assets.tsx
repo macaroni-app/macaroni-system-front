@@ -71,6 +71,8 @@ const Assets = (): JSX.Element => {
       }
     })
 
+  const numberColumn = checkRole([ROLES.ADMIN]) ? 5 : 4
+
   return (
     <>
       {queryAssets?.isLoading && (
@@ -202,7 +204,7 @@ const Assets = (): JSX.Element => {
               <Card variant="outline" mb={3}>
                 <CardBody>
                   <Grid
-                    templateColumns="repeat(5, 1fr)"
+                    templateColumns={`repeat(${numberColumn}, 1fr)`}
                     gap={2}
                     alignItems={"center"}
                   >
@@ -226,11 +228,13 @@ const Assets = (): JSX.Element => {
                         <Text fontWeight="bold">Precio de costo</Text>
                       </Flex>
                     </GridItem>
-                    <GridItem>
-                      <Flex direction="column" gap={2} placeItems={"end"}>
-                        <Text fontWeight="bold">Acciones</Text>
-                      </Flex>
-                    </GridItem>
+                    {checkRole([ROLES.ADMIN]) && (
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"end"}>
+                          <Text fontWeight="bold">Acciones</Text>
+                        </Flex>
+                      </GridItem>
+                    )}
                   </Grid>
                 </CardBody>
               </Card>

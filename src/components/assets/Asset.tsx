@@ -124,11 +124,17 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const numberColumn = checkRole([ROLES.ADMIN]) ? 5 : 4
+
   return (
     <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
         <CardBody>
-          <Grid templateColumns="repeat(5, 1fr)" gap={2} alignItems={"center"}>
+          <Grid
+            templateColumns={`repeat(${numberColumn}, 1fr)`}
+            gap={2}
+            alignItems={"center"}
+          >
             <GridItem>
               <Flex direction="column" gap={2}>
                 <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
