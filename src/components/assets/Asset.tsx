@@ -31,7 +31,7 @@ import {
   Badge,
 } from "@chakra-ui/react"
 
-import { ChevronDownIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { ROLES } from "../common/roles"
@@ -135,14 +135,22 @@ const Asset = ({ asset }: Props): JSX.Element => {
             gap={2}
             alignItems={"center"}
           >
-            <GridItem>
+            <GridItem colSpan={{ base: 3, md: 1 }}>
               <Flex direction="column" gap={2}>
                 <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
                   {asset.name}
                 </Text>
+                <Badge
+                  display={{ md: "none" }}
+                  variant="subtle"
+                  colorScheme="gray"
+                  alignSelf={"flex-start"}
+                >
+                  {asset?.category?.name}
+                </Badge>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Badge
                   variant="subtle"
@@ -152,14 +160,14 @@ const Asset = ({ asset }: Props): JSX.Element => {
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Badge variant="subtle" colorScheme="gray">
                   {asset?.category?.name}
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 {asset.costPrice !== undefined && (
                   <Text as="b">
@@ -174,7 +182,25 @@ const Asset = ({ asset }: Props): JSX.Element => {
                 )}
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem colStart={{ base: 5 }}>
+              <Flex
+                display={{ md: "none" }}
+                direction="column"
+                gap={2}
+                placeItems={"center"}
+              >
+                {asset.costPrice !== undefined && (
+                  <Text as="b">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      minimumFractionDigits: 2,
+                      currency: "USD",
+                    }).format(
+                      Number.parseFloat(asset?.costPrice.toFixed(2).toString())
+                    )}
+                  </Text>
+                )}
+              </Flex>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 {checkRole([ROLES.ADMIN]) && (
                   <>

@@ -200,7 +200,7 @@ const Assets = (): JSX.Element => {
         queryAssets?.data?.length > 0 &&
         !queryAssets?.isLoading && (
           <Grid mt={5}>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Card variant="outline" mb={3}>
                 <CardBody>
                   <Grid
