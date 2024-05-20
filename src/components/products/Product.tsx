@@ -170,14 +170,22 @@ const Product = ({ product }: Props) => {
                 gap={2}
                 alignItems="center"
               >
-                <GridItem>
+                <GridItem colSpan={{ base: 3, md: 1 }}>
                   <Flex direction="column" gap={2}>
                     <Text fontSize="lg" align="start" mr={2}>
                       {product.name}
                     </Text>
+                    <Badge
+                      display={{ md: "none" }}
+                      variant={"subtle"}
+                      colorScheme={"gray"}
+                      alignSelf={"flex-start"}
+                    >
+                      {product.productType?.name}
+                    </Badge>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge
                       variant="subtle"
@@ -187,14 +195,14 @@ const Product = ({ product }: Props) => {
                     </Badge>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge variant={"subtle"} colorScheme={"gray"}>
                       {product.productType?.name}
                     </Badge>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text as="b">
                       {product?.retailsalePrice
@@ -215,7 +223,7 @@ const Product = ({ product }: Props) => {
                     </Text>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text as="b">
                       {product?.wholesalePrice
@@ -236,7 +244,31 @@ const Product = ({ product }: Props) => {
                     </Text>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem colStart={{ base: 6 }}>
+                  <Flex
+                    display={{ md: "none" }}
+                    direction="column"
+                    gap={2}
+                    placeItems={"center"}
+                  >
+                    <Text as="b">
+                      {product?.retailsalePrice
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(
+                            Number.parseFloat(
+                              product?.retailsalePrice.toString()
+                            )
+                          )
+                        : new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(0)}
+                    </Text>
+                  </Flex>
                   <Flex direction="column" gap={2}>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
