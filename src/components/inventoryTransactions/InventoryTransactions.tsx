@@ -145,7 +145,7 @@ const InventoryTransactions = (): JSX.Element => {
             <CardBody>
               <Flex placeItems={"center"}>
                 <Text color={"white"} fontWeight={"bold"}>
-                  {inventoryTransactionList?.length} transacciones de inventario
+                  {inventoryTransactionList?.length} transacciones
                 </Text>
                 <Spacer />
                 {checkRole([ROLES.ADMIN]) && (
@@ -155,7 +155,7 @@ const InventoryTransactions = (): JSX.Element => {
                     variant="solid"
                   >
                     <AddIcon boxSize={3} me={2} />
-                    Agregar transacción
+                    Agregar nueva
                   </Button>
                 )}
               </Flex>
@@ -167,8 +167,12 @@ const InventoryTransactions = (): JSX.Element => {
         queryInventoryTransactions?.data?.length !== undefined &&
         queryInventoryTransactions?.data?.length > 0 &&
         !queryInventoryTransactions?.isLoading && (
-          <Grid>
-            <GridItem mb={3}>
+          <Grid gap={2} templateColumns="repeat(12, 1fr)">
+            <GridItem
+              display={{ base: "none", md: "block" }}
+              colSpan={{ base: 12, md: 12, lg: 12 }}
+              colStart={{ base: 1, md: 1, lg: 1 }}
+            >
               <Card variant="outline">
                 <CardBody>
                   <Grid
@@ -210,7 +214,12 @@ const InventoryTransactions = (): JSX.Element => {
                 </CardBody>
               </Card>
             </GridItem>
-            {inventoryTransactionList}
+            <GridItem
+              colSpan={{ base: 12, md: 12, lg: 12 }}
+              colStart={{ base: 1, md: 1, lg: 1 }}
+            >
+              {inventoryTransactionList}
+            </GridItem>
           </Grid>
         )}
       {!queryInventoryTransactions?.isError &&

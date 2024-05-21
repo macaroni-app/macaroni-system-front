@@ -127,20 +127,40 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <GridItem mb={3}>
+    <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
         <CardBody>
           <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
-            <GridItem>
+            <GridItem colSpan={{ base: 3, md: 1 }}>
               <Flex direction="column" gap={2}>
-                <Flex alignItems={"center"}>
-                  <Text fontSize="lg" align="start" mr={2}>
-                    {inventoryTransaction?.asset?.name}
-                  </Text>
-                </Flex>
+                <Text fontSize="lg" align="start" mr={2}>
+                  {inventoryTransaction?.asset?.name}
+                </Text>
+                <Badge
+                  display={{ md: "none" }}
+                  variant={"subtle"}
+                  colorScheme={getColorSchemeBaseOnTransactionType(
+                    inventoryTransaction.transactionType !== undefined
+                      ? inventoryTransaction.transactionType
+                      : ""
+                  )}
+                  alignSelf={"flex-start"}
+                >
+                  {getLabelBaseOnTransactionType(
+                    inventoryTransaction.transactionReason !== undefined
+                      ? inventoryTransaction.transactionReason
+                      : ""
+                  )}
+                  {inventoryTransaction.transactionType === "UP" && (
+                    <TriangleUpIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                  {inventoryTransaction.transactionType === "DOWN" && (
+                    <TriangleDownIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                </Badge>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Badge
                   variant={"subtle"}
@@ -164,14 +184,14 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text fontSize="xs" align="start">
                   {inventoryTransaction?.affectedAmount}
                 </Text>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text fontSize="xs" align="start">
                   {inventoryTransaction?.createdBy?.firstName}{" "}
@@ -179,7 +199,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                 </Text>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text color={"gray.500"} fontSize="xs" align="start">
                   {format(
@@ -196,7 +216,15 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                 </Text>
               </Flex>
             </GridItem>
-            <GridItem>
+            <GridItem colStart={{ base: 6 }}>
+              <Flex
+                display={{ md: "none" }}
+                direction="column"
+                gap={2}
+                textAlign={"center"}
+              >
+                <Text as={"b"}>{inventoryTransaction?.affectedAmount}</Text>
+              </Flex>
               <Flex direction="column" gap={2}>
                 {checkRole([ROLES.ADMIN]) && (
                   <>
