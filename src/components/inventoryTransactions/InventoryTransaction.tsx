@@ -137,33 +137,15 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
             gap={2}
             alignItems="center"
           >
-            <GridItem colSpan={{ base: 3, md: 1 }}>
+            <GridItem colSpan={{ base: 5, md: 1 }}>
               <Flex direction="column" gap={2}>
                 <Text fontSize="lg" align="start" mr={2}>
                   {inventoryTransaction?.asset?.name}
                 </Text>
-                <Badge
-                  display={{ md: "none" }}
-                  variant={"subtle"}
-                  colorScheme={getColorSchemeBaseOnTransactionType(
-                    inventoryTransaction.transactionType !== undefined
-                      ? inventoryTransaction.transactionType
-                      : ""
-                  )}
-                  alignSelf={"flex-start"}
-                >
-                  {getLabelBaseOnTransactionType(
-                    inventoryTransaction.transactionReason !== undefined
-                      ? inventoryTransaction.transactionReason
-                      : ""
-                  )}
-                  {inventoryTransaction.transactionType === "UP" && (
-                    <TriangleUpIcon boxSize={3} ms={2} mb={1} />
-                  )}
-                  {inventoryTransaction.transactionType === "DOWN" && (
-                    <TriangleDownIcon boxSize={3} ms={2} mb={1} />
-                  )}
-                </Badge>
+                <Text display={{ md: "none" }}>
+                  Cantidad afectada:{" "}
+                  <Text as="b">{inventoryTransaction?.affectedAmount}</Text>
+                </Text>
               </Flex>
             </GridItem>
             <GridItem display={{ base: "none", md: "block" }}>
@@ -223,15 +205,28 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
               </Flex>
             </GridItem>
             <GridItem colStart={{ base: 6 }}>
-              <Flex
-                display={{ md: "none" }}
-                direction="column"
-                gap={2}
-                textAlign={"center"}
-              >
-                <Text as={"b"}>{inventoryTransaction?.affectedAmount}</Text>
-              </Flex>
               <Flex direction="column" gap={2}>
+                <Badge
+                  display={{ md: "none" }}
+                  variant={"subtle"}
+                  colorScheme={getColorSchemeBaseOnTransactionType(
+                    inventoryTransaction.transactionType !== undefined
+                      ? inventoryTransaction.transactionType
+                      : ""
+                  )}
+                >
+                  {getLabelBaseOnTransactionType(
+                    inventoryTransaction.transactionReason !== undefined
+                      ? inventoryTransaction.transactionReason
+                      : ""
+                  )}
+                  {inventoryTransaction.transactionType === "UP" && (
+                    <TriangleUpIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                  {inventoryTransaction.transactionType === "DOWN" && (
+                    <TriangleDownIcon boxSize={3} ms={2} mb={1} />
+                  )}
+                </Badge>
                 {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">

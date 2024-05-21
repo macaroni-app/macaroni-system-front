@@ -245,13 +245,8 @@ const Product = ({ product }: Props) => {
                   </Flex>
                 </GridItem>
                 <GridItem colStart={{ base: 6 }}>
-                  <Flex
-                    display={{ md: "none" }}
-                    direction="column"
-                    gap={2}
-                    placeItems={"center"}
-                  >
-                    <Text as="b">
+                  <Flex direction="column" gap={2}>
+                    <Text display={{ md: "none" }} as="b">
                       {product?.retailsalePrice
                         ? new Intl.NumberFormat("en-US", {
                             style: "currency",
@@ -268,8 +263,6 @@ const Product = ({ product }: Props) => {
                             currency: "USD",
                           }).format(0)}
                     </Text>
-                  </Flex>
-                  <Flex direction="column" gap={2}>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
                         <IconButton

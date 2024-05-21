@@ -183,14 +183,9 @@ const Asset = ({ asset }: Props): JSX.Element => {
               </Flex>
             </GridItem>
             <GridItem colStart={{ base: 5 }}>
-              <Flex
-                display={{ md: "none" }}
-                direction="column"
-                gap={2}
-                placeItems={"center"}
-              >
+              <Flex direction="column" gap={2} placeItems={"center"}>
                 {asset.costPrice !== undefined && (
-                  <Text as="b">
+                  <Text display={{ md: "none" }} as="b">
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       minimumFractionDigits: 2,
@@ -200,8 +195,6 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
-              </Flex>
-              <Flex direction="column" gap={2} placeItems={"center"}>
                 {checkRole([ROLES.ADMIN]) && (
                   <>
                     <Popover placement="bottom-start">
