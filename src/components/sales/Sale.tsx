@@ -231,15 +231,39 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                 gap={2}
                 alignItems="center"
               >
-                <GridItem>
+                <GridItem colSpan={{ base: 4, md: 1 }}>
                   <Flex direction="column" gap={2}>
                     <Text fontSize="lg" align="start" mr={2}>
                       {sale.client?.name}
                     </Text>
+                    <Badge
+                      display={{ md: "none" }}
+                      variant={"subtle"}
+                      colorScheme={
+                        sale.status === "CANCELLED" ? "red" : "green"
+                      }
+                      alignSelf={"flex-start"}
+                    >
+                      {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
+                    </Badge>
+                    <Text
+                      display={{ md: "none" }}
+                      color={"gray.500"}
+                      fontSize="xs"
+                      align="start"
+                    >
+                      {format(
+                        new Date(sale?.createdAt ? sale?.createdAt : ""),
+                        "eeee dd yyyy",
+                        {
+                          locale: es,
+                        }
+                      )}
+                    </Text>
                   </Flex>
                 </GridItem>
 
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge
                       variant={"subtle"}
@@ -251,14 +275,14 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                     </Badge>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text fontSize="xs" align="start">
                       {sale?.createdBy?.firstName} {sale?.createdBy?.lastName}
                     </Text>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text color={"gray.500"} fontSize="xs" align="start">
                       {format(
@@ -271,7 +295,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                     </Text>
                   </Flex>
                 </GridItem>
-                <GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text as="b">
                       {sale?.total
@@ -289,7 +313,27 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                   </Flex>
                 </GridItem>
 
-                <GridItem>
+                <GridItem colStart={{ base: 6 }}>
+                  <Flex
+                    display={{ md: "none" }}
+                    direction="column"
+                    gap={2}
+                    placeItems={"center"}
+                  >
+                    <Text as="b">
+                      {sale?.total
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(Number.parseFloat(sale?.total.toString()))
+                        : new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(0)}
+                    </Text>
+                  </Flex>
                   <Flex direction="column" gap={2}>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>

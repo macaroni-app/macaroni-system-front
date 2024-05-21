@@ -188,6 +188,7 @@ const Sales = () => {
 
       <Grid gap={2} templateColumns="repeat(12, 1fr)">
         <GridItem
+          display={{ base: "none", md: "block" }}
           colSpan={{ base: 12, md: 12, lg: 12 }}
           colStart={{ base: 1, md: 1, lg: 1 }}
         >
