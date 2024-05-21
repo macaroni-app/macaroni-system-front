@@ -62,6 +62,8 @@ const InventoryTransactions = (): JSX.Element => {
     }
   )
 
+  const numberColumn = checkRole([ROLES.ADMIN]) ? 6 : 5
+
   if (queryInventoryTransactions?.isLoading) {
     return (
       <>
@@ -182,7 +184,7 @@ const InventoryTransactions = (): JSX.Element => {
               <Card variant="outline">
                 <CardBody>
                   <Grid
-                    templateColumns="repeat(6, 1fr)"
+                    templateColumns={`repeat(${numberColumn}, 1fr)`}
                     gap={2}
                     alignItems={"center"}
                   >
@@ -211,11 +213,13 @@ const InventoryTransactions = (): JSX.Element => {
                         <Text fontWeight="bold">Fecha de creación</Text>
                       </Flex>
                     </GridItem>
-                    <GridItem>
-                      <Flex direction="column" gap={2} placeItems={"end"}>
-                        <Text fontWeight="bold">Acciones</Text>
-                      </Flex>
-                    </GridItem>
+                    {checkRole([ROLES.ADMIN]) && (
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"end"}>
+                          <Text fontWeight="bold">Acciones</Text>
+                        </Flex>
+                      </GridItem>
+                    )}
                   </Grid>
                 </CardBody>
               </Card>

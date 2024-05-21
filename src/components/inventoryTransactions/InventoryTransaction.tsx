@@ -124,13 +124,19 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
       : "Otro"
   }
 
+  const numberColumn = checkRole([ROLES.ADMIN]) ? 6 : 5
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
         <CardBody>
-          <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
+          <Grid
+            templateColumns={`repeat(${numberColumn}, 1fr)`}
+            gap={2}
+            alignItems="center"
+          >
             <GridItem colSpan={{ base: 3, md: 1 }}>
               <Flex direction="column" gap={2}>
                 <Text fontSize="lg" align="start" mr={2}>
