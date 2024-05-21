@@ -136,7 +136,7 @@ const ProductType = ({ productType }: Props) => {
                 </Text>
                 <Badge
                   variant="subtle"
-                  colorScheme={productType?.isActive ? "purple" : "red"}
+                  colorScheme={productType?.isActive ? "green" : "red"}
                   alignSelf={"start"}
                 >
                   {productType?.isActive ? "Activo" : "Inactivo"}

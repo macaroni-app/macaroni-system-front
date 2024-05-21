@@ -131,7 +131,7 @@ const Client = ({ client }: Props) => {
                 </Text>
                 <Badge
                   variant="subtle"
-                  colorScheme={client?.isActive ? "purple" : "red"}
+                  colorScheme={client?.isActive ? "green" : "red"}
                   alignSelf={"start"}
                 >
                   {client?.isActive ? "Activo" : "Inactivo"}

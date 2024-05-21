@@ -133,7 +133,7 @@ const Category = ({ category }: Props) => {
                 </Text>
                 <Badge
                   variant="subtle"
-                  colorScheme={category?.isActive ? "purple" : "red"}
+                  colorScheme={category?.isActive ? "green" : "red"}
                   alignSelf={"start"}
                 >
                   {category?.isActive ? "Activo" : "Inactivo"}

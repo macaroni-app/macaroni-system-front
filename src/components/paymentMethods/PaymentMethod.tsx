@@ -132,7 +132,7 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
                 </Text>
                 <Badge
                   variant="subtle"
-                  colorScheme={paymentMethod?.isActive ? "purple" : "red"}
+                  colorScheme={paymentMethod?.isActive ? "green" : "red"}
                   alignSelf={"start"}
                 >
                   {paymentMethod?.isActive ? "Activo" : "Inactivo"}
