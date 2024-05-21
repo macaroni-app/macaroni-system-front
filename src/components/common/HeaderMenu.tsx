@@ -56,16 +56,6 @@ const HeaderMenu = (): JSX.Element => {
         {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/assets")}>Insumos</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN]) && (
-          <MenuItem onClick={() => navigate("/categories")}>
-            Categorias
-          </MenuItem>
-        )}
-        {checkRole([ROLES.ADMIN]) && (
-          <MenuItem onClick={() => navigate("/productTypes")}>
-            Tipos de productos
-          </MenuItem>
-        )}
         {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/inventories")}>
             Inventarios
@@ -76,6 +66,17 @@ const HeaderMenu = (): JSX.Element => {
             Historial inventario
           </MenuItem>
         )}
+        {checkRole([ROLES.ADMIN]) && <MenuDivider />}
+        {checkRole([ROLES.ADMIN]) && (
+          <MenuItem onClick={() => navigate("/categories")}>
+            Categorias
+          </MenuItem>
+        )}
+        {checkRole([ROLES.ADMIN]) && (
+          <MenuItem onClick={() => navigate("/productTypes")}>
+            Tipos de productos
+          </MenuItem>
+        )}
         {checkRole([ROLES.ADMIN]) && (
           <MenuItem onClick={() => navigate("/clients")}>Clientes</MenuItem>
         )}
@@ -84,6 +85,7 @@ const HeaderMenu = (): JSX.Element => {
             Métodos de pagos
           </MenuItem>
         )}
+
         <MenuDivider />
         <MenuItem>
           {auth.firstName} {auth.lastName}
