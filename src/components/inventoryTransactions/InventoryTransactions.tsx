@@ -144,7 +144,12 @@ const InventoryTransactions = (): JSX.Element => {
           <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
             <CardBody>
               <Flex placeItems={"center"}>
-                <Text color={"white"} fontWeight={"bold"}>
+                <Text
+                  color={"white"}
+                  fontWeight={"bold"}
+                  noOfLines={1}
+                  fontSize={{ base: "small", md: "medium" }}
+                >
                   {inventoryTransactionList?.length} transacciones
                 </Text>
                 <Spacer />
@@ -153,9 +158,10 @@ const InventoryTransactions = (): JSX.Element => {
                     onClick={() => handleAddInventoryTransaction()}
                     colorScheme="purple"
                     variant="solid"
+                    size={{ base: "sm", md: "md" }}
                   >
                     <AddIcon boxSize={3} me={2} />
-                    Agregar nueva
+                    Nueva transacción
                   </Button>
                 )}
               </Flex>

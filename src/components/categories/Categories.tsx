@@ -131,7 +131,11 @@ const Categories = (): JSX.Element => {
         <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
           <CardBody>
             <Flex placeItems={"center"}>
-              <Text color={"white"} fontWeight={"bold"}>
+              <Text
+                color={"white"}
+                fontWeight={"bold"}
+                fontSize={{ base: "small", md: "medium" }}
+              >
                 {categoryList?.length} categorias
               </Text>
               <Spacer />
@@ -139,9 +143,10 @@ const Categories = (): JSX.Element => {
                 onClick={() => handleAddCategory()}
                 colorScheme="purple"
                 variant="solid"
+                size={{ base: "sm", md: "md" }}
               >
                 <AddIcon boxSize={3} me={2} />
-                Agregar categoria
+                Nueva categoria
               </Button>
             </Flex>
           </CardBody>

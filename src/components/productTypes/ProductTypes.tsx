@@ -131,7 +131,11 @@ const ProductTypes = (): JSX.Element => {
         <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
           <CardBody>
             <Flex placeItems={"center"}>
-              <Text color={"white"} fontWeight={"bold"}>
+              <Text
+                color={"white"}
+                fontWeight={"bold"}
+                fontSize={{ base: "small", md: "medium" }}
+              >
                 {productTypeList?.length} tipos de productos
               </Text>
               <Spacer />
@@ -139,9 +143,10 @@ const ProductTypes = (): JSX.Element => {
                 onClick={() => handleAddProductType()}
                 colorScheme="purple"
                 variant="solid"
+                size={{ base: "sm", md: "md" }}
               >
                 <AddIcon boxSize={3} me={2} />
-                Agregar tipo de producto
+                Nuevo tipo
               </Button>
             </Flex>
           </CardBody>

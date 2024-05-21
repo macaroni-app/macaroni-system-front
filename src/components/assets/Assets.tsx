@@ -95,7 +95,11 @@ const Assets = (): JSX.Element => {
           <Card bgColor={"#373E68"} variant="outline" mt={5} mb={3}>
             <CardBody>
               <Flex placeItems={"center"}>
-                <Text color={"white"} fontWeight={"bold"}>
+                <Text
+                  color={"white"}
+                  fontWeight={"bold"}
+                  fontSize={{ base: "small", md: "medium" }}
+                >
                   {assetList?.length} insumos
                 </Text>
                 <Spacer />
@@ -104,9 +108,10 @@ const Assets = (): JSX.Element => {
                     onClick={() => handleAddAsset()}
                     colorScheme="purple"
                     variant="solid"
+                    size={{ base: "sm", md: "md" }}
                   >
                     <AddIcon boxSize={3} me={2} />
-                    Agregar insumo
+                    Nuevo insumo
                   </Button>
                 )}
               </Flex>
