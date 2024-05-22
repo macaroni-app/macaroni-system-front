@@ -75,6 +75,9 @@ const SaleDetails = () => {
       <Tr key={saleItem._id}>
         <Td>{saleItem?.product?.name}</Td>
         <Td>
+          <Badge>{saleItem?.product?.productType?.name}</Badge>
+        </Td>
+        <Td>
           {saleItem?.quantity !== undefined &&
             Number.parseFloat(saleItem?.quantity.toString())}
         </Td>
@@ -265,7 +268,8 @@ const SaleDetails = () => {
                   <Table size="sm">
                     <Thead>
                       <Tr>
-                        <Th>Insumo</Th>
+                        <Th>Producto</Th>
+                        <Th>Tipo</Th>
                         <Th>Cantidad</Th>
                         <Th isNumeric>Subtotal</Th>
                       </Tr>
@@ -274,6 +278,7 @@ const SaleDetails = () => {
                     <Tfoot>
                       <Tr>
                         <Th>Total</Th>
+                        <Th></Th>
                         <Th></Th>
                         <Th isNumeric>
                           {saleItems !== undefined &&
