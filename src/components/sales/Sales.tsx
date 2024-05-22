@@ -115,7 +115,7 @@ const Sales = () => {
           noRecords={saleList?.length}
           title="ventas"
           buttonLabel="Nueva venta"
-          roles={[ROLES.ADMIN, ROLES.SELLER]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
         />
       )}
 

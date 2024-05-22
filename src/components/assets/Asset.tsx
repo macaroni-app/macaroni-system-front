@@ -124,7 +124,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const numberColumn = checkRole([ROLES.ADMIN]) ? 5 : 4
+  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 5 : 4
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -195,7 +195,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
-                {checkRole([ROLES.ADMIN]) && (
+                {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>

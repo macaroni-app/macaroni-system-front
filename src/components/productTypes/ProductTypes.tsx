@@ -133,7 +133,7 @@ const ProductTypes = (): JSX.Element => {
           noRecords={productTypeList?.length}
           title="tipos de productos"
           buttonLabel="Nuevo tipo"
-          roles={[ROLES.ADMIN]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
         />
       )}
 

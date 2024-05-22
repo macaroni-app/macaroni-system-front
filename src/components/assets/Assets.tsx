@@ -70,7 +70,7 @@ const Assets = (): JSX.Element => {
       }
     })
 
-  const numberColumn = checkRole([ROLES.ADMIN]) ? 5 : 4
+  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 5 : 4
 
   return (
     <>
@@ -96,7 +96,7 @@ const Assets = (): JSX.Element => {
             noRecords={assetList?.length}
             title="insumos"
             buttonLabel="Nuevo insumo"
-            roles={[ROLES.ADMIN]}
+            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
           />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
@@ -214,7 +214,7 @@ const Assets = (): JSX.Element => {
                         <Text fontWeight="bold">Precio de costo</Text>
                       </Flex>
                     </GridItem>
-                    {checkRole([ROLES.ADMIN]) && (
+                    {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"end"}>
                           <Text fontWeight="bold">Acciones</Text>

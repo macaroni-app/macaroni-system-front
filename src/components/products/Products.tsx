@@ -117,7 +117,7 @@ const Products = () => {
             noRecords={productList?.length}
             title="productos"
             buttonLabel="Nuevo producto"
-            roles={[ROLES.ADMIN]}
+            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
           />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>

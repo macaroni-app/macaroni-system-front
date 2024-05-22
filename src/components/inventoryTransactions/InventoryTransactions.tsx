@@ -61,7 +61,7 @@ const InventoryTransactions = (): JSX.Element => {
     }
   )
 
-  const numberColumn = checkRole([ROLES.ADMIN]) ? 6 : 5
+  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 6 : 5
 
   if (queryInventoryTransactions?.isLoading) {
     return (
@@ -147,7 +147,7 @@ const InventoryTransactions = (): JSX.Element => {
             noRecords={inventoryTransactionList?.length}
             title="transacciones"
             buttonLabel="Nueva transacción"
-            roles={[ROLES.ADMIN]}
+            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
           />
         )}
 
@@ -193,7 +193,7 @@ const InventoryTransactions = (): JSX.Element => {
                         <Text fontWeight="bold">Fecha de creación</Text>
                       </Flex>
                     </GridItem>
-                    {checkRole([ROLES.ADMIN]) && (
+                    {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"end"}>
                           <Text fontWeight="bold">Acciones</Text>

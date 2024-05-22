@@ -136,7 +136,7 @@ const PaymentMethods = (): JSX.Element => {
           noRecords={paymentMethodList?.length}
           title="métodos de pagos"
           buttonLabel="Nuevo método"
-          roles={[ROLES.ADMIN]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
         />
       )}
 

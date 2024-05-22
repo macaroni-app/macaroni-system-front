@@ -298,7 +298,7 @@ const Product = ({ product }: Props) => {
                               >
                                 Ver detalles
                               </Button>
-                              {checkRole([ROLES.ADMIN]) && (
+                              {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
                                 <>
                                   <Button
                                     onClick={() => handleEdit()}

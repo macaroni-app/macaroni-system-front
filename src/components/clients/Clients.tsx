@@ -128,7 +128,7 @@ const Clients = (): JSX.Element => {
           noRecords={clientList?.length}
           title="clientes"
           buttonLabel="Nuevo cliente"
-          roles={[ROLES.ADMIN]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
         />
       )}
 

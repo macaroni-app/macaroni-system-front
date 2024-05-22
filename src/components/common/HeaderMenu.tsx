@@ -42,45 +42,45 @@ const HeaderMenu = (): JSX.Element => {
         variant="outline"
       />
       <MenuList padding={0}>
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/sales/add")}>
             Nueva venta
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/sales")}>Ventas</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/products")}>Productos</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/assets")}>Insumos</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/inventories")}>
             Inventarios
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SELLER]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
           <MenuItem onClick={() => navigate("/inventoryTransactions")}>
             Historial inventario
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN]) && <MenuDivider />}
-        {checkRole([ROLES.ADMIN]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && <MenuDivider />}
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
           <MenuItem onClick={() => navigate("/categories")}>
             Categorias
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
           <MenuItem onClick={() => navigate("/productTypes")}>
             Tipos de productos
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
           <MenuItem onClick={() => navigate("/clients")}>Clientes</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN]) && (
+        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
           <MenuItem onClick={() => navigate("/paymentMethods")}>
             Métodos de pagos
           </MenuItem>

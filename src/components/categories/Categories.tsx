@@ -133,7 +133,7 @@ const Categories = (): JSX.Element => {
           noRecords={categoryList?.length}
           title="categorias"
           buttonLabel="Nueva categoria"
-          roles={[ROLES.ADMIN]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
         />
       )}
 

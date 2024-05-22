@@ -124,7 +124,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
       : "Otro"
   }
 
-  const numberColumn = checkRole([ROLES.ADMIN]) ? 6 : 5
+  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 6 : 5
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -227,7 +227,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                     <TriangleDownIcon boxSize={3} ms={2} mb={1} />
                   )}
                 </Badge>
-                {checkRole([ROLES.ADMIN]) && (
+                {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>

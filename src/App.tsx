@@ -20,7 +20,9 @@ function App(): JSX.Element {
         <Route element={<PersistLogin />}>
           <Route
             element={
-              <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+              <ProtectedRoute
+                allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+              />
             }
           >
             <Route path="/*" element={<Home />} />

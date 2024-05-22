@@ -63,7 +63,9 @@ const Home = () => {
         {/* SALES */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -87,7 +89,9 @@ const Home = () => {
         {/* ASSETS */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -106,12 +110,20 @@ const Home = () => {
             }
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route path="/assets/add" element={<AssetForm />} />
           <Route path="/assets/:assetId/edit" element={<AssetForm />} />
         </Route>
         {/* CATEGORIES */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route
             path="/categories"
             element={
@@ -134,7 +146,11 @@ const Home = () => {
           />
         </Route>
         {/* PRODUCT_TYPES */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route
             path="/productTypes"
             element={
@@ -159,7 +175,9 @@ const Home = () => {
         {/* PRODUCTS */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -182,14 +200,20 @@ const Home = () => {
             element={<ProductDetails />}
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route path="/products/add" element={<ProductForm />} />
           <Route path="/products/:productId/edit" element={<ProductForm />} />
         </Route>
         {/* INVENTORIES */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -208,7 +232,11 @@ const Home = () => {
             }
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route path="/inventories/add" element={<InventoryForm />} />
           <Route
             path="/inventories/:inventoryId/edit"
@@ -218,7 +246,9 @@ const Home = () => {
         {/* INVENTORY TRANSACTIONS */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -237,7 +267,11 @@ const Home = () => {
             }
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route
             path="/inventoryTransactions/add"
             element={<InventoryTransactionForm />}
@@ -250,7 +284,9 @@ const Home = () => {
         {/* CLIENTS */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SELLER]} />
+            <ProtectedRoute
+              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+            />
           }
         >
           <Route
@@ -269,12 +305,20 @@ const Home = () => {
             }
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route path="/clients/add" element={<ClientForm />} />
           <Route path="/clients/:clientId/edit" element={<ClientForm />} />
         </Route>
         {/* PAYMENT_METHODS */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+          }
+        >
           <Route
             path="/paymentMethods"
             element={

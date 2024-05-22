@@ -133,7 +133,7 @@ const Inventories = (): JSX.Element => {
           noRecords={inventoryList?.length}
           title="inventarios"
           buttonLabel="Nuevo inventario"
-          roles={[ROLES.ADMIN]}
+          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
         />
       )}
 
