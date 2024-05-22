@@ -193,7 +193,7 @@ const Login = (): JSX.Element => {
               </form>
             </CardBody>
           </Card>
-          <Card variant="outline">
+          {/* <Card variant="outline">
             <CardBody>
               <Text>
                 ¿No tenes cuenta?{" "}
@@ -206,7 +206,7 @@ const Login = (): JSX.Element => {
                 </Button>
               </Text>
             </CardBody>
-          </Card>
+          </Card> */}
         </GridItem>
       </Grid>
     </>
