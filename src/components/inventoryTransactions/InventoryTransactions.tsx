@@ -1,6 +1,5 @@
 import {
   Grid,
-  Button,
   Card,
   CardBody,
   Flex,
@@ -10,13 +9,13 @@ import {
   Text,
   GridItem,
 } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 
 // components
 import InventoryTransaction from "./InventoryTransaction"
 import WithoutResults from "../common/WithoutResults"
+import NewRecordPanel from "../common/NewRecordPanel"
 
 // custom hooks
 import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
@@ -143,32 +142,13 @@ const InventoryTransactions = (): JSX.Element => {
     <>
       {!queryInventoryTransactions?.isError &&
         !queryInventoryTransactions?.isLoading && (
-          <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-            <CardBody>
-              <Flex placeItems={"center"}>
-                <Text
-                  color={"white"}
-                  fontWeight={"bold"}
-                  noOfLines={1}
-                  fontSize={{ base: "small", md: "medium" }}
-                >
-                  {inventoryTransactionList?.length} transacciones
-                </Text>
-                <Spacer />
-                {checkRole([ROLES.ADMIN]) && (
-                  <Button
-                    onClick={() => handleAddInventoryTransaction()}
-                    colorScheme="purple"
-                    variant="solid"
-                    size={{ base: "sm", md: "md" }}
-                  >
-                    <AddIcon boxSize={3} me={2} />
-                    Nueva transacción
-                  </Button>
-                )}
-              </Flex>
-            </CardBody>
-          </Card>
+          <NewRecordPanel
+            handleAddRecord={handleAddInventoryTransaction}
+            noRecords={inventoryTransactionList?.length}
+            title="transacciones"
+            buttonLabel="Nueva transacción"
+            roles={[ROLES.ADMIN]}
+          />
         )}
 
       {!queryInventoryTransactions?.isError &&

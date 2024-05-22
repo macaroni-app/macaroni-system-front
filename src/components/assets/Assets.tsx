@@ -14,7 +14,6 @@ import { IAssetFullCategory } from "./types"
 import {
   Grid,
   GridItem,
-  Button,
   Card,
   CardBody,
   Flex,
@@ -25,12 +24,12 @@ import {
   FormControl,
   Input,
 } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
 
 // components
 import Asset from "./Asset"
 // import Dashboard from "../reports/Dashboard"
 import WithoutResults from "../common/WithoutResults"
+import NewRecordPanel from "../common/NewRecordPanel"
 
 import { ROLES } from "../common/roles"
 
@@ -92,31 +91,13 @@ const Assets = (): JSX.Element => {
       )} */}
       {!queryAssets?.isError && !queryAssets?.isLoading && (
         <>
-          <Card bgColor={"#373E68"} variant="outline" mt={5} mb={3}>
-            <CardBody>
-              <Flex placeItems={"center"}>
-                <Text
-                  color={"white"}
-                  fontWeight={"bold"}
-                  fontSize={{ base: "small", md: "medium" }}
-                >
-                  {assetList?.length} insumos
-                </Text>
-                <Spacer />
-                {checkRole([ROLES.ADMIN]) && (
-                  <Button
-                    onClick={() => handleAddAsset()}
-                    colorScheme="purple"
-                    variant="solid"
-                    size={{ base: "sm", md: "md" }}
-                  >
-                    <AddIcon boxSize={3} me={2} />
-                    Nuevo insumo
-                  </Button>
-                )}
-              </Flex>
-            </CardBody>
-          </Card>
+          <NewRecordPanel
+            handleAddRecord={handleAddAsset}
+            noRecords={assetList?.length}
+            title="insumos"
+            buttonLabel="Nuevo insumo"
+            roles={[ROLES.ADMIN]}
+          />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
               <Flex>

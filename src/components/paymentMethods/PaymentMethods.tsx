@@ -1,26 +1,26 @@
 import {
   Grid,
-  Button,
   Card,
   CardBody,
   Flex,
   Spacer,
   Stack,
   Skeleton,
-  Text,
 } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 
 // components
 import PaymentMethod from "./PaymentMethod"
 import WithoutResults from "../common/WithoutResults"
+import NewRecordPanel from "../common/NewRecordPanel"
 
 // custom hooks
 import { usePaymentMethods } from "../../hooks/usePaymentMethods"
 import { IPaymentMethod } from "./types"
 // import { useError } from "../../hooks/useError"
+
+import { ROLES } from "../common/roles"
 
 const PaymentMethods = (): JSX.Element => {
   const queryPaymentMethods = usePaymentMethods({})
@@ -39,7 +39,7 @@ const PaymentMethods = (): JSX.Element => {
 
   const paymentMethods = queryPaymentMethods?.data as IPaymentMethod[]
 
-  const clientList = paymentMethods?.map((paymentMethod) => {
+  const paymentMethodList = paymentMethods?.map((paymentMethod) => {
     if (
       paymentMethod._id !== undefined &&
       paymentMethod.createdAt !== undefined
@@ -131,35 +131,19 @@ const PaymentMethods = (): JSX.Element => {
   return (
     <>
       {!queryPaymentMethods?.isError && !queryPaymentMethods?.isLoading && (
-        <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-          <CardBody>
-            <Flex placeItems={"center"}>
-              <Text
-                color={"white"}
-                fontWeight={"bold"}
-                fontSize={{ base: "small", md: "medium" }}
-              >
-                {clientList?.length} métodos de pagos
-              </Text>
-              <Spacer />
-              <Button
-                onClick={() => handleAddPaymentMethod()}
-                colorScheme="purple"
-                variant="solid"
-                size={{ base: "sm", md: "md" }}
-              >
-                <AddIcon boxSize={3} me={2} />
-                Agregar método
-              </Button>
-            </Flex>
-          </CardBody>
-        </Card>
+        <NewRecordPanel
+          handleAddRecord={handleAddPaymentMethod}
+          noRecords={paymentMethodList?.length}
+          title="métodos de pagos"
+          buttonLabel="Nuevo método"
+          roles={[ROLES.ADMIN]}
+        />
       )}
 
       {!queryPaymentMethods?.isError &&
         queryPaymentMethods?.data?.length !== undefined &&
         queryPaymentMethods?.data?.length > 0 &&
-        !queryPaymentMethods?.isLoading && <Grid>{clientList}</Grid>}
+        !queryPaymentMethods?.isLoading && <Grid>{paymentMethodList}</Grid>}
       {!queryPaymentMethods?.isError &&
         queryPaymentMethods?.data?.length === 0 &&
         !queryPaymentMethods?.isLoading && (

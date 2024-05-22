@@ -2,7 +2,6 @@
 
 import {
   Grid,
-  Button,
   Card,
   CardBody,
   Flex,
@@ -15,7 +14,6 @@ import {
   // Input,
   GridItem,
 } from "@chakra-ui/react"
-import { AddIcon /* , SearchIcon */ } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 
@@ -35,6 +33,10 @@ import { useInventories } from "../../hooks/useInventories"
 // types
 import { ISaleFullRelated, ISaleItemFullRelated } from "./types"
 import { IInventoryFullRelated } from "../inventories/types"
+
+import NewRecordPanel from "../common/NewRecordPanel"
+
+import { ROLES } from "../common/roles"
 
 const Sales = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -63,7 +65,8 @@ const Sales = () => {
   }
 
   const sales = querySales?.data as ISaleFullRelated[]
-  const saleItems = querySaleItems?.data as ISaleItemFullRelated[]
+  // saleItems
+  querySaleItems?.data as ISaleItemFullRelated[]
 
   // const saleDetails = querySaleDetails?.data
 
@@ -107,29 +110,13 @@ const Sales = () => {
       )} */}
 
       {!querySales?.isError && !querySales?.isLoading && (
-        <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-          <CardBody>
-            <Flex placeItems={"center"}>
-              <Text
-                color={"white"}
-                fontWeight={"bold"}
-                fontSize={{ base: "small", md: "medium" }}
-              >
-                {saleList?.length} ventas
-              </Text>
-              <Spacer />
-              <Button
-                onClick={() => handleAddSale()}
-                colorScheme="purple"
-                variant="solid"
-                size={{ base: "sm", md: "md" }}
-              >
-                <AddIcon boxSize={3} me={2} />
-                Nueva venta
-              </Button>
-            </Flex>
-          </CardBody>
-        </Card>
+        <NewRecordPanel
+          handleAddRecord={handleAddSale}
+          noRecords={saleList?.length}
+          title="ventas"
+          buttonLabel="Nueva venta"
+          roles={[ROLES.ADMIN, ROLES.SELLER]}
+        />
       )}
 
       {querySales?.isLoading && (

@@ -1,26 +1,26 @@
 import {
   Grid,
-  Button,
   Card,
   CardBody,
   Flex,
   Spacer,
   Stack,
   Skeleton,
-  Text,
 } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 
 // components
 import ProductType from "./ProductType"
 import WithoutResults from "../common/WithoutResults"
+import NewRecordPanel from "../common/NewRecordPanel"
 
 // custom hooks
 import { useProductTypes } from "../../hooks/useProductTypes"
 import { IProductTypeType } from "./types"
 // import { useError } from "../../hooks/useError"
+
+import { ROLES } from "../common/roles"
 
 const ProductTypes = (): JSX.Element => {
   const queryProductTypes = useProductTypes({})
@@ -128,29 +128,13 @@ const ProductTypes = (): JSX.Element => {
   return (
     <>
       {!queryProductTypes?.isError && !queryProductTypes?.isLoading && (
-        <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-          <CardBody>
-            <Flex placeItems={"center"}>
-              <Text
-                color={"white"}
-                fontWeight={"bold"}
-                fontSize={{ base: "small", md: "medium" }}
-              >
-                {productTypeList?.length} tipos de productos
-              </Text>
-              <Spacer />
-              <Button
-                onClick={() => handleAddProductType()}
-                colorScheme="purple"
-                variant="solid"
-                size={{ base: "sm", md: "md" }}
-              >
-                <AddIcon boxSize={3} me={2} />
-                Nuevo tipo
-              </Button>
-            </Flex>
-          </CardBody>
-        </Card>
+        <NewRecordPanel
+          handleAddRecord={handleAddProductType}
+          noRecords={productTypeList?.length}
+          title="tipos de productos"
+          buttonLabel="Nuevo tipo"
+          roles={[ROLES.ADMIN]}
+        />
       )}
 
       {!queryProductTypes?.isError &&

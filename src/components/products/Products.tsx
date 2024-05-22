@@ -1,6 +1,5 @@
 import {
   Grid,
-  Button,
   Card,
   CardBody,
   Flex,
@@ -13,7 +12,6 @@ import {
   Input,
   GridItem,
 } from "@chakra-ui/react"
-import { AddIcon /* , SearchIcon */ } from "@chakra-ui/icons"
 
 import { useNavigate } from "react-router-dom"
 import { ChangeEvent, useState } from "react"
@@ -28,7 +26,6 @@ import Product from "./Product"
 // import { useDebts } from "../../hooks/useDebts";
 import { useProducts } from "../../hooks/useProducts"
 import { useProductItems } from "../../hooks/useProductItems"
-import { useCheckRole } from "../../hooks/useCheckRole"
 
 // import { useTodayDate } from "../../hooks/useTodayDate";
 // import { useError } from "../../hooks/useError"
@@ -37,6 +34,7 @@ import { useCheckRole } from "../../hooks/useCheckRole"
 import { IProductFullRelated, IProductItemFullRelated } from "./types"
 
 import { ROLES } from "../common/roles"
+import NewRecordPanel from "../common/NewRecordPanel"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -44,8 +42,6 @@ const Products = () => {
   // );
 
   const [searchValue, setSearchValue] = useState<string>("")
-
-  const { checkRole } = useCheckRole()
 
   const queryProducts = useProducts({})
   const queryProductItems = useProductItems({})
@@ -69,7 +65,8 @@ const Products = () => {
   }
 
   const products = queryProducts?.data as IProductFullRelated[]
-  const productItems = queryProductItems?.data as IProductItemFullRelated[]
+  // productItems
+  queryProductItems?.data as IProductItemFullRelated[]
 
   // const saleDetails = querySaleDetails?.data
 
@@ -79,7 +76,7 @@ const Products = () => {
   //   throwError(querySales?.error)
   // }
 
-  const saleList = products
+  const productList = products
     ?.filter((product) => {
       if (product.name !== undefined) {
         return product.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -115,31 +112,13 @@ const Products = () => {
 
       {!queryProducts?.isError && !queryProducts?.isLoading && (
         <>
-          <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
-            <CardBody>
-              <Flex placeItems={"center"}>
-                <Text
-                  color={"white"}
-                  fontWeight={"bold"}
-                  fontSize={{ base: "small", md: "medium" }}
-                >
-                  {saleList?.length} productos
-                </Text>
-                <Spacer />
-                {checkRole([ROLES.ADMIN]) && (
-                  <Button
-                    onClick={() => handleAddProduct()}
-                    colorScheme="purple"
-                    variant="solid"
-                    size={{ base: "sm", md: "md" }}
-                  >
-                    <AddIcon boxSize={3} me={2} />
-                    Nuevo producto
-                  </Button>
-                )}
-              </Flex>
-            </CardBody>
-          </Card>
+          <NewRecordPanel
+            handleAddRecord={handleAddProduct}
+            noRecords={productList?.length}
+            title="productos"
+            buttonLabel="Nuevo producto"
+            roles={[ROLES.ADMIN]}
+          />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
               <Flex>
@@ -274,7 +253,7 @@ const Products = () => {
           {queryProducts?.data?.length !== undefined &&
             queryProducts?.data?.length > 0 &&
             !queryProducts?.isLoading &&
-            !queryProducts?.isError && <>{saleList}</>}
+            !queryProducts?.isError && <>{productList}</>}
           {queryProducts?.data?.length === 0 &&
             !queryProducts?.isError &&
             !queryProducts?.isLoading && (
