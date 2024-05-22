@@ -33,8 +33,9 @@ import { useProductItems } from "../../hooks/useProductItems"
 // types
 import { IProductFullRelated, IProductItemFullRelated } from "./types"
 
-import { ROLES } from "../common/roles"
 import NewRecordPanel from "../common/NewRecordPanel"
+
+import ProfileBase from "../common/permissions"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -117,7 +118,7 @@ const Products = () => {
             noRecords={productList?.length}
             title="productos"
             buttonLabel="Nuevo producto"
-            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+            roles={ProfileBase.products.create}
           />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>

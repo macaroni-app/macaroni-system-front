@@ -36,7 +36,7 @@ import { IInventoryFullRelated } from "../inventories/types"
 
 import NewRecordPanel from "../common/NewRecordPanel"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const Sales = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -115,7 +115,7 @@ const Sales = () => {
           noRecords={saleList?.length}
           title="ventas"
           buttonLabel="Nueva venta"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+          roles={ProfileBase.sales.create}
         />
       )}
 

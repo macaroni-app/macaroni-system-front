@@ -18,6 +18,7 @@ import { useCheckRole } from "../../hooks/useCheckRole"
 import { ROLES } from "../common/roles"
 import { useAuthContext } from "../../hooks/useAuthContext"
 import { IUserContext } from "../../context/types"
+import ProfileBase from "./permissions"
 
 const HeaderMenu = (): JSX.Element => {
   const navigate = useNavigate()
@@ -42,45 +43,45 @@ const HeaderMenu = (): JSX.Element => {
         variant="outline"
       />
       <MenuList padding={0}>
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.sales.create) && (
           <MenuItem onClick={() => navigate("/sales/add")}>
             Nueva venta
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.sales.view) && (
           <MenuItem onClick={() => navigate("/sales")}>Ventas</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.products.view) && (
           <MenuItem onClick={() => navigate("/products")}>Productos</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.assets.view) && (
           <MenuItem onClick={() => navigate("/assets")}>Insumos</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.inventories.view) && (
           <MenuItem onClick={() => navigate("/inventories")}>
             Inventarios
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]) && (
+        {checkRole(ProfileBase.inventoryTransactions.view) && (
           <MenuItem onClick={() => navigate("/inventoryTransactions")}>
             Historial inventario
           </MenuItem>
         )}
         {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && <MenuDivider />}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+        {checkRole(ProfileBase.categories.view) && (
           <MenuItem onClick={() => navigate("/categories")}>
             Categorias
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+        {checkRole(ProfileBase.productTypes.view) && (
           <MenuItem onClick={() => navigate("/productTypes")}>
             Tipos de productos
           </MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+        {checkRole(ProfileBase.clients.view) && (
           <MenuItem onClick={() => navigate("/clients")}>Clientes</MenuItem>
         )}
-        {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+        {checkRole(ProfileBase.paymentMethods.view) && (
           <MenuItem onClick={() => navigate("/paymentMethods")}>
             Métodos de pagos
           </MenuItem>
