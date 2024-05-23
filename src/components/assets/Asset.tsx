@@ -60,9 +60,9 @@ const Asset = ({ asset }: Props): JSX.Element => {
     navigate(`${asset._id}/edit`)
   }
 
-  const handleDetails = () => {
-    navigate(`/assets/${asset._id}/details`)
-  }
+  // const handleDetails = () => {
+  //   navigate(`/assets/${asset._id}/details`)
+  // }
 
   const handleChangeIsActive = async (isActive: boolean) => {
     setIsLoading(true)
@@ -219,7 +219,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                           <PopoverArrow />
                           <PopoverBody p={0}>
                             <VStack spacing={1} align="stretch">
-                              {checkRole(ProfileBase.assets.view) && (
+                              {/* {checkRole(ProfileBase.assets.view) && (
                                 <Button
                                   onClick={() => handleDetails()}
                                   variant="blue"
@@ -234,7 +234,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                                 >
                                   Ver detalles
                                 </Button>
-                              )}
+                              )} */}
                               {checkRole(ProfileBase.assets.edit) && (
                                 <Button
                                   onClick={() => handleEdit()}
