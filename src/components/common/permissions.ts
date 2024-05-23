@@ -10,7 +10,7 @@ const ProfileBase = {
     cancel: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
-    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
   },
   products: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR],
@@ -74,6 +74,14 @@ const ProfileBase = {
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN, ROLES.SUPERVISOR],
     viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
+  },
+  users: {
+    create: [ROLES.ADMIN],
+    edit: [ROLES.ADMIN],
+    deactivate: [ROLES.ADMIN],
+    delete: [ROLES.ADMIN],
+    view: [ROLES.ADMIN],
+    viewActions: [ROLES.ADMIN],
   }
 }
 

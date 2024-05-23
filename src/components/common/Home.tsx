@@ -40,8 +40,11 @@ import ClientForm from "../clients/ClientForm"
 import PaymentMethods from "../paymentMethods/PaymentMethods"
 import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
 import ProtectedRoute from "../auth/ProtectedRoute"
+import Users from "../users/Users"
 import Unauthorized from "./Unauthorized"
-import { ROLES } from "./roles"
+
+import ProfileBase from "./permissions"
+
 // import PageNotFound from "./PageNotFound"
 
 const Home = () => {
@@ -62,11 +65,7 @@ const Home = () => {
       <Routes>
         {/* SALES */}
         <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
-            />
-          }
+          element={<ProtectedRoute allowedRoles={ProfileBase.sales.view} />}
         >
           <Route
             path="/sales"
@@ -83,16 +82,62 @@ const Home = () => {
               </Grid>
             }
           />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.sales.create} />}
+        >
           <Route path="/sales/add" element={<SaleForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.sales.view} />}
+        >
           <Route path="/sales/:saleId/details" element={<SaleDetails />} />
         </Route>
-        {/* ASSETS */}
+
+        {/* PRODUCTS */}
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.products.view} />}
+        >
+          <Route
+            path="/products"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Products />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.products.view} />}
+        >
+          <Route
+            path="/products/:productId/details"
+            element={<ProductDetails />}
+          />
+        </Route>
         <Route
           element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
-            />
+            <ProtectedRoute allowedRoles={ProfileBase.products.create} />
           }
+        >
+          <Route path="/products/add" element={<ProductForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.products.edit} />}
+        >
+          <Route path="/products/:productId/edit" element={<ProductForm />} />
+        </Route>
+
+        {/* ASSETS */}
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.assets.view} />}
         >
           <Route
             path="/assets"
@@ -111,17 +156,20 @@ const Home = () => {
           />
         </Route>
         <Route
-          element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
-          }
+          element={<ProtectedRoute allowedRoles={ProfileBase.assets.create} />}
         >
           <Route path="/assets/add" element={<AssetForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.assets.edit} />}
+        >
           <Route path="/assets/:assetId/edit" element={<AssetForm />} />
         </Route>
+
         {/* CATEGORIES */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            <ProtectedRoute allowedRoles={ProfileBase.categories.view} />
           }
         >
           <Route
@@ -139,16 +187,29 @@ const Home = () => {
               </Grid>
             }
           />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.categories.create} />
+          }
+        >
           <Route path="/categories/add" element={<CategoryForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.categories.edit} />
+          }
+        >
           <Route
             path="/categories/:categoryId/edit"
             element={<CategoryForm />}
           />
         </Route>
+
         {/* PRODUCT_TYPES */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            <ProtectedRoute allowedRoles={ProfileBase.productTypes.view} />
           }
         >
           <Route
@@ -166,54 +227,29 @@ const Home = () => {
               </Grid>
             }
           />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.productTypes.create} />
+          }
+        >
           <Route path="/productTypes/add" element={<ProductTypeForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.productTypes.edit} />
+          }
+        >
           <Route
             path="/productTypes/:productTypeId/edit"
             element={<ProductTypeForm />}
           />
         </Route>
-        {/* PRODUCTS */}
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
-            />
-          }
-        >
-          <Route
-            path="/products"
-            element={
-              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
-                <GridItem
-                  as="main"
-                  colSpan={{ base: 10, md: 10, lg: 8 }}
-                  colStart={{ base: 2, md: 2, lg: 3 }}
-                  mb={10}
-                >
-                  <Products />
-                </GridItem>
-              </Grid>
-            }
-          />
-          <Route
-            path="/products/:productId/details"
-            element={<ProductDetails />}
-          />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
-          }
-        >
-          <Route path="/products/add" element={<ProductForm />} />
-          <Route path="/products/:productId/edit" element={<ProductForm />} />
-        </Route>
+
         {/* INVENTORIES */}
         <Route
           element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
-            />
+            <ProtectedRoute allowedRoles={ProfileBase.inventories.view} />
           }
         >
           <Route
@@ -234,20 +270,27 @@ const Home = () => {
         </Route>
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            <ProtectedRoute allowedRoles={ProfileBase.inventories.create} />
           }
         >
           <Route path="/inventories/add" element={<InventoryForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.inventories.edit} />
+          }
+        >
           <Route
             path="/inventories/:inventoryId/edit"
             element={<InventoryForm />}
           />
         </Route>
+
         {/* INVENTORY TRANSACTIONS */}
         <Route
           element={
             <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
+              allowedRoles={ProfileBase.inventoryTransactions.view}
             />
           }
         >
@@ -269,25 +312,32 @@ const Home = () => {
         </Route>
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            <ProtectedRoute
+              allowedRoles={ProfileBase.inventoryTransactions.create}
+            />
           }
         >
           <Route
             path="/inventoryTransactions/add"
             element={<InventoryTransactionForm />}
           />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              allowedRoles={ProfileBase.inventoryTransactions.edit}
+            />
+          }
+        >
           <Route
             path="/inventoryTransactions/:inventoryTransactionId/edit"
             element={<InventoryTransactionForm />}
           />
         </Route>
+
         {/* CLIENTS */}
         <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]}
-            />
-          }
+          element={<ProtectedRoute allowedRoles={ProfileBase.clients.view} />}
         >
           <Route
             path="/clients"
@@ -306,17 +356,20 @@ const Home = () => {
           />
         </Route>
         <Route
-          element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
-          }
+          element={<ProtectedRoute allowedRoles={ProfileBase.clients.create} />}
         >
           <Route path="/clients/add" element={<ClientForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.clients.edit} />}
+        >
           <Route path="/clients/:clientId/edit" element={<ClientForm />} />
         </Route>
+
         {/* PAYMENT_METHODS */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            <ProtectedRoute allowedRoles={ProfileBase.paymentMethods.view} />
           }
         >
           <Route
@@ -334,12 +387,46 @@ const Home = () => {
               </Grid>
             }
           />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.paymentMethods.create} />
+          }
+        >
           <Route path="/paymentMethods/add" element={<PaymentMethodForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.paymentMethods.edit} />
+          }
+        >
           <Route
             path="/paymentMethods/:paymentMethodId/edit"
             element={<PaymentMethodForm />}
           />
         </Route>
+
+        {/* USERS */}
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.users.view} />}
+        >
+          <Route
+            path="/users"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Users />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+
         {/* UNAUTHORIZED */}
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>

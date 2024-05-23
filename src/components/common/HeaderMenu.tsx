@@ -86,6 +86,9 @@ const HeaderMenu = (): JSX.Element => {
             Métodos de pagos
           </MenuItem>
         )}
+        {checkRole(ProfileBase.users.view) && (
+          <MenuItem onClick={() => navigate("/users")}>Usuarios</MenuItem>
+        )}
 
         <MenuDivider />
         <MenuItem>
