@@ -60,12 +60,12 @@ const ProfileBase = {
     viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
   },
   clients: {
-    create: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    create: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     edit: [ROLES.ADMIN],
-    deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     delete: [ROLES.ADMIN],
-    view: [ROLES.ADMIN, ROLES.SUPERVISOR],
-    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
   },
   paymentMethods: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR],
