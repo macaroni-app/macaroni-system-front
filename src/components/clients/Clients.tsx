@@ -20,7 +20,7 @@ import { useClients } from "../../hooks/useClients"
 import { IClient } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const Clients = (): JSX.Element => {
   const queryClients = useClients({})
@@ -128,7 +128,7 @@ const Clients = (): JSX.Element => {
           noRecords={clientList?.length}
           title="clientes"
           buttonLabel="Nuevo cliente"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+          roles={ProfileBase.clients.create}
         />
       )}
 

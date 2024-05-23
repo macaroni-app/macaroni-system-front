@@ -34,10 +34,11 @@ import {
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { ROLES } from "../common/roles"
 import { useChangeIsActiveAsset } from "../../hooks/useChangeIsActiveAsset"
 
 import CustomModal from "../common/CustomModal"
+
+import ProfileBase from "../common/permissions"
 
 interface Props {
   asset: IAssetFullCategory
@@ -124,7 +125,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 5 : 4
+  const numberColumn = checkRole(ProfileBase.assets.viewActions) ? 5 : 4
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -195,7 +196,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                     )}
                   </Text>
                 )}
-                {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+                {checkRole(ProfileBase.assets.viewActions) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
@@ -218,68 +219,76 @@ const Asset = ({ asset }: Props): JSX.Element => {
                           <PopoverArrow />
                           <PopoverBody p={0}>
                             <VStack spacing={1} align="stretch">
-                              <Button
-                                onClick={() => handleDetails()}
-                                variant="blue"
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Ver detalles
-                              </Button>
-                              <Button
-                                onClick={() => handleEdit()}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setDeleteModal(false)
-                                  onOpen()
-                                }}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                {asset.isActive ? "Desactivar" : "Activar"}
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setDeleteModal(true)
-                                  onOpen()
-                                }}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Borrar
-                              </Button>
+                              {checkRole(ProfileBase.assets.view) && (
+                                <Button
+                                  onClick={() => handleDetails()}
+                                  variant="blue"
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Ver detalles
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.assets.edit) && (
+                                <Button
+                                  onClick={() => handleEdit()}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Editar
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.assets.deactivate) && (
+                                <Button
+                                  onClick={() => {
+                                    setDeleteModal(false)
+                                    onOpen()
+                                  }}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  {asset.isActive ? "Desactivar" : "Activar"}
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.assets.delete) && (
+                                <Button
+                                  onClick={() => {
+                                    setDeleteModal(true)
+                                    onOpen()
+                                  }}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Borrar
+                                </Button>
+                              )}
                             </VStack>
                           </PopoverBody>
                         </PopoverContent>

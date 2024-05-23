@@ -20,7 +20,7 @@ import { useInventories } from "../../hooks/useInventories"
 import { IInventoryFullRelated } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const Inventories = (): JSX.Element => {
   const queryInventories = useInventories({})
@@ -133,7 +133,7 @@ const Inventories = (): JSX.Element => {
           noRecords={inventoryList?.length}
           title="inventarios"
           buttonLabel="Nuevo inventario"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+          roles={ProfileBase.inventories.create}
         />
       )}
 

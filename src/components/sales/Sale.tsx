@@ -64,6 +64,9 @@ import {
 import { IProductItemFullRelated } from "../products/types"
 import { useEditSale } from "../../hooks/useEditSale"
 
+import { useCheckRole } from "../../hooks/useCheckRole"
+import ProfileBase from "../common/permissions"
+
 interface Props {
   sale: ISaleFullRelated
   inventories: IInventoryFullRelated[]
@@ -72,6 +75,8 @@ interface Props {
 
 const Sale = ({ sale, inventories, productItems }: Props) => {
   const navigate = useNavigate()
+
+  const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -328,42 +333,45 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                             currency: "USD",
                           }).format(0)}
                     </Text>
-                    <Popover placement="bottom-start">
-                      <PopoverTrigger>
-                        <IconButton
-                          alignSelf="end"
-                          variant={"link"}
-                          colorScheme="blackAlpha"
-                          size="md"
-                          icon={
-                            <>
-                              <AddIcon boxSize="3" />
-                              <ChevronDownIcon boxSize="4" />
-                            </>
-                          }
-                          aria-label={""}
-                        />
-                      </PopoverTrigger>
-                      <Portal>
-                        <PopoverContent width="3xs">
-                          <PopoverArrow />
-                          <PopoverBody p={0}>
-                            <VStack spacing={1} align="stretch">
-                              <Button
-                                onClick={() => handleDetails()}
-                                variant="blue"
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Ver detalles
-                              </Button>
-                              {/* <Button
+                    {checkRole(ProfileBase.sales.viewActions) && (
+                      <Popover placement="bottom-start">
+                        <PopoverTrigger>
+                          <IconButton
+                            alignSelf="end"
+                            variant={"link"}
+                            colorScheme="blackAlpha"
+                            size="md"
+                            icon={
+                              <>
+                                <AddIcon boxSize="3" />
+                                <ChevronDownIcon boxSize="4" />
+                              </>
+                            }
+                            aria-label={""}
+                          />
+                        </PopoverTrigger>
+                        <Portal>
+                          <PopoverContent width="3xs">
+                            <PopoverArrow />
+                            <PopoverBody p={0}>
+                              <VStack spacing={1} align="stretch">
+                                {checkRole(ProfileBase.sales.view) && (
+                                  <Button
+                                    onClick={() => handleDetails()}
+                                    variant="blue"
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Ver detalles
+                                  </Button>
+                                )}
+                                {/* <Button
                                 onClick={() => handleEdit()}
                                 variant={"blue"}
                                 colorScheme="blue"
@@ -377,25 +385,28 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                               >
                                 Editar
                               </Button> */}
-                              <Button
-                                onClick={onOpen}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Anular
-                              </Button>
-                            </VStack>
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Portal>
-                    </Popover>
+                                {checkRole(ProfileBase.sales.cancel) && (
+                                  <Button
+                                    onClick={onOpen}
+                                    variant={"blue"}
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Anular
+                                  </Button>
+                                )}
+                              </VStack>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Portal>
+                      </Popover>
+                    )}
                   </Flex>
                 </GridItem>
               </Grid>

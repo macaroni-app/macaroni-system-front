@@ -32,6 +32,9 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import CustomModal from "../common/CustomModal"
 
+import { useCheckRole } from "../../hooks/useCheckRole"
+import ProfileBase from "../common/permissions"
+
 interface Props {
   category: ICategory
 }
@@ -40,6 +43,8 @@ const Category = ({ category }: Props) => {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const { checkRole } = useCheckRole()
 
   const [deleteModal, setDeleteModal] = useState(false)
 
@@ -143,80 +148,88 @@ const Category = ({ category }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                <Popover placement="bottom-start">
-                  <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                      aria-label={""}
-                    />
-                  </PopoverTrigger>
-                  <Portal>
-                    <PopoverContent width="3xs">
-                      <PopoverArrow />
-                      <PopoverBody p={0}>
-                        <VStack spacing={1} align="stretch">
-                          <Button
-                            onClick={() => handleEdit()}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setDeleteModal(false)
-                              onOpen()
-                            }}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            {category.isActive ? "Desactivar" : "Activar"}
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setDeleteModal(true)
-                              onOpen()
-                            }}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Borrar
-                          </Button>
-                        </VStack>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Portal>
-                </Popover>
+                {checkRole(ProfileBase.categories.viewActions) && (
+                  <Popover placement="bottom-start">
+                    <PopoverTrigger>
+                      <IconButton
+                        alignSelf="end"
+                        variant={"link"}
+                        colorScheme="blackAlpha"
+                        size="md"
+                        icon={
+                          <>
+                            <AddIcon boxSize="3" />
+                            <ChevronDownIcon boxSize="4" />
+                          </>
+                        }
+                        aria-label={""}
+                      />
+                    </PopoverTrigger>
+                    <Portal>
+                      <PopoverContent width="3xs">
+                        <PopoverArrow />
+                        <PopoverBody p={0}>
+                          <VStack spacing={1} align="stretch">
+                            {checkRole(ProfileBase.categories.edit) && (
+                              <Button
+                                onClick={() => handleEdit()}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Editar
+                              </Button>
+                            )}
+                            {checkRole(ProfileBase.categories.deactivate) && (
+                              <Button
+                                onClick={() => {
+                                  setDeleteModal(false)
+                                  onOpen()
+                                }}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                {category.isActive ? "Desactivar" : "Activar"}
+                              </Button>
+                            )}
+                            {checkRole(ProfileBase.categories.delete) && (
+                              <Button
+                                onClick={() => {
+                                  setDeleteModal(true)
+                                  onOpen()
+                                }}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Borrar
+                              </Button>
+                            )}
+                          </VStack>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Portal>
+                  </Popover>
+                )}
               </Flex>
             </GridItem>
           </Grid>

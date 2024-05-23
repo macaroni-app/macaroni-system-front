@@ -31,12 +31,17 @@ import { IPaymentMethod } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import CustomModal from "../common/CustomModal"
 
+import { useCheckRole } from "../../hooks/useCheckRole"
+import ProfileBase from "../common/permissions"
+
 interface Props {
   paymentMethod: IPaymentMethod
 }
 
 const PaymentMethod = ({ paymentMethod }: Props) => {
   const navigate = useNavigate()
+
+  const { checkRole } = useCheckRole()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -142,80 +147,92 @@ const PaymentMethod = ({ paymentMethod }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                <Popover placement="bottom-start">
-                  <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                      aria-label={""}
-                    />
-                  </PopoverTrigger>
-                  <Portal>
-                    <PopoverContent width="3xs">
-                      <PopoverArrow />
-                      <PopoverBody p={0}>
-                        <VStack spacing={1} align="stretch">
-                          <Button
-                            onClick={() => handleEdit()}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setDeleteModal(false)
-                              onOpen()
-                            }}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            {paymentMethod.isActive ? "Desactivar" : "Activar"}
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setDeleteModal(true)
-                              onOpen()
-                            }}
-                            variant={"blue"}
-                            colorScheme="blue"
-                            justifyContent={"start"}
-                            size="md"
-                            _hover={{
-                              textDecoration: "none",
-                              color: "purple",
-                              bg: "purple.100",
-                            }}
-                          >
-                            Borrar
-                          </Button>
-                        </VStack>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Portal>
-                </Popover>
+                {checkRole(ProfileBase.paymentMethods.viewActions) && (
+                  <Popover placement="bottom-start">
+                    <PopoverTrigger>
+                      <IconButton
+                        alignSelf="end"
+                        variant={"link"}
+                        colorScheme="blackAlpha"
+                        size="md"
+                        icon={
+                          <>
+                            <AddIcon boxSize="3" />
+                            <ChevronDownIcon boxSize="4" />
+                          </>
+                        }
+                        aria-label={""}
+                      />
+                    </PopoverTrigger>
+                    <Portal>
+                      <PopoverContent width="3xs">
+                        <PopoverArrow />
+                        <PopoverBody p={0}>
+                          <VStack spacing={1} align="stretch">
+                            {checkRole(ProfileBase.paymentMethods.edit) && (
+                              <Button
+                                onClick={() => handleEdit()}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Editar
+                              </Button>
+                            )}
+                            {checkRole(
+                              ProfileBase.paymentMethods.deactivate
+                            ) && (
+                              <Button
+                                onClick={() => {
+                                  setDeleteModal(false)
+                                  onOpen()
+                                }}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                {paymentMethod.isActive
+                                  ? "Desactivar"
+                                  : "Activar"}
+                              </Button>
+                            )}
+                            {checkRole(ProfileBase.paymentMethods.delete) && (
+                              <Button
+                                onClick={() => {
+                                  setDeleteModal(true)
+                                  onOpen()
+                                }}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Borrar
+                              </Button>
+                            )}
+                          </VStack>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Portal>
+                  </Popover>
+                )}
               </Flex>
             </GridItem>
           </Grid>

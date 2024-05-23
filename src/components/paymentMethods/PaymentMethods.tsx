@@ -20,7 +20,7 @@ import { usePaymentMethods } from "../../hooks/usePaymentMethods"
 import { IPaymentMethod } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const PaymentMethods = (): JSX.Element => {
   const queryPaymentMethods = usePaymentMethods({})
@@ -136,7 +136,7 @@ const PaymentMethods = (): JSX.Element => {
           noRecords={paymentMethodList?.length}
           title="métodos de pagos"
           buttonLabel="Nuevo método"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+          roles={ProfileBase.paymentMethods.create}
         />
       )}
 

@@ -20,7 +20,7 @@ import { useProductTypes } from "../../hooks/useProductTypes"
 import { IProductTypeType } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const ProductTypes = (): JSX.Element => {
   const queryProductTypes = useProductTypes({})
@@ -133,7 +133,7 @@ const ProductTypes = (): JSX.Element => {
           noRecords={productTypeList?.length}
           title="tipos de productos"
           buttonLabel="Nuevo tipo"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+          roles={ProfileBase.productTypes.create}
         />
       )}
 

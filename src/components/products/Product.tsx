@@ -44,9 +44,9 @@ import {
 import { PRODUCT_DELETED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { ROLES } from "../common/roles"
 import { useCheckRole } from "../../hooks/useCheckRole"
 import { useChangeIsActiveProduct } from "../../hooks/useChangeIsActiveProduct"
+import ProfileBase from "../common/permissions"
 
 interface Props {
   product: IProductFullRelated
@@ -284,73 +284,75 @@ const Product = ({ product }: Props) => {
                           <PopoverArrow />
                           <PopoverBody p={0}>
                             <VStack spacing={1} align="stretch">
-                              <Button
-                                onClick={() => handleDetails()}
-                                variant="blue"
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Ver detalles
-                              </Button>
-                              {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
-                                <>
-                                  <Button
-                                    onClick={() => handleEdit()}
-                                    variant={"blue"}
-                                    colorScheme="blue"
-                                    justifyContent={"start"}
-                                    size="md"
-                                    _hover={{
-                                      textDecoration: "none",
-                                      color: "purple",
-                                      bg: "purple.100",
-                                    }}
-                                  >
-                                    Editar
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      setDeleteModal(false)
-                                      onOpen()
-                                    }}
-                                    variant={"blue"}
-                                    colorScheme="blue"
-                                    justifyContent={"start"}
-                                    size="md"
-                                    _hover={{
-                                      textDecoration: "none",
-                                      color: "purple",
-                                      bg: "purple.100",
-                                    }}
-                                  >
-                                    {product.isActive
-                                      ? "Desactivar"
-                                      : "Activar"}
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      setDeleteModal(true)
-                                      onOpen()
-                                    }}
-                                    variant={"blue"}
-                                    colorScheme="blue"
-                                    justifyContent={"start"}
-                                    size="md"
-                                    _hover={{
-                                      textDecoration: "none",
-                                      color: "purple",
-                                      bg: "purple.100",
-                                    }}
-                                  >
-                                    Borrar
-                                  </Button>
-                                </>
+                              {checkRole(ProfileBase.products.view) && (
+                                <Button
+                                  onClick={() => handleDetails()}
+                                  variant="blue"
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Ver detalles
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.products.edit) && (
+                                <Button
+                                  onClick={() => handleEdit()}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Editar
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.products.deactivate) && (
+                                <Button
+                                  onClick={() => {
+                                    setDeleteModal(false)
+                                    onOpen()
+                                  }}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  {product.isActive ? "Desactivar" : "Activar"}
+                                </Button>
+                              )}
+                              {checkRole(ProfileBase.products.delete) && (
+                                <Button
+                                  onClick={() => {
+                                    setDeleteModal(true)
+                                    onOpen()
+                                  }}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Borrar
+                                </Button>
                               )}
                             </VStack>
                           </PopoverBody>

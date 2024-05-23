@@ -31,7 +31,7 @@ import Asset from "./Asset"
 import WithoutResults from "../common/WithoutResults"
 import NewRecordPanel from "../common/NewRecordPanel"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const Assets = (): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>("")
@@ -70,7 +70,7 @@ const Assets = (): JSX.Element => {
       }
     })
 
-  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 5 : 4
+  const numberColumn = checkRole(ProfileBase.assets.viewActions) ? 5 : 4
 
   return (
     <>
@@ -96,7 +96,7 @@ const Assets = (): JSX.Element => {
             noRecords={assetList?.length}
             title="insumos"
             buttonLabel="Nuevo insumo"
-            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+            roles={ProfileBase.assets.create}
           />
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
@@ -214,7 +214,7 @@ const Assets = (): JSX.Element => {
                         <Text fontWeight="bold">Precio de costo</Text>
                       </Flex>
                     </GridItem>
-                    {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+                    {checkRole(ProfileBase.assets.viewActions) && (
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"end"}>
                           <Text fontWeight="bold">Acciones</Text>

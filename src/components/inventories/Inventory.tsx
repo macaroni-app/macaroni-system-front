@@ -37,8 +37,8 @@ import { IInventoryFullRelated } from "./types"
 
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { ROLES } from "../common/roles"
 import { useCheckRole } from "../../hooks/useCheckRole"
+import ProfileBase from "../common/permissions"
 
 interface Props {
   inventory: IInventoryFullRelated
@@ -112,30 +112,29 @@ const Inventory = ({ inventory }: Props) => {
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {checkRole([ROLES.ADMIN]) && (
-                  <>
-                    <Popover placement="bottom-start">
-                      <PopoverTrigger>
-                        <IconButton
-                          alignSelf="end"
-                          variant={"link"}
-                          colorScheme="blackAlpha"
-                          aria-label="some"
-                          size="md"
-                          icon={
-                            <>
-                              <AddIcon boxSize="3" />
-                              <ChevronDownIcon boxSize="4" />
-                            </>
-                          }
-                        />
-                      </PopoverTrigger>
-                      <Portal>
-                        <PopoverContent width="3xs">
-                          <PopoverArrow />
-                          <PopoverBody p={0}>
-                            <VStack spacing={1} align="stretch">
-                              {/* <Button
+                {checkRole(ProfileBase.inventories.viewActions) && (
+                  <Popover placement="bottom-start">
+                    <PopoverTrigger>
+                      <IconButton
+                        alignSelf="end"
+                        variant={"link"}
+                        colorScheme="blackAlpha"
+                        aria-label="some"
+                        size="md"
+                        icon={
+                          <>
+                            <AddIcon boxSize="3" />
+                            <ChevronDownIcon boxSize="4" />
+                          </>
+                        }
+                      />
+                    </PopoverTrigger>
+                    <Portal>
+                      <PopoverContent width="3xs">
+                        <PopoverArrow />
+                        <PopoverBody p={0}>
+                          <VStack spacing={1} align="stretch">
+                            {/* <Button
                             onClick={() => handleEdit()}
                             variant={"blue"}
                             colorScheme="blue"
@@ -149,7 +148,7 @@ const Inventory = ({ inventory }: Props) => {
                           >
                             Editar
                           </Button> */}
-
+                            {checkRole(ProfileBase.inventories.delete) && (
                               <Button
                                 onClick={onOpen}
                                 variant={"blue"}
@@ -164,12 +163,12 @@ const Inventory = ({ inventory }: Props) => {
                               >
                                 Borrar
                               </Button>
-                            </VStack>
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Portal>
-                    </Popover>
-                  </>
+                            )}
+                          </VStack>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Portal>
+                  </Popover>
                 )}
               </Flex>
             </GridItem>

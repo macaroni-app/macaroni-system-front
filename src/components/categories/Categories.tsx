@@ -20,7 +20,7 @@ import { useCategories } from "../../hooks/useCategories"
 import { ICategory } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const Categories = (): JSX.Element => {
   const queryCategories = useCategories({})
@@ -133,7 +133,7 @@ const Categories = (): JSX.Element => {
           noRecords={categoryList?.length}
           title="categorias"
           buttonLabel="Nueva categoria"
-          roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+          roles={ProfileBase.categories.create}
         />
       )}
 

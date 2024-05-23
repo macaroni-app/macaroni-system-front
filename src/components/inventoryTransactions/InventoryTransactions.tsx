@@ -22,8 +22,9 @@ import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
 import { IInventoryTransactionFullRelated } from "./types"
 // import { useError } from "../../hooks/useError"
 
-import { ROLES } from "../common/roles"
 import { useCheckRole } from "../../hooks/useCheckRole"
+
+import ProfileBase from "../common/permissions"
 
 const InventoryTransactions = (): JSX.Element => {
   const queryInventoryTransactions = useInventoryTransactions({})
@@ -61,7 +62,9 @@ const InventoryTransactions = (): JSX.Element => {
     }
   )
 
-  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 6 : 5
+  const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
+    ? 6
+    : 5
 
   if (queryInventoryTransactions?.isLoading) {
     return (
@@ -147,7 +150,7 @@ const InventoryTransactions = (): JSX.Element => {
             noRecords={inventoryTransactionList?.length}
             title="transacciones"
             buttonLabel="Nueva transacción"
-            roles={[ROLES.ADMIN, ROLES.SUPERVISOR]}
+            roles={ProfileBase.inventoryTransactions.create}
           />
         )}
 
@@ -193,7 +196,9 @@ const InventoryTransactions = (): JSX.Element => {
                         <Text fontWeight="bold">Fecha de creación</Text>
                       </Flex>
                     </GridItem>
-                    {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+                    {checkRole(
+                      ProfileBase.inventoryTransactions.viewActions
+                    ) && (
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"end"}>
                           <Text fontWeight="bold">Acciones</Text>

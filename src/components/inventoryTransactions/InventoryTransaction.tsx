@@ -46,7 +46,7 @@ import { IInventoryTransactionFullRelated } from "./types"
 
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 interface Props {
   inventoryTransaction: IInventoryTransactionFullRelated
@@ -124,7 +124,9 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
       : "Otro"
   }
 
-  const numberColumn = checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) ? 6 : 5
+  const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
+    ? 6
+    : 5
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -227,7 +229,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                     <TriangleDownIcon boxSize={3} ms={2} mb={1} />
                   )}
                 </Badge>
-                {checkRole([ROLES.ADMIN, ROLES.SUPERVISOR]) && (
+                {checkRole(ProfileBase.inventoryTransactions.viewActions) && (
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
@@ -264,20 +266,24 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                           >
                             Editar
                           </Button> */}
-                              <Button
-                                onClick={onOpen}
-                                variant={"blue"}
-                                colorScheme="blue"
-                                justifyContent={"start"}
-                                size="md"
-                                _hover={{
-                                  textDecoration: "none",
-                                  color: "purple",
-                                  bg: "purple.100",
-                                }}
-                              >
-                                Borrar
-                              </Button>
+                              {checkRole(
+                                ProfileBase.inventoryTransactions.delete
+                              ) && (
+                                <Button
+                                  onClick={onOpen}
+                                  variant={"blue"}
+                                  colorScheme="blue"
+                                  justifyContent={"start"}
+                                  size="md"
+                                  _hover={{
+                                    textDecoration: "none",
+                                    color: "purple",
+                                    bg: "purple.100",
+                                  }}
+                                >
+                                  Borrar
+                                </Button>
+                              )}
                             </VStack>
                           </PopoverBody>
                         </PopoverContent>
