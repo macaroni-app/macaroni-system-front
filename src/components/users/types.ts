@@ -7,3 +7,9 @@ export interface IUser extends IGenericObject{
   roles?: number[]
   email?: string
 }
+
+export interface IRole {
+  _id?: string
+  name?: string
+  code?: number
+}
