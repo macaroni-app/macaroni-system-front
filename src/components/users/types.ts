@@ -4,7 +4,6 @@ export interface IUser extends IGenericObject{
   firstName?: string
   lastName?: string
   password?: string
-  roles?: string[]
+  roles?: number[]
   email?: string
-  refreshToken?: string
 }

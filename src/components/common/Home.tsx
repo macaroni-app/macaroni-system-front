@@ -41,6 +41,7 @@ import PaymentMethods from "../paymentMethods/PaymentMethods"
 import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
 import ProtectedRoute from "../auth/ProtectedRoute"
 import Users from "../users/Users"
+import UserForm from "../users/UserForm"
 import Unauthorized from "./Unauthorized"
 
 import ProfileBase from "./permissions"
@@ -425,6 +426,11 @@ const Home = () => {
               </Grid>
             }
           />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.users.create} />}
+        >
+          <Route path="/users/add" element={<UserForm />} />
         </Route>
 
         {/* UNAUTHORIZED */}

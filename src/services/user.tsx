@@ -30,7 +30,7 @@ const userService = {
     return data
   },
   store: async (newUser: IUser, axiosPrivate: AxiosInstance) => {
-    const { data } = await axiosPrivate.post(USER_URL, newUser, {
+    const { data } = await axiosPrivate.post(`${USER_URL}/register`, newUser, {
       withCredentials: true,
     })
     return data

@@ -35,6 +35,8 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { useCheckRole } from "../../hooks/useCheckRole"
 
 import ProfileBase from "../common/permissions"
+import { useChangeIsActiveUser } from "../../hooks/useChangeIsActiveUser"
+import { useDeleteUser } from "../../hooks/useDeleteUser"
 
 interface Props {
   user: IUser
@@ -48,9 +50,9 @@ const User = ({ user }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
 
-  // const { deleteClient } = useDeleteClient()
+  const { deleteUser } = useDeleteUser()
   const { showMessage } = useMessage()
-  // const { changeIsActiveClient } = useChangeIsActiveClient()
+  const { changeIsActiveUser } = useChangeIsActiveUser()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -68,27 +70,27 @@ const User = ({ user }: Props) => {
 
     let response = undefined
 
-    // if (user !== undefined && user._id !== undefined) {
-    //   response = await changeIsActiveClient({
-    //     userId: user._id,
-    //     isActive,
-    //   })
-    // }
+    if (user !== undefined && user._id !== undefined) {
+      response = await changeIsActiveUser({
+        userId: user._id,
+        isActive,
+      })
+    }
 
-    // if (response?.isUpdated) {
-    //   showMessage(
-    //     isActive ? "Usuario activado." : "Usuario desactivado.",
-    //     AlertStatus.Success,
-    //     AlertColorScheme.Purple
-    //   )
-    //   setIsLoading(false)
-    //   onClose()
-    // }
+    if (response?.isUpdated) {
+      showMessage(
+        isActive ? "Usuario activado." : "Usuario desactivado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+      onClose()
+    }
 
-    // if (!response?.isUpdated) {
-    //   showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
-    //   setIsLoading(false)
-    // }
+    if (!response?.isUpdated) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
 
     setDeleteModal(false)
     navigate("/users")
@@ -104,23 +106,23 @@ const User = ({ user }: Props) => {
 
     let response = undefined
 
-    // if (user !== undefined && user._id !== undefined) {
-    //   response = await deleteClient(user._id)
-    // }
+    if (user !== undefined && user._id !== undefined) {
+      response = await deleteUser(user._id)
+    }
 
-    // if (response?.isDeleted) {
-    //   showMessage(
-    //     "Usuario eliminado.",
-    //     AlertStatus.Success,
-    //     AlertColorScheme.Purple
-    //   )
-    //   setIsLoading(false)
-    // }
+    if (response?.isDeleted) {
+      showMessage(
+        "Usuario eliminado.",
+        AlertStatus.Success,
+        AlertColorScheme.Purple
+      )
+      setIsLoading(false)
+    }
 
-    // if (!response?.isDeleted) {
-    //   showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
-    //   setIsLoading(false)
-    // }
+    if (!response?.isDeleted) {
+      showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
+      setIsLoading(false)
+    }
     setDeleteModal(false)
     navigate("/users")
   }
