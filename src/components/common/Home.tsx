@@ -432,6 +432,11 @@ const Home = () => {
         >
           <Route path="/users/add" element={<UserForm />} />
         </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.users.edit} />}
+        >
+          <Route path="/users/:userId/edit" element={<UserForm />} />
+        </Route>
 
         {/* UNAUTHORIZED */}
         <Route path="/unauthorized" element={<Unauthorized />} />

@@ -1,6 +1,6 @@
 export interface IAuth {
   accessToken?: string
-  roles?: number[]
+  role?: number
   firstName?: string,
   lastName?: string
 }

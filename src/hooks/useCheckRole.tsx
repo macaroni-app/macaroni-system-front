@@ -6,9 +6,7 @@ export const useCheckRole = () => {
   const { auth } = useAuthContext() as IUserContext
 
   const checkRole = (allowedRoles: number[]) => {
-    return auth.roles
-      ?.map((role) => allowedRoles?.includes(role))
-      .find((val) => val)
+    return allowedRoles?.includes(Number(auth.role))
   }
 
   return { checkRole }

@@ -33,13 +33,15 @@ const UserAddEditForm = (props: Props) => {
   const { onSubmit, onCancelOperation, userToUpdate, isEditing, isLoading } =
     props
 
+  console.log(userToUpdate)
+
   const { register, formState, handleSubmit, control } = useForm<IUser>({
     resolver: zodResolver(userSchema),
     values: {
       firstName: userToUpdate?.firstName,
       lastName: userToUpdate?.lastName,
       email: userToUpdate?.email,
-      // roles: userToUpdate?.roles,
+      roles: userToUpdate?.roles,
       password: userToUpdate?.password,
     },
   })

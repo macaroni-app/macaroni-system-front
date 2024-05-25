@@ -13,7 +13,7 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
   const { auth } = useAuthContext() as IUserContext
   const location = useLocation()
 
-  return auth?.roles?.find((role) => allowedRoles?.includes(role)) ? (
+  return allowedRoles?.includes(Number(auth.role)) ? (
     <Outlet />
   ) : auth?.accessToken ? (
     <Navigate to="/unauthorized" state={{ from: location }} replace />

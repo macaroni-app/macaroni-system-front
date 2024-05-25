@@ -12,7 +12,7 @@ interface UserPayload {
   iat: number
   id: string
   lastName: string
-  roles: number[]
+  role: number
 }
 
 const useRefreshToken = () => {
@@ -30,11 +30,11 @@ const useRefreshToken = () => {
 
     const decoded = jwtDecode(accessToken) as UserPayload
 
-    const roles = decoded?.roles as number[]
+    const role = decoded?.role
 
     setAuth({
       accessToken,
-      roles,
+      role,
       firstName: decoded.firstName,
       lastName: decoded.lastName,
     })

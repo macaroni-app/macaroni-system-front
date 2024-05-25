@@ -6,16 +6,16 @@ import { useNavigate, useParams } from "react-router-dom"
 import UserAddEditForm from "./UserAddEditForm"
 
 // custom hooks
-// import { useClients } from "../../hooks/useClients"
-// import { useNewClient } from "../../hooks/useNewClient"
 import { useMessage } from "../../hooks/useMessage"
+import { useNewUser } from "../../hooks/useNewUser"
+import { useEditUser } from "../../hooks/useEditUser"
 import { Error, useError } from "../../hooks/useError"
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+
 import { IUser } from "./types"
-import { useNewUser } from "../../hooks/useNewUser"
-// import { useEditClient } from "../../hooks/useEditClient"
+import { useUsers } from "../../hooks/useUsers"
 
 const UserForm = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,12 +28,11 @@ const UserForm = () => {
 
   const { userId } = useParams()
 
-  // const queryClients = useClients({ id: clientId })
-  // const clientToUpdate = queryClients?.data ? { ...queryClients?.data[0] } : {}
+  const queryUsers = useUsers({ id: userId })
+  const userToUpdate = queryUsers.data ? { ...queryUsers?.data[0] } : {}
 
-  // const { addNewClient } = useNewClient()
   const { addNewUser } = useNewUser()
-  // const { editClient } = useEditClient()
+  const { editUser } = useEditUser()
 
   const onSubmit = async (user: IUser) => {
     setIsLoading(true)
@@ -53,6 +52,7 @@ const UserForm = () => {
           )
         }
       } else {
+        console.log(user)
         // response = await editClient({
         //   clientId,
         //   clientToUpdate: { name },
@@ -83,8 +83,7 @@ const UserForm = () => {
     <UserAddEditForm
       onSubmit={onSubmit}
       onCancelOperation={onCancelOperation}
-      // userToUpdate={userId ? userToUpdate : {}}
-      userToUpdate={{}}
+      userToUpdate={userId ? userToUpdate : {}}
       isEditing={userId ? true : false}
       isLoading={isLoading}
     />
