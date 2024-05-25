@@ -18,7 +18,7 @@ const ProfileBase = {
     deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR],
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
-    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
   },
   assets: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR],
