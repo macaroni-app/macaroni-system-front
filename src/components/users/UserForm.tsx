@@ -38,7 +38,7 @@ const UserForm = () => {
     setIsLoading(true)
 
     const anUser = { ...user }
-    anUser.roles = [Number(user.roles)]
+    anUser.role = Number(user.role)
 
     try {
       let response

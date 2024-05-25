@@ -29,7 +29,7 @@ import { useState } from "react"
 // import { useChangeIsActiveClient } from "../../hooks/useChangeIsActiveClient"
 import { useMessage } from "../../hooks/useMessage"
 
-import { IRole, IUser } from "./types"
+import { IUser } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useCheckRole } from "../../hooks/useCheckRole"
@@ -127,8 +127,6 @@ const User = ({ user }: Props) => {
     navigate("/users")
   }
 
-  const userRole = user.roles?.find((rol) => rol) as IRole
-
   return (
     <GridItem colSpan={5} mb={3}>
       <Card variant="outline">
@@ -149,7 +147,7 @@ const User = ({ user }: Props) => {
                 <Text fontSize="xs" align="start">
                   Rol:{" "}
                   <Text fontWeight={"bold"} as={"span"}>
-                    {userRole?.name}
+                    {user?.role?.name}
                   </Text>
                 </Text>
               </Flex>
@@ -251,7 +249,7 @@ const User = ({ user }: Props) => {
         isLoading={isLoading}
         isOpen={isOpen}
         model={user}
-        modelName="Cliente"
+        modelName="Usuario"
         onClose={onClose}
         key={user._id}
       />
