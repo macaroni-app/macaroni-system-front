@@ -20,18 +20,26 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { IUser } from "./types"
 import { userSchema } from "./userSchema"
+import { IRoleType } from "../roles/types"
 
 interface Props {
   onSubmit: SubmitHandler<IUser>
   onCancelOperation: () => void
   userToUpdate?: IUser
+  roles?: IRoleType[]
   isEditing: boolean
   isLoading: boolean
 }
 
 const UserAddEditForm = (props: Props) => {
-  const { onSubmit, onCancelOperation, userToUpdate, isEditing, isLoading } =
-    props
+  const {
+    onSubmit,
+    onCancelOperation,
+    userToUpdate,
+    isEditing,
+    isLoading,
+    roles,
+  } = props
 
   const { register, formState, handleSubmit, control } = useForm<IUser>({
     resolver: zodResolver(userSchema),
@@ -39,7 +47,7 @@ const UserAddEditForm = (props: Props) => {
       firstName: userToUpdate?.firstName,
       lastName: userToUpdate?.lastName,
       email: userToUpdate?.email,
-      role: userToUpdate?.role?.code,
+      role: userToUpdate?.role?._id,
       password: userToUpdate?.password,
     },
   })
@@ -112,11 +120,7 @@ const UserAddEditForm = (props: Props) => {
                       placeholder={"Buscar rol ..."}
                       label={"Rol"}
                       control={control}
-                      data={[
-                        { _id: "2001", name: "Seller" },
-                        { _id: "5150", name: "Admin" },
-                        { _id: "7085", name: "Supervisor" },
-                      ]}
+                      data={roles}
                       isRequired={true}
                       noOptionsMessage="No hay datos"
                     />

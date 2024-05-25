@@ -58,7 +58,7 @@ const MySelect = (props: Props) => {
             ref={ref}
             placeholder={placeholder}
             defaultValue={value}
-            value={options?.filter((option: Option) => option.value == value)}
+            value={options?.filter((option: Option) => option.value === value)}
             name={name}
             isClearable={true}
             required={isRequired}

@@ -16,6 +16,7 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { IUser } from "./types"
 import { useUsers } from "../../hooks/useUsers"
+import { useRoles } from "../../hooks/useRoles"
 
 const UserForm = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -31,19 +32,19 @@ const UserForm = () => {
   const queryUsers = useUsers({ id: userId })
   const userToUpdate = queryUsers.data ? { ...queryUsers?.data[0] } : {}
 
+  const queryRoles = useRoles({})
+  const roles = queryRoles.data
+
   const { addNewUser } = useNewUser()
   const { editUser } = useEditUser()
 
   const onSubmit = async (user: IUser) => {
     setIsLoading(true)
 
-    const anUser = { ...user }
-    anUser.role = Number(user.role)
-
     try {
       let response
       if (!userId) {
-        response = await addNewUser(anUser)
+        response = await addNewUser(user)
         if (response.isStored) {
           showMessage(
             RECORD_CREATED,
@@ -52,18 +53,18 @@ const UserForm = () => {
           )
         }
       } else {
-        console.log(user)
-        // response = await editClient({
-        //   clientId,
-        //   clientToUpdate: { name },
-        // })
-        // if (response.isUpdated) {
-        //   showMessage(
-        //     RECORD_UPDATED,
-        //     AlertStatus.Success,
-        //     AlertColorScheme.Purple
-        //   )
-        // }
+        response = await editUser({
+          userId,
+          userToUpdate: { ...user },
+        })
+
+        if (response.isUpdated) {
+          showMessage(
+            RECORD_UPDATED,
+            AlertStatus.Success,
+            AlertColorScheme.Purple
+          )
+        }
       }
       if (response.status === 200 || response.status === 201) {
         navigate("/users")
@@ -84,6 +85,7 @@ const UserForm = () => {
       onSubmit={onSubmit}
       onCancelOperation={onCancelOperation}
       userToUpdate={userId ? userToUpdate : {}}
+      roles={roles}
       isEditing={userId ? true : false}
       isLoading={isLoading}
     />
