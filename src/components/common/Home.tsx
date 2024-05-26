@@ -43,6 +43,7 @@ import ProtectedRoute from "../auth/ProtectedRoute"
 import Users from "../users/Users"
 import UserForm from "../users/UserForm"
 import UserDetails from "../users/UserDetails"
+import UserNewPasswordForm from "../users/UserNewPassword"
 import Unauthorized from "./Unauthorized"
 
 import ProfileBase from "./permissions"
@@ -444,6 +445,16 @@ const Home = () => {
           }
         >
           <Route path="/users/:userId/details" element={<UserDetails />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.users.editOwnInfo} />
+          }
+        >
+          <Route
+            path="/users/:userId/new-password"
+            element={<UserNewPasswordForm />}
+          />
         </Route>
 
         {/* UNAUTHORIZED */}

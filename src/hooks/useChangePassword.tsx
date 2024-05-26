@@ -11,14 +11,14 @@ interface Props {
   userToUpdate: IUserLessRelated
 }
 
-export const useEditUser = () => {
+export const useChangePassword = () => {
   const queryClient = useQueryClient()
 
   const axiosPrivate = useAxiosPrivate()
 
-  const { mutateAsync: editUser } = useMutation({
+  const { mutateAsync: changePassword } = useMutation({
     mutationFn: ({ userId, userToUpdate }: Props) =>
-      userService.update(userId, userToUpdate, axiosPrivate),
+      userService.changePassword(userId, userToUpdate, axiosPrivate),
     onMutate: async (userToUpdate) => {
       queryClient.cancelQueries({ queryKey: ["users"] })
 
@@ -43,5 +43,5 @@ export const useEditUser = () => {
     },
   })
 
-  return { editUser }
+  return { changePassword }
 }

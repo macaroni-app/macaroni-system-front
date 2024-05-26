@@ -78,6 +78,7 @@ const ProfileBase = {
   users: {
     create: [ROLES.ADMIN],
     edit: [ROLES.ADMIN],
+    editOwnInfo: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     deactivate: [ROLES.ADMIN],
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN],

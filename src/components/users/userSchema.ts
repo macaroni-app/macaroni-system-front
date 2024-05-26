@@ -15,3 +15,7 @@ export const userSchema = z.object({
   createdBy: z.string().min(24).max(24).optional(),
   updatedBy: z.string().min(24).max(24).optional()
 })
+
+export const userResetPasswordSchema = z.object({
+  password: z.string().min(1, "Complete el campo"),
+})

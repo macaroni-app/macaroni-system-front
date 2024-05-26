@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios"
 
-import { IUser } from "../components/users/types"
+import { IUserLessRelated } from "../components/users/types"
 
 const USER_URL = "/api/v1/users"
 
@@ -29,7 +29,7 @@ const userService = {
     })
     return data
   },
-  store: async (newUser: IUser, axiosPrivate: AxiosInstance) => {
+  store: async (newUser: IUserLessRelated, axiosPrivate: AxiosInstance) => {
     const { data } = await axiosPrivate.post(`${USER_URL}/register`, newUser, {
       withCredentials: true,
     })
@@ -43,12 +43,26 @@ const userService = {
   },
   update: async (
     id: string,
-    userToUpdate: IUser,
+    userToUpdate: IUserLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
     const { data } = await axiosPrivate.put(`${USER_URL}/${id}`, userToUpdate, {
       withCredentials: true,
     })
+    return data
+  },
+  changePassword: async (
+    id: string,
+    userToUpdate: IUserLessRelated,
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${USER_URL}/change-password/${id}`,
+      userToUpdate,
+      {
+        withCredentials: true,
+      }
+    )
     return data
   },
   changeIsActive: async (

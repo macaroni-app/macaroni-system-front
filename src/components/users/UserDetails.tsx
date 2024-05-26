@@ -19,7 +19,7 @@ import { useNavigate, useParams } from "react-router-dom"
 // types
 import { IUserFullRelated } from "./types"
 
-import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { ChevronLeftIcon, EditIcon } from "@chakra-ui/icons"
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
@@ -51,6 +51,10 @@ const UserDetails = () => {
     }
   }
 
+  const handleEditPassword = () => {
+    navigate(`/users/${userId}/new-password`)
+  }
+
   return (
     <>
       <Grid templateColumns="repeat(12, 1fr)" gap={1}>
@@ -71,6 +75,14 @@ const UserDetails = () => {
                   Volver
                 </Button>
                 <Spacer />
+                <Button
+                  onClick={() => handleEditPassword()}
+                  colorScheme="purple"
+                  variant="solid"
+                >
+                  <EditIcon boxSize={3} me={2} />
+                  Nueva contraseña
+                </Button>
               </Flex>
             </CardBody>
           </Card>

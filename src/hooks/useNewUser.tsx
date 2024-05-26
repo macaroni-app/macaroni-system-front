@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IUser } from "../components/users/types"
+import { IUserLessRelated } from "../components/users/types"
 
 import userService from "../services/user"
 
@@ -12,13 +12,16 @@ export const useNewUser = () => {
   const axiosPrivate = useAxiosPrivate()
 
   const { mutateAsync: addNewUser } = useMutation({
-    mutationFn: (newUser: IUser) => userService.store(newUser, axiosPrivate),
+    mutationFn: (newUser: IUserLessRelated) =>
+      userService.store(newUser, axiosPrivate),
     onMutate: async (newUser) => {
       queryClient.cancelQueries({ queryKey: ["users"] })
 
-      const previousUsers = queryClient.getQueryData<IUser>(["users"])
+      const previousUsers = queryClient.getQueryData<IUserLessRelated>([
+        "users",
+      ])
 
-      queryClient.setQueryData(["users"], (oldData: IUser[]) => {
+      queryClient.setQueryData(["users"], (oldData: IUserLessRelated[]) => {
         if (oldData == null) return [newUser]
         return [newUser, ...oldData]
       })
