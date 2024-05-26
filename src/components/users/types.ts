@@ -1,9 +1,18 @@
 import { IGenericObject } from "../common/types"
+import { IRoleType } from "../roles/types"
 
-export interface IUser extends IGenericObject{
+export interface IUserFather extends IGenericObject{
+  _id?: string
   firstName?: string
   lastName?: string
   password?: string
-  role?: string
   email?: string
+}
+
+export interface IUserFullRelated extends IUserFather {
+  role?: IRoleType
+}
+
+export interface IUserLessRelated extends IUserFather {
+  role?: string
 }

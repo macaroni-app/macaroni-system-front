@@ -18,14 +18,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 // custom hook
 import { SubmitHandler, useForm } from "react-hook-form"
-import { IUser } from "./types"
+import { IUserLessRelated, IUserFullRelated } from "./types"
 import { userSchema } from "./userSchema"
 import { IRoleType } from "../roles/types"
 
 interface Props {
-  onSubmit: SubmitHandler<IUser>
+  onSubmit: SubmitHandler<IUserLessRelated>
   onCancelOperation: () => void
-  userToUpdate?: IUser
+  userToUpdate?: IUserFullRelated
   roles?: IRoleType[]
   isEditing: boolean
   isLoading: boolean
@@ -41,16 +41,17 @@ const UserAddEditForm = (props: Props) => {
     roles,
   } = props
 
-  const { register, formState, handleSubmit, control } = useForm<IUser>({
-    resolver: zodResolver(userSchema),
-    values: {
-      firstName: userToUpdate?.firstName,
-      lastName: userToUpdate?.lastName,
-      email: userToUpdate?.email,
-      role: userToUpdate?.role?._id,
-      password: userToUpdate?.password,
-    },
-  })
+  const { register, formState, handleSubmit, control } =
+    useForm<IUserLessRelated>({
+      resolver: zodResolver(userSchema),
+      values: {
+        firstName: userToUpdate?.firstName,
+        lastName: userToUpdate?.lastName,
+        // email: userToUpdate?.email,
+        role: userToUpdate?.role?._id,
+        // password: "",
+      },
+    })
 
   return (
     <>
@@ -88,30 +89,34 @@ const UserAddEditForm = (props: Props) => {
                       />
                     </GridItem>
                   </Grid>
-                  <Grid mb={4}>
-                    <GridItem>
-                      <MyInput
-                        register={register}
-                        formState={formState}
-                        field={"email"}
-                        type={"email"}
-                        placeholder={"Email"}
-                        label={"Email"}
-                      />
-                    </GridItem>
-                  </Grid>
-                  <Grid mb={4}>
-                    <GridItem>
-                      <MyInput
-                        register={register}
-                        formState={formState}
-                        field={"password"}
-                        type={"password"}
-                        placeholder={"Contraseña"}
-                        label={"Contraseña"}
-                      />
-                    </GridItem>
-                  </Grid>
+                  {!isEditing && (
+                    <>
+                      <Grid mb={4}>
+                        <GridItem>
+                          <MyInput
+                            register={register}
+                            formState={formState}
+                            field={"email"}
+                            type={"email"}
+                            placeholder={"Email"}
+                            label={"Email"}
+                          />
+                        </GridItem>
+                      </Grid>
+                      <Grid mb={4}>
+                        <GridItem>
+                          <MyInput
+                            register={register}
+                            formState={formState}
+                            field={"password"}
+                            type={"password"}
+                            placeholder={"Nueva contraseña"}
+                            label={"Contraseña"}
+                          />
+                        </GridItem>
+                      </Grid>
+                    </>
+                  )}
                   <GridItem mb={4}>
                     <MySelect
                       formState={formState}
@@ -125,18 +130,6 @@ const UserAddEditForm = (props: Props) => {
                       noOptionsMessage="No hay datos"
                     />
                   </GridItem>
-                  {/* <Grid mb={4}>
-                    <GridItem>
-                      <MyInput
-                        register={register}
-                        formState={formState}
-                        field={"roles"}
-                        type={"text"}
-                        placeholder={"Rol"}
-                        label={"Rol"}
-                      />
-                    </GridItem>
-                  </Grid> */}
 
                   <Stack
                     spacing={3}

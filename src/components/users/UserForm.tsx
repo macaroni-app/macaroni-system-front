@@ -14,7 +14,7 @@ import { Error, useError } from "../../hooks/useError"
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
-import { IUser } from "./types"
+import { IUserLessRelated } from "./types"
 import { useUsers } from "../../hooks/useUsers"
 import { useRoles } from "../../hooks/useRoles"
 
@@ -38,7 +38,7 @@ const UserForm = () => {
   const { addNewUser } = useNewUser()
   const { editUser } = useEditUser()
 
-  const onSubmit = async (user: IUser) => {
+  const onSubmit = async (user: IUserLessRelated) => {
     setIsLoading(true)
 
     try {
