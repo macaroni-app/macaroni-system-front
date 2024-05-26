@@ -9,14 +9,15 @@ import UserAddEditForm from "./UserAddEditForm"
 import { useMessage } from "../../hooks/useMessage"
 import { useNewUser } from "../../hooks/useNewUser"
 import { useEditUser } from "../../hooks/useEditUser"
+import { useUsers } from "../../hooks/useUsers"
+import { useRoles } from "../../hooks/useRoles"
 import { Error, useError } from "../../hooks/useError"
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
+// types
 import { IUserLessRelated } from "./types"
-import { useUsers } from "../../hooks/useUsers"
-import { useRoles } from "../../hooks/useRoles"
 
 const UserForm = () => {
   const [isLoading, setIsLoading] = useState(false)

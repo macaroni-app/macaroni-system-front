@@ -37,6 +37,7 @@ const useRefreshToken = () => {
       role,
       firstName: decoded.firstName,
       lastName: decoded.lastName,
+      id: decoded.id,
     })
 
     return response.data.accessToken

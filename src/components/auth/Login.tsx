@@ -76,6 +76,7 @@ const Login = (): JSX.Element => {
         role,
         firstName: decoded.firstName,
         lastName: decoded.lastName,
+        id: decoded.id,
       })
       navigate(from, { replace: true })
     } catch (error) {

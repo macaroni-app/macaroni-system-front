@@ -29,7 +29,7 @@ import { useState } from "react"
 // import { useChangeIsActiveClient } from "../../hooks/useChangeIsActiveClient"
 import { useMessage } from "../../hooks/useMessage"
 
-import { IUser } from "./types"
+import { IUserFullRelated } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useCheckRole } from "../../hooks/useCheckRole"
@@ -39,7 +39,7 @@ import { useChangeIsActiveUser } from "../../hooks/useChangeIsActiveUser"
 import { useDeleteUser } from "../../hooks/useDeleteUser"
 
 interface Props {
-  user: IUser
+  user: IUserFullRelated
 }
 
 const User = ({ user }: Props) => {
@@ -58,6 +58,10 @@ const User = ({ user }: Props) => {
 
   const handleEdit = () => {
     navigate(`${user._id}/edit`)
+  }
+
+  const handleViewDetails = () => {
+    navigate(`${user._id}/details`)
   }
 
   const handleChangeIsActive = async (isActive: boolean) => {
@@ -177,6 +181,22 @@ const User = ({ user }: Props) => {
                         <PopoverArrow />
                         <PopoverBody p={0}>
                           <VStack spacing={1} align="stretch">
+                            {checkRole(ProfileBase.users.view) && (
+                              <Button
+                                onClick={() => handleViewDetails()}
+                                variant={"blue"}
+                                colorScheme="blue"
+                                justifyContent={"start"}
+                                size="md"
+                                _hover={{
+                                  textDecoration: "none",
+                                  color: "purple",
+                                  bg: "purple.100",
+                                }}
+                              >
+                                Ver detalles
+                              </Button>
+                            )}
                             {checkRole(ProfileBase.users.edit) && (
                               <Button
                                 onClick={() => handleEdit()}

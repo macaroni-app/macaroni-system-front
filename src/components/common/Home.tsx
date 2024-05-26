@@ -42,6 +42,7 @@ import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
 import ProtectedRoute from "../auth/ProtectedRoute"
 import Users from "../users/Users"
 import UserForm from "../users/UserForm"
+import UserDetails from "../users/UserDetails"
 import Unauthorized from "./Unauthorized"
 
 import ProfileBase from "./permissions"
@@ -436,6 +437,13 @@ const Home = () => {
           element={<ProtectedRoute allowedRoles={ProfileBase.users.edit} />}
         >
           <Route path="/users/:userId/edit" element={<UserForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.users.viewDetails} />
+          }
+        >
+          <Route path="/users/:userId/details" element={<UserDetails />} />
         </Route>
 
         {/* UNAUTHORIZED */}

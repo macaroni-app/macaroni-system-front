@@ -81,6 +81,7 @@ const ProfileBase = {
     deactivate: [ROLES.ADMIN],
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN],
+    viewDetails: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     viewActions: [ROLES.ADMIN],
   }
 }

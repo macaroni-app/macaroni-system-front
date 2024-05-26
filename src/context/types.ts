@@ -2,7 +2,8 @@ export interface IAuth {
   accessToken?: string
   role?: number
   firstName?: string,
-  lastName?: string
+  lastName?: string,
+  id?: string
 }
 
 export interface IUserContext {

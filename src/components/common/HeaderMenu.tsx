@@ -91,7 +91,7 @@ const HeaderMenu = (): JSX.Element => {
         )}
 
         <MenuDivider />
-        <MenuItem>
+        <MenuItem onClick={() => navigate(`/users/${auth.id}/details`)}>
           {auth.firstName} {auth.lastName}
         </MenuItem>
         <MenuItem onClick={() => handleLogout()}>Salir</MenuItem>

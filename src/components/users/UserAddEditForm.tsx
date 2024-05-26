@@ -18,6 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 // custom hook
 import { SubmitHandler, useForm } from "react-hook-form"
+
+// types
 import { IUserLessRelated, IUserFullRelated } from "./types"
 import { userSchema } from "./userSchema"
 import { IRoleType } from "../roles/types"

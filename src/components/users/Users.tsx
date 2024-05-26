@@ -17,7 +17,7 @@ import NewRecordPanel from "../common/NewRecordPanel"
 
 // custom hooks
 import { useUsers } from "../../hooks/useUsers"
-import { IUser } from "./types"
+import { IUserFullRelated } from "./types"
 // import { useError } from "../../hooks/useError"
 
 import ProfileBase from "../common/permissions"
@@ -37,7 +37,7 @@ const Users = (): JSX.Element => {
     navigate("/users/add")
   }
 
-  const users = queryUsers?.data as IUser[]
+  const users = queryUsers?.data as IUserFullRelated[]
 
   const userList = users?.map((user) => {
     if (user._id !== undefined && user.createdAt !== undefined) {
