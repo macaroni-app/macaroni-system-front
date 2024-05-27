@@ -16,7 +16,7 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
   return allowedRoles?.includes(Number(auth.role)) ? (
     <Outlet />
   ) : auth?.accessToken ? (
-    <Navigate to="/unauthorized" state={{ from: location }} replace />
+    <Navigate to="/notFound" state={{ from: location }} replace />
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />
   )
