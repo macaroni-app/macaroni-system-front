@@ -51,12 +51,23 @@ const UserNewPasswordForm = () => {
   const onSubmit = async (user: IUserLessRelated) => {
     setIsLoading(true)
     try {
-      if (userId) {
+      if (userId && user.password === user.confirmPassword) {
         await changePassword({ userId, userToUpdate: { ...user } })
-      }
-      showMessage(RECORD_UPDATED, AlertStatus.Success, AlertColorScheme.Purple)
 
-      navigate(`/users/${userId}/details`)
+        showMessage(
+          RECORD_UPDATED,
+          AlertStatus.Success,
+          AlertColorScheme.Purple
+        )
+
+        navigate(`/users/${userId}/details`)
+      } else {
+        showMessage(
+          "Las contraseñas no coinciden",
+          AlertStatus.Error,
+          AlertColorScheme.Red
+        )
+      }
     } catch (error: unknown) {
       throwError(error as Error)
     } finally {
@@ -89,6 +100,18 @@ const UserNewPasswordForm = () => {
                         type={"password"}
                         placeholder={"Nueva contraseña"}
                         label={"Nueva contraseña"}
+                      />
+                    </GridItem>
+                  </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <MyInput
+                        register={register}
+                        formState={formState}
+                        field={"confirmPassword"}
+                        type={"password"}
+                        placeholder={"Confirmar contraseña"}
+                        label={"Confirmar contraseña"}
                       />
                     </GridItem>
                   </Grid>

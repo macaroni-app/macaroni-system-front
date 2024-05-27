@@ -18,4 +18,5 @@ export const userSchema = z.object({
 
 export const userResetPasswordSchema = z.object({
   password: z.string().min(1, "Complete el campo"),
+  confirmPassword: z.string().min(1, "Complete el campo")
 })

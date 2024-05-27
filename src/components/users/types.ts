@@ -15,4 +15,5 @@ export interface IUserFullRelated extends IUserFather {
 
 export interface IUserLessRelated extends IUserFather {
   role?: string
+  confirmPassword?: string
 }
