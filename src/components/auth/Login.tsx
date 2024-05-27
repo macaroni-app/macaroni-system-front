@@ -28,7 +28,6 @@ import {
   FormControl,
   // FormErrorMessage,
   Input,
-  Text,
   VStack,
   StackDivider,
   InputGroup,
@@ -36,8 +35,11 @@ import {
   // IconButton,
   CardHeader,
   Heading,
+  InputRightElement,
+  IconButton,
 } from "@chakra-ui/react"
 import { jwtDecode } from "jwt-decode"
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 
 // import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 
@@ -53,11 +55,16 @@ interface UserPayload {
 
 const Login = (): JSX.Element => {
   const navigate = useNavigate()
+
   const location = useLocation()
+
   const from = location.state?.from?.pathname || "/"
+
   const { setAuth } = useAuthContext() as IUserContext
+
   const [show, setShow] = useState(false)
-  // const handleClick = () => setShow(!show)
+  const handleClick = () => setShow(!show)
+
   const { register, handleSubmit } = useForm<Credentials>({
     resolver: zodResolver(userSchema),
   })
@@ -149,7 +156,7 @@ const Login = (): JSX.Element => {
                           required
                           {...register("password")}
                         />
-                        {/* <InputRightElement width="2.5rem">
+                        <InputRightElement width="2.5rem">
                           <IconButton
                             colorScheme="blue"
                             variant={"link"}
@@ -157,8 +164,9 @@ const Login = (): JSX.Element => {
                             isRound={true}
                             size={"lg"}
                             onClick={handleClick}
+                            aria-label={""}
                           />
-                        </InputRightElement> */}
+                        </InputRightElement>
                       </InputGroup>
                       {/* {formik.touched.password && formik.errors.password && (
                         <FormErrorMessage>
