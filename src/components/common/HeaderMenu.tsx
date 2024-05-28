@@ -43,6 +43,9 @@ const HeaderMenu = (): JSX.Element => {
         variant="outline"
       />
       <MenuList padding={0}>
+        {checkRole(ProfileBase.home.view) && (
+          <MenuItem onClick={() => navigate("/")}>Inicio</MenuItem>
+        )}
         {checkRole(ProfileBase.sales.create) && (
           <MenuItem onClick={() => navigate("/sales/add")}>
             Nueva venta

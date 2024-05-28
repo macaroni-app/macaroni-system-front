@@ -4,6 +4,9 @@ const ProfileBase = {
   routes: {
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
   },
+  home: {
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+  },
   sales: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     edit: [ROLES.ADMIN],
