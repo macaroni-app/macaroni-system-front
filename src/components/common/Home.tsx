@@ -44,6 +44,7 @@ import Users from "../users/Users"
 import UserForm from "../users/UserForm"
 import UserDetails from "../users/UserDetails"
 import UserNewPasswordForm from "../users/UserNewPassword"
+import Dashboard from "../dashboard/Dashboard"
 // import Unauthorized from "./Unauthorized"
 import PageNotFound from "./PageNotFound"
 
@@ -72,14 +73,14 @@ const Home = () => {
           <Route
             path="/"
             element={
-              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+              <Grid templateColumns="repeat(12, 1fr)" mb={10} mt={5}>
                 <GridItem
                   as="main"
                   colSpan={{ base: 10, md: 10, lg: 8 }}
                   colStart={{ base: 2, md: 2, lg: 3 }}
                   mb={10}
                 >
-                  <h1>Aca va la home</h1>
+                  <Dashboard />
                 </GridItem>
               </Grid>
             }

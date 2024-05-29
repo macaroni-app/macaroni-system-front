@@ -155,7 +155,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Badge
                   variant="subtle"
-                  colorScheme={asset?.isActive ? "green" : "gray"}
+                  colorScheme={asset?.isActive ? "green" : "red"}
                 >
                   {asset?.isActive ? "Activo" : "Inactivo"}
                 </Badge>
