@@ -26,7 +26,7 @@ const Dashboard = () => {
     billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
   )
 
-  //  saleItems
+  // saleItems
   const querySaleItems = useSaleItems({})
   const saleItems = querySaleItems?.data as ISaleItemFullRelated[]
 
