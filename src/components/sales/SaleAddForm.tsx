@@ -59,12 +59,12 @@ const SaleFormAdd = ({
     useForm<ISaleLessRelated>({
       resolver: zodResolver(saleSchema),
       defaultValues: {
-        isRetail: true,
+        isRetail: false,
         total: undefined,
         saleItems: [{ product: "", quantity: 1 }],
       },
       values: {
-        isRetail: saleToUpdate?.isRetail || true,
+        isRetail: saleToUpdate?.isRetail || false,
         total: saleToUpdate?.total || undefined,
         saleItems: [{ product: "", quantity: 1 }],
       },

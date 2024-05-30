@@ -1,10 +1,12 @@
 import {
   Card,
   CardBody,
+  CardHeader,
   Grid,
   GridItem,
+  Text,
   Table,
-  TableCaption,
+  // TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -39,10 +41,13 @@ const QuickInventoryReport = () => {
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
       <GridItem colSpan={{ base: 12 }}>
         <Card variant="outline">
+          <CardHeader>
+            <Text textAlign={"center"}>Cantidades disponibles</Text>
+          </CardHeader>
           <CardBody>
             <TableContainer>
               <Table size="sm">
-                <TableCaption>Cantidades disponibles</TableCaption>
+                {/* <TableCaption>Cantidades disponibles</TableCaption> */}
                 <Thead>
                   <Tr>
                     <Th>Insumo</Th>
