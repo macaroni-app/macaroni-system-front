@@ -143,6 +143,23 @@ const ProductFormAdd = ({
     }
   }
 
+  const getRevenuePorcentage = () => {
+    const costTotal = getCostTotal()
+
+    const revenuePorcentage = Number(
+      (
+        ((Number(product?.wholesalePrice) - Number(costTotal)) /
+          Number(costTotal)) *
+        100
+      ).toFixed(2)
+    )
+
+    if (revenuePorcentage > 0 && revenuePorcentage !== Infinity) {
+      return revenuePorcentage
+    }
+    return 0
+  }
+
   return (
     <>
       {isLoading && <Loading />}
@@ -156,7 +173,7 @@ const ProductFormAdd = ({
                 </Heading>
                 <form noValidate onSubmit={handleSubmit(onSubmit)}>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
                       <MyInput
                         formState={formState}
                         register={register}
@@ -166,7 +183,7 @@ const ProductFormAdd = ({
                         label={"Nombre"}
                       />
                     </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
                       <FormControl>
                         <FormLabel>Costo total:</FormLabel>
                         <Input
@@ -175,6 +192,16 @@ const ProductFormAdd = ({
                             minimumFractionDigits: 2,
                             currency: "ARS",
                           }).format(getCostTotal() || 0)}
+                          disabled={true}
+                        />
+                      </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
+                      <FormControl>
+                        <FormLabel>Porcentaje de ganancia:</FormLabel>
+                        <Input
+                          value={`${getRevenuePorcentage()}%`}
+                          type="text"
                           disabled={true}
                         />
                       </FormControl>

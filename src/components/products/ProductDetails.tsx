@@ -35,16 +35,14 @@ import { EditIcon, ChevronLeftIcon } from "@chakra-ui/icons"
 // custom hooks
 import { useProductItems } from "../../hooks/useProductItems"
 import { useProducts } from "../../hooks/useProducts"
-import { useAuthContext } from "../../hooks/useAuthContext"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
-import { IUserContext } from "../../context/types"
-
-import { ROLES } from "../common/roles"
+import ProfileBase from "../common/permissions"
 
 const ProductDetails = () => {
   const { productId } = useParams()
 
-  const { auth } = useAuthContext() as IUserContext
+  const { checkRole } = useCheckRole()
 
   const queryProducts = useProducts({})
 
@@ -75,6 +73,12 @@ const ProductDetails = () => {
         return acc + currentValue
       }
     }, 0)
+
+  const revenuePorcentage = Number(
+    ((Number(product?.wholesalePrice) - Number(product?.costPrice)) /
+      Number(product?.costPrice)) *
+      100
+  ).toFixed(2)
 
   const productDetailsList = productItems?.map((productItem) => {
     return (
@@ -130,9 +134,7 @@ const ProductDetails = () => {
                 </Button>
                 <Spacer />
 
-                {auth?.roles
-                  ?.map((role) => role === ROLES.ADMIN)
-                  .find((val) => val) && (
+                {checkRole(ProfileBase.products.edit) && (
                   <Button
                     onClick={() => handleEditProduct()}
                     colorScheme="purple"
@@ -271,6 +273,16 @@ const ProductDetails = () => {
                             ? Number.parseFloat(product?.costPrice?.toFixed(2))
                             : 0
                         )}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Porcentaje de ganancia: </Text>
+                      <Text as="b" fontSize="lg">
+                        {revenuePorcentage} %
                       </Text>
                     </Flex>
                     <Flex
