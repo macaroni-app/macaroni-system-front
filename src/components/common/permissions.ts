@@ -7,6 +7,10 @@ const ProfileBase = {
   home: {
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
   },
+  dashboard: {
+    stockTab: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    stats: [ROLES.ADMIN, ROLES.SUPERVISOR]
+  },
   sales: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     edit: [ROLES.ADMIN],

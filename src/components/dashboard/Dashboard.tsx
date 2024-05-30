@@ -4,6 +4,7 @@ import { Grid, GridItem } from "@chakra-ui/react"
 import { useSales } from "../../hooks/useSales"
 import { useSaleItems } from "../../hooks/useSaleItems"
 import { useInventories } from "../../hooks/useInventories"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 // components
 import QuickInventoryReport from "./QuickInventoryReport"
@@ -12,8 +13,11 @@ import QuickInventoryReport from "./QuickInventoryReport"
 import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
 import { IInventoryFullRelated } from "../inventories/types"
 import SimpleBoard from "./SimpleBoard"
+import ProfileBase from "../common/permissions"
 
 const Dashboard = () => {
+  const { checkRole } = useCheckRole()
+
   // sales
   const querySales = useSales({})
   const sales = querySales?.data as ISaleFullRelated[]
@@ -62,45 +66,51 @@ const Dashboard = () => {
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
-      <GridItem colSpan={{ base: 12, md: 6 }}>
-        <Grid templateColumns="repeat(12, 1fr)" gap={3}>
-          <GridItem colSpan={{ base: 12 }}>
-            <SimpleBoard
-              title="Facturación"
-              amount={totalBillings}
-              size={billings?.length}
-            />
+      {checkRole(ProfileBase.dashboard.stats) && (
+        <>
+          <GridItem colSpan={{ base: 12, md: 6 }}>
+            <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+              <GridItem colSpan={{ base: 12 }}>
+                <SimpleBoard
+                  title="Facturación"
+                  amount={totalBillings}
+                  size={billings?.length}
+                />
+              </GridItem>
+              <GridItem colSpan={{ base: 12 }}>
+                <SimpleBoard
+                  title="Costo"
+                  amount={totalCosts}
+                  size={costs?.length}
+                />
+              </GridItem>
+            </Grid>
           </GridItem>
-          <GridItem colSpan={{ base: 12 }}>
-            <SimpleBoard
-              title="Costo"
-              amount={totalCosts}
-              size={costs?.length}
-            />
+          <GridItem colSpan={{ base: 12, md: 6 }}>
+            <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+              <GridItem colSpan={{ base: 12 }}>
+                <SimpleBoard
+                  title="Ganancia"
+                  amount={totalRevenues}
+                  size={billings?.length}
+                />
+              </GridItem>
+              <GridItem colSpan={{ base: 12 }}>
+                <SimpleBoard
+                  title="Costo en stock"
+                  amount={totalAssetCosts}
+                  size={assetCosts?.length}
+                />
+              </GridItem>
+            </Grid>
           </GridItem>
-        </Grid>
-      </GridItem>
-      <GridItem colSpan={{ base: 12, md: 6 }}>
-        <Grid templateColumns="repeat(12, 1fr)" gap={3}>
-          <GridItem colSpan={{ base: 12 }}>
-            <SimpleBoard
-              title="Ganancia"
-              amount={totalRevenues}
-              size={billings?.length}
-            />
-          </GridItem>
-          <GridItem colSpan={{ base: 12 }}>
-            <SimpleBoard
-              title="Costo en stock"
-              amount={totalAssetCosts}
-              size={assetCosts?.length}
-            />
-          </GridItem>
-        </Grid>
-      </GridItem>
-      <GridItem colSpan={{ base: 12, md: 6 }}>
-        <QuickInventoryReport />
-      </GridItem>
+        </>
+      )}
+      {checkRole(ProfileBase.dashboard.stockTab) && (
+        <GridItem colSpan={{ base: 12, md: 6 }}>
+          <QuickInventoryReport />
+        </GridItem>
+      )}
       <GridItem colSpan={{ base: 12, md: 6 }}>
         {/* <QuickInventoryReport /> */}
       </GridItem>
