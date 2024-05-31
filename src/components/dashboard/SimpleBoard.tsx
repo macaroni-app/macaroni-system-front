@@ -4,15 +4,16 @@ interface Props {
   title: string
   amount: number
   size: number
+  fontColor: string
 }
 
-const SimpleBoard = ({ title, amount, size }: Props) => {
+const SimpleBoard = ({ title, amount, size, fontColor }: Props) => {
   return (
     <Card variant="outline">
       <CardBody>
         <Flex direction={"column"}>
           <Text>{title}</Text>
-          <Text fontSize={"2xl"} as="b">
+          <Text fontSize={"2xl"} as="b" color={fontColor}>
             {amount
               ? new Intl.NumberFormat("en-US", {
                   style: "currency",

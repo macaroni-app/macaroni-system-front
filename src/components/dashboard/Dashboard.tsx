@@ -96,6 +96,7 @@ const Dashboard = () => {
                     title="Facturación"
                     amount={totalBillings}
                     size={billings?.length}
+                    fontColor="black"
                   />
                 )}
               </GridItem>
@@ -110,6 +111,7 @@ const Dashboard = () => {
                         title="Costo"
                         amount={totalCosts}
                         size={costs?.length}
+                        fontColor="black"
                       />
                     )}
                   </GridItem>
@@ -122,6 +124,7 @@ const Dashboard = () => {
                         title="Costo fijo"
                         amount={totalFixedCosts}
                         size={assetCosts?.length}
+                        fontColor="black"
                       />
                     )}
                   </GridItem>
@@ -142,6 +145,7 @@ const Dashboard = () => {
                         title="Ganancia"
                         amount={totalRevenues}
                         size={billings?.length}
+                        fontColor="green"
                       />
                     )}
                   </GridItem>
@@ -154,6 +158,7 @@ const Dashboard = () => {
                         title="Ganancia neta"
                         amount={netRevenue}
                         size={billings?.length}
+                        fontColor="green"
                       />
                     )}
                   </GridItem>
@@ -168,6 +173,7 @@ const Dashboard = () => {
                     title="Costo en stock"
                     amount={totalAssetCosts}
                     size={assetCosts?.length}
+                    fontColor="black"
                   />
                 )}
               </GridItem>
