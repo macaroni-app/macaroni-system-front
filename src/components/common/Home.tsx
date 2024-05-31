@@ -46,6 +46,7 @@ import UserDetails from "../users/UserDetails"
 import UserNewPasswordForm from "../users/UserNewPassword"
 import Dashboard from "../dashboard/Dashboard"
 import FixedCosts from "../fixedCosts/FixedCosts"
+import FixedCostForm from "../fixedCosts/FixedCostForm"
 // import Unauthorized from "./Unauthorized"
 import PageNotFound from "./PageNotFound"
 
@@ -450,6 +451,23 @@ const Home = () => {
                 </GridItem>
               </Grid>
             }
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.fixedCosts.create} />
+          }
+        >
+          <Route path="/fixedCosts/add" element={<FixedCostForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.fixedCosts.edit} />
+          }
+        >
+          <Route
+            path="/fixedCosts/:fixedCostId/edit"
+            element={<FixedCostForm />}
           />
         </Route>
 
