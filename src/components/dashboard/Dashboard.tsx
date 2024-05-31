@@ -14,6 +14,9 @@ import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
 import { IInventoryFullRelated } from "../inventories/types"
 import SimpleBoard from "./SimpleBoard"
 import ProfileBase from "../common/permissions"
+import { useFixedCosts } from "../../hooks/useFixedCosts"
+import { IFixedCost } from "../fixedCosts/types"
+import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
 
 const Dashboard = () => {
   const { checkRole } = useCheckRole()
@@ -64,6 +67,22 @@ const Dashboard = () => {
     assetCosts?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
   )
 
+  // Net costs
+  const queryFixedCosts = useFixedCosts({})
+  const fixedCosts = queryFixedCosts?.data as IFixedCost[]
+  const fixedCostAmounts = fixedCosts?.map(
+    (fixedCost) => fixedCost.amount
+  ) as number[]
+
+  const totalFixedCosts = Number.parseFloat(
+    fixedCostAmounts
+      ?.reduce((acc, currentValue) => acc + currentValue, 0)
+      .toFixed(2)
+  )
+
+  // Net revenues
+  const netRevenue = Number(totalRevenues - totalFixedCosts)
+
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
       {checkRole(ProfileBase.dashboard.stats) && (
@@ -71,36 +90,86 @@ const Dashboard = () => {
           <GridItem colSpan={{ base: 12, md: 6 }}>
             <Grid templateColumns="repeat(12, 1fr)" gap={3}>
               <GridItem colSpan={{ base: 12 }}>
-                <SimpleBoard
-                  title="Facturación"
-                  amount={totalBillings}
-                  size={billings?.length}
-                />
+                {querySales.isLoading && <SimpleBoardSkeleton numberRows={3} />}
+                {!querySales.isLoading && (
+                  <SimpleBoard
+                    title="Facturación"
+                    amount={totalBillings}
+                    size={billings?.length}
+                  />
+                )}
               </GridItem>
               <GridItem colSpan={{ base: 12 }}>
-                <SimpleBoard
-                  title="Costo"
-                  amount={totalCosts}
-                  size={costs?.length}
-                />
+                <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {querySaleItems.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!querySaleItems.isLoading && (
+                      <SimpleBoard
+                        title="Costo"
+                        amount={totalCosts}
+                        size={costs?.length}
+                      />
+                    )}
+                  </GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {queryFixedCosts.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!queryFixedCosts.isLoading && (
+                      <SimpleBoard
+                        title="Costo fijo"
+                        amount={totalFixedCosts}
+                        size={assetCosts?.length}
+                      />
+                    )}
+                  </GridItem>
+                </Grid>
               </GridItem>
             </Grid>
           </GridItem>
           <GridItem colSpan={{ base: 12, md: 6 }}>
             <Grid templateColumns="repeat(12, 1fr)" gap={3}>
               <GridItem colSpan={{ base: 12 }}>
-                <SimpleBoard
-                  title="Ganancia"
-                  amount={totalRevenues}
-                  size={billings?.length}
-                />
+                <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {querySales.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!querySales.isLoading && (
+                      <SimpleBoard
+                        title="Ganancia"
+                        amount={totalRevenues}
+                        size={billings?.length}
+                      />
+                    )}
+                  </GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {querySales.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!querySales.isLoading && (
+                      <SimpleBoard
+                        title="Ganancia neta"
+                        amount={netRevenue}
+                        size={billings?.length}
+                      />
+                    )}
+                  </GridItem>
+                </Grid>
               </GridItem>
               <GridItem colSpan={{ base: 12 }}>
-                <SimpleBoard
-                  title="Costo en stock"
-                  amount={totalAssetCosts}
-                  size={assetCosts?.length}
-                />
+                {queryInventories.isLoading && (
+                  <SimpleBoardSkeleton numberRows={3} />
+                )}
+                {!queryInventories.isLoading && (
+                  <SimpleBoard
+                    title="Costo en stock"
+                    amount={totalAssetCosts}
+                    size={assetCosts?.length}
+                  />
+                )}
               </GridItem>
             </Grid>
           </GridItem>
@@ -108,7 +177,8 @@ const Dashboard = () => {
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <GridItem colSpan={{ base: 12, md: 6 }}>
-          <QuickInventoryReport />
+          {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={6} />}
+          {!queryInventories.isLoading && <QuickInventoryReport />}
         </GridItem>
       )}
       <GridItem colSpan={{ base: 12, md: 6 }}>
