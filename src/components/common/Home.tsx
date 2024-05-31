@@ -45,6 +45,7 @@ import UserForm from "../users/UserForm"
 import UserDetails from "../users/UserDetails"
 import UserNewPasswordForm from "../users/UserNewPassword"
 import Dashboard from "../dashboard/Dashboard"
+import FixedCosts from "../fixedCosts/FixedCosts"
 // import Unauthorized from "./Unauthorized"
 import PageNotFound from "./PageNotFound"
 
@@ -426,6 +427,29 @@ const Home = () => {
           <Route
             path="/paymentMethods/:paymentMethodId/edit"
             element={<PaymentMethodForm />}
+          />
+        </Route>
+
+        {/* FIXED_COSTS */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.fixedCosts.view} />
+          }
+        >
+          <Route
+            path="/fixedCosts"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <FixedCosts />
+                </GridItem>
+              </Grid>
+            }
           />
         </Route>
 
