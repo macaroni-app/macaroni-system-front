@@ -145,7 +145,7 @@ const Dashboard = () => {
                         title="Ganancia"
                         amount={totalRevenues}
                         size={billings?.length}
-                        fontColor="green"
+                        fontColor="black"
                       />
                     )}
                   </GridItem>
@@ -158,7 +158,7 @@ const Dashboard = () => {
                         title="Ganancia neta"
                         amount={netRevenue}
                         size={billings?.length}
-                        fontColor="green"
+                        fontColor="black"
                       />
                     )}
                   </GridItem>
@@ -183,7 +183,7 @@ const Dashboard = () => {
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <GridItem colSpan={{ base: 12, md: 6 }}>
-          {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={6} />}
+          {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
           {!queryInventories.isLoading && <QuickInventoryReport />}
         </GridItem>
       )}
