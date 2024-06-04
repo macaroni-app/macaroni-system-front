@@ -76,9 +76,9 @@ const ProfileBase = {
   },
   fixedCosts: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
-    edit: [ROLES.ADMIN],
+    edit: [ROLES.ADMIN, ROLES.SUPERVISOR],
     deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
-    delete: [ROLES.ADMIN],
+    delete: [ROLES.ADMIN, ROLES.SUPERVISOR],
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
   },

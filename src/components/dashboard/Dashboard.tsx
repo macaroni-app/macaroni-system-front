@@ -170,7 +170,7 @@ const Dashboard = () => {
                 )}
                 {!queryInventories.isLoading && (
                   <SimpleBoard
-                    title="Costo en stock"
+                    title="Costo del stock disponible"
                     amount={totalAssetCosts}
                     size={assetCosts?.length}
                     fontColor="black"

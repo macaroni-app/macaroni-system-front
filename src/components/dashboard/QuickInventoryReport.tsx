@@ -42,7 +42,7 @@ const QuickInventoryReport = () => {
       <GridItem colSpan={{ base: 12 }}>
         <Card variant="outline">
           <CardHeader>
-            <Text textAlign={"center"}>Cantidades disponibles</Text>
+            <Text textAlign={"center"}>Stock disponibles</Text>
           </CardHeader>
           <CardBody>
             <TableContainer>
