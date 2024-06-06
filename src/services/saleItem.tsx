@@ -5,6 +5,7 @@ const SALE_ITEM_URL = "/api/v1/saleItems"
 
 interface IFilters {
   id?: string
+  historyMonthToRetrieve?: number
 }
 
 const saleItemService = {
@@ -13,6 +14,20 @@ const saleItemService = {
 
     if (filters.id) {
       finalUrl = `${SALE_ITEM_URL}?id=${filters.id}`
+    } else {
+      finalUrl = SALE_ITEM_URL
+    }
+
+    const { data } = await axiosPrivate.get(finalUrl, {
+      withCredentials: true,
+    })
+    return data
+  },
+  getAllForReport: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
+    let finalUrl
+
+    if (filters.historyMonthToRetrieve) {
+      finalUrl = `${SALE_ITEM_URL}?historyMonthToRetrieve=${filters.historyMonthToRetrieve}`
     } else {
       finalUrl = SALE_ITEM_URL
     }

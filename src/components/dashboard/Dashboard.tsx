@@ -17,6 +17,7 @@ import ProfileBase from "../common/permissions"
 import { useFixedCosts } from "../../hooks/useFixedCosts"
 import { IFixedCost } from "../fixedCosts/types"
 import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
+import BarChart from "./BarChart"
 
 const Dashboard = () => {
   const { checkRole } = useCheckRole()
@@ -188,7 +189,7 @@ const Dashboard = () => {
         </GridItem>
       )}
       <GridItem colSpan={{ base: 12, md: 6 }}>
-        {/* <QuickInventoryReport /> */}
+        <BarChart />
       </GridItem>
     </Grid>
   )
