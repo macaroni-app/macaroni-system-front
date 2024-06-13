@@ -110,8 +110,7 @@ const BarChart = () => {
       obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total
     } else {
       obj[new Date(sale.createdAt).getMonth() + 1] = {
-        total: sale.total,
-      }
+        total: sale.total      }
     }
   })
   const saleArr = Object.keys(obj).map((key) => {
@@ -131,6 +130,7 @@ const BarChart = () => {
       }
     })
   })
+
 
   const total = sales
     ?.map((sale) => sale?.total)
@@ -193,21 +193,38 @@ const BarChart = () => {
   //   ],
   // }
 
-  console.log(
-    months
-      .slice(currentMonth - numberOfMonth)
-      .concat(months.slice(currentMonth - 1, currentMonth))
-  )
+  const  getLastMonths = (monthCount, excludeCurrentMonth) => {
+    //debugger;  
+    let currentDate = new Date(); // Get the current date
+    let monthsInterno = []; // Array to store the last N months
+    let profits = []
+  
+    // if the current month should be excluded, off by default
+    if(excludeCurrentMonth) {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+    }
+      
+    for (var i = 0; i < monthCount; i++) {
+      let currentMonth = currentDate.getMonth(); // Get the current month (0-11)
+      let currentYear = currentDate.getFullYear(); // Get the current year
+  
+      // Add the current month and year to the array
+      monthsInterno.unshift(currentYear + " - " + (currentMonth + 1));
+      profits.unshift(profitArr[currentMonth])
+  
+      // Move to the previous month
+      currentDate.setMonth(currentDate.getMonth() - 1);
+    }
+  
+    return profits
+  }
+
 
   const data = {
-    labels: months
-      .slice(currentMonth - numberOfMonth)
-      .concat(months.slice(currentMonth - 1, currentMonth)),
+    labels: getLastMonths(12, false).map(current => months[current.month - 1]),
     datasets: [
       {
-        data: profitArr
-          .slice(currentMonth - numberOfMonth)
-          .concat(profitArr.slice(currentMonth - 1, currentMonth))
+        data: getLastMonths(12, false)
           .map((current) => current.total),
         backgroundColor: ["#805AD5"],
       },
