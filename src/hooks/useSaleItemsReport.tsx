@@ -10,7 +10,7 @@ import { ISaleItemFullRelated } from "../components/sales/types"
 import { IFilters } from "../components/common/types"
 
 // services
-import saleItemService from "../services/saleItem"
+import reportsService from "../services/reports"
 
 // hooks
 import useAxiosPrivate from "./useAxiosPrivate"
@@ -33,7 +33,7 @@ export const useSaleItemsReport = (props: Props) => {
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
       const { filters } = queryKey[1] as IFilters
-      const { data } = await saleItemService.getAllForReport(
+      const { data } = await reportsService.getAllSaleItems(
         { ...filters },
         axiosPrivate
       )
