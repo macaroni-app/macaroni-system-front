@@ -23,20 +23,6 @@ const saleItemService = {
     })
     return data
   },
-  getAllForReport: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
-    let finalUrl
-
-    if (filters.historyMonthToRetrieve) {
-      finalUrl = `${SALE_ITEM_URL}?historyMonthToRetrieve=${filters.historyMonthToRetrieve}`
-    } else {
-      finalUrl = SALE_ITEM_URL
-    }
-
-    const { data } = await axiosPrivate.get(finalUrl, {
-      withCredentials: true,
-    })
-    return data
-  },
   getOne: async (id: string, axiosPrivate: AxiosInstance) => {
     const { data } = await axiosPrivate.get(`${SALE_ITEM_URL}/${id}`, {
       withCredentials: true,
