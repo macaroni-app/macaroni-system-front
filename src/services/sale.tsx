@@ -5,7 +5,6 @@ const SALE_URL = "/api/v1/sales"
 
 interface IFilters {
   id?: string
-  historyMonthToRetrieve?: number
 }
 
 const saleService = {
