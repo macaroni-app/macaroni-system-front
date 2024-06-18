@@ -183,14 +183,16 @@ const Dashboard = () => {
         </>
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
-        <GridItem colSpan={{ base: 12, md: 6 }}>
+        <GridItem colSpan={{ base: 12 }}>
           {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
           {!queryInventories.isLoading && <QuickInventoryReport />}
         </GridItem>
       )}
-      <GridItem colSpan={{ base: 12, md: 6 }}>
-        <BarChart />
-      </GridItem>
+      {checkRole(ProfileBase.dashboard.stats) && (
+        <GridItem colSpan={{ base: 12 }}>
+          <BarChart />
+        </GridItem>
+      )}
     </Grid>
   )
 }

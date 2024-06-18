@@ -11,7 +11,7 @@ import {
   Tooltip,
   Title,
 } from "chart.js"
-import { Bar } from "react-chartjs-2"
+import { Bar, Line } from "react-chartjs-2"
 import {
   Text,
   Card,
@@ -46,9 +46,11 @@ ChartJS.register(
 )
 
 const BarChart = () => {
+
   const querySaleItemsReport = useSaleItemsReport({
     historyMonthToRetrieve: 12,
   })
+
   const saleItems = querySaleItemsReport.data as ISaleItemFullRelated[]
 
   const [numberOfMonth, setNumberOfMonth] = useState(12)
@@ -67,6 +69,7 @@ const BarChart = () => {
     11: { total: 0 },
     12: { total: 0 },
   }
+
   saleItems?.forEach((saleDetail) => {
     if (costObj.hasOwnProperty(new Date(saleDetail.createdAt).getMonth() + 1)) {
       if (saleDetail.product !== null) {
@@ -81,6 +84,7 @@ const BarChart = () => {
       }
     }
   })
+
   const costArr = Object.keys(costObj).map((key) => {
     return {
       ...costObj[key],
@@ -110,7 +114,8 @@ const BarChart = () => {
       obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total
     } else {
       obj[new Date(sale.createdAt).getMonth() + 1] = {
-        total: sale.total      }
+        total: sale.total
+      }
     }
   })
   const saleArr = Object.keys(obj).map((key) => {
@@ -139,7 +144,7 @@ const BarChart = () => {
 
   const options = {
     responsive: true,
-    type: "Bar",
+    type: "Line",
     plugins: {
       legend: {
         display: false,
@@ -193,66 +198,64 @@ const BarChart = () => {
   //   ],
   // }
 
-  const  getLastMonths = (monthCount, excludeCurrentMonth) => {
+  const getLastMonths = (monthCount: number, excludeCurrentMonth: boolean) => {
     //debugger;  
     let currentDate = new Date(); // Get the current date
     let monthsInterno = []; // Array to store the last N months
     let profits = []
-  
+
     // if the current month should be excluded, off by default
-    if(excludeCurrentMonth) {
-        currentDate.setMonth(currentDate.getMonth() - 1);
+    if (excludeCurrentMonth) {
+      currentDate.setMonth(currentDate.getMonth() - 1);
     }
-      
+
     for (var i = 0; i < monthCount; i++) {
       let currentMonth = currentDate.getMonth(); // Get the current month (0-11)
       let currentYear = currentDate.getFullYear(); // Get the current year
-  
+
       // Add the current month and year to the array
       monthsInterno.unshift(currentYear + " - " + (currentMonth + 1));
       profits.unshift(profitArr[currentMonth])
-  
+
       // Move to the previous month
       currentDate.setMonth(currentDate.getMonth() - 1);
     }
-  
+
     return profits
   }
 
 
   const data = {
-    labels: getLastMonths(12, false).map(current => months[current.month - 1]),
+    labels: getLastMonths(numberOfMonth, false).map(current => months[current.month - 1]),
     datasets: [
       {
-        data: getLastMonths(12, false)
+        data: getLastMonths(numberOfMonth, false)
           .map((current) => current.total),
         backgroundColor: ["#805AD5"],
       },
     ],
   }
 
-  // const lastTwelveYears = profitArr
-  //   .slice(currentMonth - numberOfMonth)
-  //   .concat(profitArr.slice(currentMonth - 1, currentMonth))
-  //   .map((current) => {
-  //     return (
-  //       <Card key={current.month} variant="outline" mb={3}>
-  //         <CardBody>
-  //           <Flex direction="row" justifyContent={"space-between"}>
-  //             <Text>{monthsLong[current.month - 1]}:</Text>
-  //             <Text as={"span"} fontWeight={"bold"}>
-  //               {new Intl.NumberFormat("en-US", {
-  //                 style: "currency",
-  //                 minimumFractionDigits: 2,
-  //                 currency: "USD",
-  //               }).format(current.total)}
-  //             </Text>
-  //           </Flex>
-  //         </CardBody>
-  //       </Card>
-  //     )
-  //   })
-  //   .reverse()
+  const lastTwelveYears = getLastMonths(numberOfMonth, false)
+    .map((current) => {
+      return (
+        <Card key={current.month} variant="outline" mb={3}>
+          <CardBody>
+            <Flex direction="row" justifyContent={"space-between"}>
+              <Text>{monthsLong[current.month - 1]}:</Text>
+              <Text as={"span"} fontWeight={"bold"}>
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  minimumFractionDigits: 2,
+                  currency: "USD",
+                }).format(current.total)}
+              </Text>
+            </Flex>
+          </CardBody>
+        </Card>
+      )
+    })
+    .reverse()
 
   if (querySalesReport?.isLoading) {
     return <Loading />
@@ -272,36 +275,36 @@ const BarChart = () => {
             </Heading>
           </CardHeader>
           <CardBody>
-            <Bar options={options} data={data} />
+            <Line options={options} data={data} />
           </CardBody>
-          {/* <Divider />
-        <CardFooter justifyContent={"center"}>
-          <Flex gap={2}>
-            <Button
-              onClick={() => setNumberOfMonth(12)}
-              colorScheme="purple"
-              variant="ghost"
-            >
-              12 meses
-            </Button>
-            <Button
-              onClick={() => setNumberOfMonth(6)}
-              colorScheme="purple"
-              variant="ghost"
-            >
-              6 meses
-            </Button>
-            <Button
-              onClick={() => setNumberOfMonth(3)}
-              colorScheme="purple"
-              variant="ghost"
-            >
-              3 meses
-            </Button>
-          </Flex>
-        </CardFooter> */}
+          <Divider />
+          <CardFooter justifyContent={"center"}>
+            <Flex gap={2}>
+              <Button
+                onClick={() => setNumberOfMonth(12)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                12 meses
+              </Button>
+              <Button
+                onClick={() => setNumberOfMonth(6)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                6 meses
+              </Button>
+              <Button
+                onClick={() => setNumberOfMonth(3)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                3 meses
+              </Button>
+            </Flex>
+          </CardFooter>
         </Card>
-        {/* {lastTwelveYears} */}
+        {lastTwelveYears}
       </>
     )
   }
