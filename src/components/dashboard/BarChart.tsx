@@ -32,7 +32,7 @@ import { useSalesReport } from "../../hooks/useSalesReport"
 import Loading from "../common/Loading"
 
 // typeps
-import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
+import { ISaleFullRelated, ISaleItemFullRelated, SaleStatus } from "../sales/types"
 
 ChartJS.register(
   LinearScale,
@@ -71,15 +71,17 @@ const BarChart = () => {
   }
 
   saleItems?.forEach((saleDetail) => {
-    if (costObj.hasOwnProperty(new Date(saleDetail.createdAt).getMonth() + 1)) {
-      if (saleDetail.product !== null) {
-        costObj[new Date(saleDetail.createdAt).getMonth() + 1].total +=
-          saleDetail?.product?.costPrice * saleDetail?.quantity
-      }
-    } else {
-      if (saleDetail.product !== null) {
-        costObj[new Date(saleDetail.createdAt).getMonth() + 1] = {
-          total: saleDetail?.product?.costPrice * saleDetail?.quantity,
+    if (saleDetail.sale?.status === SaleStatus.PAID) {
+      if (costObj.hasOwnProperty(new Date(saleDetail.createdAt).getMonth() + 1)) {
+        if (saleDetail.product !== null) {
+          costObj[new Date(saleDetail.createdAt).getMonth() + 1].total +=
+            saleDetail?.product?.costPrice * saleDetail?.quantity
+        }
+      } else {
+        if (saleDetail.product !== null) {
+          costObj[new Date(saleDetail.createdAt).getMonth() + 1] = {
+            total: saleDetail?.product?.costPrice * saleDetail?.quantity,
+          }
         }
       }
     }
@@ -110,11 +112,13 @@ const BarChart = () => {
     12: { total: 0 },
   }
   sales?.forEach((sale) => {
-    if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
-      obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total
-    } else {
-      obj[new Date(sale.createdAt).getMonth() + 1] = {
-        total: sale.total
+    if (sale?.status === SaleStatus.PAID) {
+      if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
+        obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total
+      } else {
+        obj[new Date(sale.createdAt).getMonth() + 1] = {
+          total: sale.total
+        }
       }
     }
   })
@@ -138,7 +142,11 @@ const BarChart = () => {
 
 
   const total = sales
-    ?.map((sale) => sale?.total)
+    ?.map((sale) => {
+      if (sale.status === SaleStatus.PAID) {
+        return sale?.total
+      }
+    })
     ?.reduce((acc, currentValue) => acc + currentValue, 0)
     .toFixed(2)
 
@@ -223,7 +231,6 @@ const BarChart = () => {
 
     return profits
   }
-
 
   const data = {
     labels: getLastMonths(numberOfMonth, false).map(current => months[current.month - 1]),
