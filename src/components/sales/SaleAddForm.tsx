@@ -131,6 +131,27 @@ const SaleFormAdd = ({
     return totalSale
   }
 
+  const getSubtotal = (index: number) => {
+
+    let subtotal: number = 0
+
+    products?.filter(product => {
+      if (product._id === sale.saleItems?.at(index)?.product) {
+
+        let quantity = Number(sale?.saleItems?.at(index)?.quantity)
+
+        if (sale !== undefined && sale?.isRetail) {
+          subtotal = Number(product?.retailsalePrice) * quantity
+        } else {
+          subtotal = Number(product?.wholesalePrice) * quantity
+        }
+      }
+    })
+
+    return subtotal
+  }
+
+
   return (
     <>
       {isLoading && <Loading />}
@@ -262,7 +283,9 @@ const SaleFormAdd = ({
                                       style: "currency",
                                       minimumFractionDigits: 2,
                                       currency: "ARS",
-                                    }).format(0)}
+                                    }).format(
+                                      getSubtotal(index)
+                                    )}
                                   </Text>
                                 </SimpleGrid>
                               </GridItem>
