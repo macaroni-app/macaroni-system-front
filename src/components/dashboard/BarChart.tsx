@@ -11,7 +11,7 @@ import {
   Tooltip,
   Title,
 } from "chart.js"
-import { Bar, Line } from "react-chartjs-2"
+import { Line } from "react-chartjs-2"
 import {
   Text,
   Card,
@@ -34,6 +34,9 @@ import Loading from "../common/Loading"
 // typeps
 import { ISaleFullRelated, ISaleItemFullRelated, SaleStatus } from "../sales/types"
 
+
+import { crearObjetos } from "../../utils/reports"
+
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -47,40 +50,50 @@ ChartJS.register(
 
 const BarChart = () => {
 
+  const [numberOfMonth, setNumberOfMonth] = useState(12)
+
   const querySaleItemsReport = useSaleItemsReport({
     historyMonthToRetrieve: 12,
   })
 
   const saleItems = querySaleItemsReport.data as ISaleItemFullRelated[]
 
-  const [numberOfMonth, setNumberOfMonth] = useState(12)
+  // Ejemplo de uso:
+  // const numero = 12;
+  let costObj = crearObjetos(numberOfMonth)
+  // let costTest ={}
 
-  let costObj = {
-    1: { total: 0 },
-    2: { total: 0 },
-    3: { total: 0 },
-    4: { total: 0 },
-    5: { total: 0 },
-    6: { total: 0 },
-    7: { total: 0 },
-    8: { total: 0 },
-    9: { total: 0 },
-    10: { total: 0 },
-    11: { total: 0 },
-    12: { total: 0 },
-  }
+  // for(let i = 0; i < 12; i++) {
+  //   costTest
+  // }
 
-  saleItems?.forEach((saleDetail) => {
-    if (saleDetail.sale?.status === SaleStatus.PAID) {
-      if (costObj.hasOwnProperty(new Date(saleDetail.createdAt).getMonth() + 1)) {
-        if (saleDetail.product !== null) {
-          costObj[new Date(saleDetail.createdAt).getMonth() + 1].total +=
-            saleDetail?.product?.costPrice * saleDetail?.quantity
+  // let costObj = {
+  //   1: { total: 0 },
+  //   2: { total: 0 },
+  //   3: { total: 0 },
+  //   4: { total: 0 },
+  //   5: { total: 0 },
+  //   6: { total: 0 },
+  //   7: { total: 0 },
+  //   8: { total: 0 },
+  //   9: { total: 0 },
+  //   10: { total: 0 },
+  //   11: { total: 0 },
+  //   12: { total: 0 },
+  // }
+
+
+  saleItems?.forEach((saleItem) => {
+    if (saleItem.sale?.status === SaleStatus.PAID) {
+      if (costObj.hasOwnProperty(new Date(saleItem?.createdAt).getMonth() + 1)) {
+        if (saleItem.product !== null) {
+          costObj[new Date(saleItem?.createdAt).getMonth() + 1].total +=
+            saleItem?.product?.costPrice * saleItem?.quantity
         }
       } else {
-        if (saleDetail.product !== null) {
-          costObj[new Date(saleDetail.createdAt).getMonth() + 1] = {
-            total: saleDetail?.product?.costPrice * saleDetail?.quantity,
+        if (saleItem.product !== null) {
+          costObj[new Date(saleItem?.createdAt).getMonth() + 1] = {
+            total: saleItem?.product?.costPrice * saleItem?.quantity,
           }
         }
       }
@@ -97,20 +110,23 @@ const BarChart = () => {
   const querySalesReport = useSalesReport({ historyMonthToRetrieve: 12 })
   const sales = querySalesReport.data as ISaleFullRelated[]
 
-  let obj = {
-    1: { total: 0 },
-    2: { total: 0 },
-    3: { total: 0 },
-    4: { total: 0 },
-    5: { total: 0 },
-    6: { total: 0 },
-    7: { total: 0 },
-    8: { total: 0 },
-    9: { total: 0 },
-    10: { total: 0 },
-    11: { total: 0 },
-    12: { total: 0 },
-  }
+  // let obj = {
+  //   1: { total: 0 },
+  //   2: { total: 0 },
+  //   3: { total: 0 },
+  //   4: { total: 0 },
+  //   5: { total: 0 },
+  //   6: { total: 0 },
+  //   7: { total: 0 },
+  //   8: { total: 0 },
+  //   9: { total: 0 },
+  //   10: { total: 0 },
+  //   11: { total: 0 },
+  //   12: { total: 0 },
+  // }
+  let obj = crearObjetos(numberOfMonth)
+
+
   sales?.forEach((sale) => {
     if (sale?.status === SaleStatus.PAID) {
       if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
@@ -129,16 +145,33 @@ const BarChart = () => {
     }
   })
 
+  const meses = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ]
+
   const profitArr = []
   saleArr.forEach((sale) => {
     costArr.forEach((cost) => {
       {
         if (sale.month === cost.month) {
-          profitArr.push({ total: sale.total - cost.total, month: sale.month })
+          profitArr.push({ total: sale.total - cost.total, month: sale.month, label: meses[sale.month - 1] })
         }
       }
     })
   })
+
+  // console.log(profitArr)
 
 
   const total = sales
@@ -232,8 +265,10 @@ const BarChart = () => {
     return profits
   }
 
+  console.log(getLastMonths(3, false))
+
   const data = {
-    labels: getLastMonths(numberOfMonth, false).map(current => months[current.month - 1]),
+    labels: getLastMonths(numberOfMonth, false).map(current => current.label),
     datasets: [
       {
         data: getLastMonths(numberOfMonth, false)
