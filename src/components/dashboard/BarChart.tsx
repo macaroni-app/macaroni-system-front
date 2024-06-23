@@ -125,7 +125,13 @@ const BarChart = () => {
   }
 
   if (!querySalesReport?.isLoading && profitRecords?.length === 0) {
-    return <Text>No hay datos</Text>
+    return (
+      <Card variant="outline" mb={3}>
+        <CardBody textAlign={"center"}>
+          <Text>No hay datos</Text>
+        </CardBody>
+      </Card>
+    )
   }
 
   if (!querySalesReport?.isLoading && profitRecords?.length > 0) {
