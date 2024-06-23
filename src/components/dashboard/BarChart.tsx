@@ -31,11 +31,10 @@ import { useSalesReport } from "../../hooks/useSalesReport"
 // components
 import Loading from "../common/Loading"
 
-// typeps
-import { ISaleFullRelated, ISaleItemFullRelated, SaleStatus } from "../sales/types"
+// types
+import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
 
-
-import { crearObjetos } from "../../utils/reports"
+import { groupSaleItemByMonth, groupSalesByMonth, MonthData } from "../../utils/reports"
 
 ChartJS.register(
   LinearScale,
@@ -48,140 +47,37 @@ ChartJS.register(
   Title
 )
 
+
 const BarChart = () => {
 
-  const [numberOfMonth, setNumberOfMonth] = useState(12)
+  const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
+  // saleItems
   const querySaleItemsReport = useSaleItemsReport({
     historyMonthToRetrieve: 12,
   })
 
   const saleItems = querySaleItemsReport.data as ISaleItemFullRelated[]
 
-  // Ejemplo de uso:
-  // const numero = 12;
-  let costObj = crearObjetos(numberOfMonth)
-  // let costTest ={}
+  const groupedSaleItems = groupSaleItemByMonth(saleItems?.filter(saleItem => saleItem.sale?.status === 'PAID'), numberOfMonth)
 
-  // for(let i = 0; i < 12; i++) {
-  //   costTest
-  // }
-
-  // let costObj = {
-  //   1: { total: 0 },
-  //   2: { total: 0 },
-  //   3: { total: 0 },
-  //   4: { total: 0 },
-  //   5: { total: 0 },
-  //   6: { total: 0 },
-  //   7: { total: 0 },
-  //   8: { total: 0 },
-  //   9: { total: 0 },
-  //   10: { total: 0 },
-  //   11: { total: 0 },
-  //   12: { total: 0 },
-  // }
-
-
-  saleItems?.forEach((saleItem) => {
-    if (saleItem.sale?.status === SaleStatus.PAID) {
-      if (costObj.hasOwnProperty(new Date(saleItem?.createdAt).getMonth() + 1)) {
-        if (saleItem.product !== null) {
-          costObj[new Date(saleItem?.createdAt).getMonth() + 1].total +=
-            saleItem?.product?.costPrice * saleItem?.quantity
-        }
-      } else {
-        if (saleItem.product !== null) {
-          costObj[new Date(saleItem?.createdAt).getMonth() + 1] = {
-            total: saleItem?.product?.costPrice * saleItem?.quantity,
-          }
-        }
-      }
-    }
-  })
-
-  const costArr = Object.keys(costObj).map((key) => {
-    return {
-      ...costObj[key],
-      month: Number.parseInt(key),
-    }
-  })
-
+  // sales
   const querySalesReport = useSalesReport({ historyMonthToRetrieve: 12 })
   const sales = querySalesReport.data as ISaleFullRelated[]
 
-  // let obj = {
-  //   1: { total: 0 },
-  //   2: { total: 0 },
-  //   3: { total: 0 },
-  //   4: { total: 0 },
-  //   5: { total: 0 },
-  //   6: { total: 0 },
-  //   7: { total: 0 },
-  //   8: { total: 0 },
-  //   9: { total: 0 },
-  //   10: { total: 0 },
-  //   11: { total: 0 },
-  //   12: { total: 0 },
-  // }
-  let obj = crearObjetos(numberOfMonth)
+  const groupedSales = groupSalesByMonth(sales?.filter(sale => sale?.status === 'PAID'), numberOfMonth)
 
+  // profits
+  const profitRecords: MonthData[] = []
 
-  sales?.forEach((sale) => {
-    if (sale?.status === SaleStatus.PAID) {
-      if (obj.hasOwnProperty(new Date(sale.createdAt).getMonth() + 1)) {
-        obj[new Date(sale.createdAt).getMonth() + 1].total += sale.total
-      } else {
-        obj[new Date(sale.createdAt).getMonth() + 1] = {
-          total: sale.total
-        }
-      }
-    }
-  })
-  const saleArr = Object.keys(obj).map((key) => {
-    return {
-      ...obj[key],
-      month: Number.parseInt(key),
-    }
-  })
-
-  const meses = [
-    "Ene",
-    "Feb",
-    "Mar",
-    "Abr",
-    "May",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dic",
-  ]
-
-  const profitArr = []
-  saleArr.forEach((sale) => {
-    costArr.forEach((cost) => {
-      {
-        if (sale.month === cost.month) {
-          profitArr.push({ total: sale.total - cost.total, month: sale.month, label: meses[sale.month - 1] })
-        }
+  groupedSales?.forEach(groupedSale => {
+    groupedSaleItems?.forEach(groupedSaleItem => {
+      if (groupedSale.month === groupedSaleItem.month && groupedSale.year === groupedSaleItem.year) {
+        profitRecords.push({ ...groupedSale, total: groupedSale.total - groupedSaleItem.total })
       }
     })
   })
 
-  // console.log(profitArr)
-
-
-  const total = sales
-    ?.map((sale) => {
-      if (sale.status === SaleStatus.PAID) {
-        return sale?.total
-      }
-    })
-    ?.reduce((acc, currentValue) => acc + currentValue, 0)
-    .toFixed(2)
 
   const options = {
     responsive: true,
@@ -190,124 +86,49 @@ const BarChart = () => {
       legend: {
         display: false,
       },
-      // title: {
-      //   display: true,
-      //   text: `Ganancia últimos ${numberOfMonth} meses`,
-      // },
     },
   }
 
-  const months = [
-    "Ene",
-    "Feb",
-    "Mar",
-    "Abr",
-    "May",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dic",
-  ]
-
-  const monthsLong = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ]
-
-  let currentMonth = new Date().getMonth() + 1
-
-  // const data = {
-  //   labels: months,
-  //   datasets: [
-  //     {
-  //       data: [200, 2000, 200, 300, 4000, 430, 499, 200, 100, 400, 299, 700],
-  //       backgroundColor: ["#805AD5"],
-  //     },
-  //   ],
-  // }
-
-  const getLastMonths = (monthCount: number, excludeCurrentMonth: boolean) => {
-    //debugger;  
-    let currentDate = new Date(); // Get the current date
-    let monthsInterno = []; // Array to store the last N months
-    let profits = []
-
-    // if the current month should be excluded, off by default
-    if (excludeCurrentMonth) {
-      currentDate.setMonth(currentDate.getMonth() - 1);
-    }
-
-    for (var i = 0; i < monthCount; i++) {
-      let currentMonth = currentDate.getMonth(); // Get the current month (0-11)
-      let currentYear = currentDate.getFullYear(); // Get the current year
-
-      // Add the current month and year to the array
-      monthsInterno.unshift(currentYear + " - " + (currentMonth + 1));
-      profits.unshift(profitArr[currentMonth])
-
-      // Move to the previous month
-      currentDate.setMonth(currentDate.getMonth() - 1);
-    }
-
-    return profits
-  }
-
-  console.log(getLastMonths(3, false))
-
   const data = {
-    labels: getLastMonths(numberOfMonth, false).map(current => current.label),
+    labels: profitRecords?.map(profitRecord => profitRecord.monthName),
     datasets: [
       {
-        data: getLastMonths(numberOfMonth, false)
-          .map((current) => current.total),
+        data: profitRecords?.map(profitRecord => profitRecord.total)
+          .map((current) => current),
         backgroundColor: ["#805AD5"],
       },
     ],
   }
 
-  const lastTwelveYears = getLastMonths(numberOfMonth, false)
-    .map((current) => {
-      return (
-        <Card key={current.month} variant="outline" mb={3}>
-          <CardBody>
-            <Flex direction="row" justifyContent={"space-between"}>
-              <Text>{monthsLong[current.month - 1]}:</Text>
-              <Text as={"span"} fontWeight={"bold"}>
-                {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  minimumFractionDigits: 2,
-                  currency: "USD",
-                }).format(current.total)}
-              </Text>
-            </Flex>
-          </CardBody>
-        </Card>
-      )
-    })
+  const profitRecordList = profitRecords?.map((profitRecord) => {
+    return (
+      <Card key={profitRecord.month} variant="outline" mb={3}>
+        <CardBody>
+          <Flex direction="row" justifyContent={"space-between"}>
+            <Text>{profitRecord.monthName} del {profitRecord.year}</Text>
+            <Text as={"span"} fontWeight={"bold"}>
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                minimumFractionDigits: 2,
+                currency: "USD",
+              }).format(profitRecord.total)}
+            </Text>
+          </Flex>
+        </CardBody>
+      </Card>
+    )
+  })
     .reverse()
 
   if (querySalesReport?.isLoading) {
     return <Loading />
   }
 
-  if (!querySalesReport?.isLoading && total?.length === 0) {
+  if (!querySalesReport?.isLoading && profitRecords?.length === 0) {
     return <Text>No hay datos</Text>
   }
 
-  if (!querySalesReport?.isLoading && total?.length > 0) {
+  if (!querySalesReport?.isLoading && profitRecords?.length > 0) {
     return (
       <>
         <Card variant="outline" mb={3}>
@@ -346,7 +167,7 @@ const BarChart = () => {
             </Flex>
           </CardFooter>
         </Card>
-        {lastTwelveYears}
+        {profitRecordList}
       </>
     )
   }
