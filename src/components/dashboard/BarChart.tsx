@@ -34,7 +34,7 @@ import Loading from "../common/Loading"
 // types
 import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
 
-import { groupSaleItemByMonth, groupSalesByMonth, MonthData } from "../../utils/reports"
+import { groupSaleItemsByMonth, groupSalesByMonth, MonthData } from "../../utils/reports"
 
 ChartJS.register(
   LinearScale,
@@ -59,7 +59,7 @@ const BarChart = () => {
 
   const saleItems = querySaleItemsReport.data as ISaleItemFullRelated[]
 
-  const groupedSaleItems = groupSaleItemByMonth(saleItems?.filter(saleItem => saleItem.sale?.status === 'PAID'), numberOfMonth)
+  const groupedSaleItems = groupSaleItemsByMonth(saleItems?.filter(saleItem => saleItem.sale?.status === 'PAID'), numberOfMonth)
 
   // sales
   const querySalesReport = useSalesReport({ historyMonthToRetrieve: 12 })
