@@ -51,6 +51,7 @@ import FixedCostForm from "../fixedCosts/FixedCostForm"
 import PageNotFound from "./PageNotFound"
 
 import ProfileBase from "./permissions"
+import InventoryTransactionBulkForm from "../inventoryTransactions/InventoryTransactionBulkForm"
 
 const Home = () => {
   return (
@@ -345,6 +346,18 @@ const Home = () => {
           <Route
             path="/inventoryTransactions/add"
             element={<InventoryTransactionForm />}
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              allowedRoles={ProfileBase.inventoryTransactions.create}
+            />
+          }
+        >
+          <Route
+            path="/inventoryTransactions/bulk-add"
+            element={<InventoryTransactionBulkForm />}
           />
         </Route>
         <Route

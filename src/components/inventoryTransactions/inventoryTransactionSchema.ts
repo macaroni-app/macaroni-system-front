@@ -1,7 +1,17 @@
 import {z} from "zod"
 
+
 export const TRANSACTION_TYPE = ['UP', 'DOWN'] as const
 export const TRANSACTION_REASON = ['BUY', 'SELL', 'RETURN', 'ADJUSTMENT', 'DONATION', 'DEFEATED', 'LOSS', 'INTERNAL_USAGE'] as const
+
+
+const inventoryTransactions = z.object({
+  asset: z.string(),
+  transactionReason: z.string(),
+  transactionType: z.string(),
+  affectedAmount: z.number().nonnegative(),
+  id: z.string().optional()
+})
 
 export const inventoryTransactionSchema = z.object({
   _id: z.string().optional(),
@@ -15,4 +25,8 @@ export const inventoryTransactionSchema = z.object({
   deletedAt: z.date().optional(),
   createdBy: z.string().min(24).max(24).optional(),
   updatedBy: z.string().min(24).max(24).optional()
+})
+
+export const inventoryTransactionBulkSchema = z.object({
+  inventoryTransactions: z.array(inventoryTransactions),
 })

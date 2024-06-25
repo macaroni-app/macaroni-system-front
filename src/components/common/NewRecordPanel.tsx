@@ -9,6 +9,8 @@ interface Props {
   title: string
   handleAddRecord: () => void
   roles: number[]
+  showBulkBtn?: boolean
+  handleAddBulkRecords?: () => void
 }
 
 const NewRecordPanel = ({
@@ -17,6 +19,8 @@ const NewRecordPanel = ({
   title,
   handleAddRecord,
   roles,
+  showBulkBtn,
+  handleAddBulkRecords
 }: Props) => {
   const { checkRole } = useCheckRole()
 
@@ -33,15 +37,25 @@ const NewRecordPanel = ({
           </Text>
           <Spacer />
           {checkRole(roles) && (
-            <Button
-              onClick={() => handleAddRecord()}
-              colorScheme="purple"
-              variant="solid"
-              size={{ base: "sm", md: "md" }}
-            >
-              <AddIcon boxSize={3} me={2} />
-              {buttonLabel}
-            </Button>
+            <>
+              {showBulkBtn !== undefined && showBulkBtn && handleAddBulkRecords !== undefined && (
+                <Button onClick={() => handleAddBulkRecords()}
+                  colorScheme="blue"
+                  mr={2}
+                  size={{ base: "sm", md: "md" }}>
+                  <AddIcon boxSize={3} me={2} />
+                  Masivo</Button>
+              )}
+              <Button
+                onClick={() => handleAddRecord()}
+                colorScheme="purple"
+                variant="solid"
+                size={{ base: "sm", md: "md" }}
+              >
+                <AddIcon boxSize={3} me={2} />
+                {buttonLabel}
+              </Button>
+            </>
           )}
         </Flex>
       </CardBody>

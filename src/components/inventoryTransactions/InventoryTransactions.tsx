@@ -7,7 +7,7 @@ import {
   Stack,
   Skeleton,
   Text,
-  GridItem,
+  GridItem
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -41,6 +41,10 @@ const InventoryTransactions = (): JSX.Element => {
 
   const handleAddInventoryTransaction = () => {
     navigate("/inventoryTransactions/add")
+  }
+
+  const handleAddBulkInventoryTransaction = () => {
+    navigate("/inventoryTransactions/bulk-add")
   }
 
   const inventoryTransactions =
@@ -151,6 +155,8 @@ const InventoryTransactions = (): JSX.Element => {
             title="transacciones"
             buttonLabel="Nueva transacción"
             roles={ProfileBase.inventoryTransactions.create}
+            showBulkBtn={true}
+            handleAddBulkRecords={handleAddBulkInventoryTransaction}
           />
         )}
 
@@ -199,12 +205,12 @@ const InventoryTransactions = (): JSX.Element => {
                     {checkRole(
                       ProfileBase.inventoryTransactions.viewActions
                     ) && (
-                      <GridItem>
-                        <Flex direction="column" gap={2} placeItems={"end"}>
-                          <Text fontWeight="bold">Acciones</Text>
-                        </Flex>
-                      </GridItem>
-                    )}
+                        <GridItem>
+                          <Flex direction="column" gap={2} placeItems={"end"}>
+                            <Text fontWeight="bold">Acciones</Text>
+                          </Flex>
+                        </GridItem>
+                      )}
                   </Grid>
                 </CardBody>
               </Card>

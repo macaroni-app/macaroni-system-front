@@ -31,3 +31,11 @@ export interface IInventoryTransactionFullRelated extends IInventoryTransactionF
 export interface IInventoryTransactionLessRelated extends IInventoryTransactionFather{
   asset?: string
 }
+
+export interface IInventoryTransactionFullRelatedBulk extends IInventoryTransactionFather{
+  inventoryTransactions: IInventoryTransactionFullRelated[]
+}
+
+export interface IInventoryTransactionLessRelatedBulk extends IInventoryTransactionFather{
+  inventoryTransactions: IInventoryTransactionLessRelated[]
+}
