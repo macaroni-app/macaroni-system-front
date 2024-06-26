@@ -261,7 +261,7 @@ const ProductForm = () => {
           isLoading={isLoading}
           categories={categories}
           productTypes={productTypes}
-          assets={assets.filter((asset) => asset.isActive)}
+          assets={assets?.filter((asset) => asset.isActive)}
           productItems={productItems as IProductFullRelated[]}
         />
       )}
