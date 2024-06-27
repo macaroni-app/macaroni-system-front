@@ -33,7 +33,7 @@ const Dashboard = () => {
     billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
   )
 
-  const totalCosts = Number(sales?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
+  const totalCosts = Number(sales?.filter((sale) => sale.status === "PAID")?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
 
   // profit
   const totalRevenues = Number(totalBillings - totalCosts)
