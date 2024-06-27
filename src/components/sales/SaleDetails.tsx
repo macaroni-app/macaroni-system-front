@@ -226,6 +226,24 @@ const SaleDetails = () => {
                       direction="row"
                       justifyContent={"space-between"}
                     >
+                      <Text fontSize="lg">Costo total: </Text>
+                      <Text as="b" fontSize="lg">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          sale?.costTotal !== undefined
+                            ? Number.parseFloat(sale?.costTotal?.toFixed(2))
+                            : 0
+                        )}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
                       <Text fontSize="lg">Venta por menor: </Text>
                       <Text as="b" fontSize="lg">
                         {sale?.isRetail ? (
