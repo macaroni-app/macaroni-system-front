@@ -135,7 +135,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
             assetQuantityByAssetId.set(
               productItem.asset?._id as string,
               Number(prevQuantity) +
-                Number(productItem.quantity) * Number(saleItem.quantity)
+              Number(productItem.quantity) * Number(saleItem.quantity)
             )
           } else {
             assetQuantityByAssetId.set(
@@ -191,6 +191,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
         status: SaleStatus.CANCELLED,
         client: sale.client?._id,
         paymentMethod: sale.paymentMethod?._id,
+        costTotal: sale.costTotal,
         total: sale.total,
         isRetail: sale.isRetail,
       },
@@ -305,15 +306,15 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                     <Text as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(Number.parseFloat(sale?.total.toString()))
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(Number.parseFloat(sale?.total.toString()))
                         : new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(0)}
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
                     </Text>
                   </Flex>
                 </GridItem>
@@ -323,15 +324,15 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
                     <Text display={{ md: "none" }} as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(Number.parseFloat(sale?.total.toString()))
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(Number.parseFloat(sale?.total.toString()))
                         : new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(0)}
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
                     </Text>
                     {checkRole(ProfileBase.sales.viewActions) && (
                       <Popover placement="bottom-start">

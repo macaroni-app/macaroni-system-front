@@ -2,7 +2,6 @@ import { Grid, GridItem } from "@chakra-ui/react"
 
 // custom hooks
 import { useSales } from "../../hooks/useSales"
-import { useSaleItems } from "../../hooks/useSaleItems"
 import { useInventories } from "../../hooks/useInventories"
 import { useCheckRole } from "../../hooks/useCheckRole"
 
@@ -10,7 +9,7 @@ import { useCheckRole } from "../../hooks/useCheckRole"
 import QuickInventoryReport from "./QuickInventoryReport"
 
 // types
-import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
+import { ISaleFullRelated } from "../sales/types"
 import { IInventoryFullRelated } from "../inventories/types"
 import SimpleBoard from "./SimpleBoard"
 import ProfileBase from "../common/permissions"
@@ -34,20 +33,7 @@ const Dashboard = () => {
     billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
   )
 
-  // saleItems
-  const querySaleItems = useSaleItems({})
-  const saleItems = querySaleItems?.data as ISaleItemFullRelated[]
-
-  const costs = saleItems
-    ?.filter((saleItem) => saleItem.sale?.status === "PAID")
-    ?.map(
-      (saleItem) =>
-        Number(saleItem?.product?.costPrice) * Number(saleItem?.quantity)
-    ) as number[]
-
-  const totalCosts = Number.parseFloat(
-    costs?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
-  )
+  const totalCosts = Number(sales?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
 
   // profit
   const totalRevenues = Number(totalBillings - totalCosts)
@@ -104,14 +90,14 @@ const Dashboard = () => {
               <GridItem colSpan={{ base: 12 }}>
                 <Grid templateColumns="repeat(12, 1fr)" gap={3}>
                   <GridItem colSpan={{ base: 12, md: 6 }}>
-                    {querySaleItems.isLoading && (
+                    {querySales.isLoading && (
                       <SimpleBoardSkeleton numberRows={3} />
                     )}
-                    {!querySaleItems.isLoading && (
+                    {!querySales.isLoading && (
                       <SimpleBoard
                         title="Costo"
                         amount={totalCosts}
-                        size={costs?.length}
+                        size={sales?.length}
                         fontColor="black"
                       />
                     )}

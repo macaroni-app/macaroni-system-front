@@ -25,16 +25,15 @@ import {
 } from "@chakra-ui/react"
 
 // custom hooks
-import { useSaleItemsReport } from "../../hooks/useSaleItemsReport"
 import { useSalesReport } from "../../hooks/useSalesReport"
 
 // components
 import Loading from "../common/Loading"
 
 // types
-import { ISaleFullRelated, ISaleItemFullRelated } from "../sales/types"
+import { ISaleFullRelated } from "../sales/types"
 
-import { groupSaleItemsByMonth, groupSalesByMonth, MonthData } from "../../utils/reports"
+import { groupSalesByMonth, MonthData } from "../../utils/reports"
 
 ChartJS.register(
   LinearScale,
@@ -52,15 +51,6 @@ const BarChart = () => {
 
   const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
-  // saleItems
-  const querySaleItemsReport = useSaleItemsReport({
-    historyMonthToRetrieve: 12,
-  })
-
-  const saleItems = querySaleItemsReport.data as ISaleItemFullRelated[]
-
-  const groupedSaleItems = groupSaleItemsByMonth(saleItems?.filter(saleItem => saleItem.sale?.status === 'PAID'), numberOfMonth)
-
   // sales
   const querySalesReport = useSalesReport({ historyMonthToRetrieve: 12 })
   const sales = querySalesReport.data as ISaleFullRelated[]
@@ -71,11 +61,7 @@ const BarChart = () => {
   const profitRecords: MonthData[] = []
 
   groupedSales?.forEach(groupedSale => {
-    groupedSaleItems?.forEach(groupedSaleItem => {
-      if (groupedSale.month === groupedSaleItem.month && groupedSale.year === groupedSaleItem.year) {
-        profitRecords.push({ ...groupedSale, total: groupedSale.total - groupedSaleItem.total })
-      }
-    })
+    profitRecords.push({ ...groupedSale, total: groupedSale.total - groupedSale.costCotal })
   })
 
 

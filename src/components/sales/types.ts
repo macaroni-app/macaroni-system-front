@@ -11,6 +11,7 @@ export enum SaleStatus {
 export interface ISaleFather extends IGenericObject {
   isRetail?: boolean
   total?: number
+  costTotal?: number
   status?: SaleStatus
   saleItems?: ISaleItemPreview[]
 }

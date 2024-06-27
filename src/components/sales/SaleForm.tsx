@@ -175,7 +175,7 @@ const SaleForm = () => {
                 assetQuantityByAssetId.set(
                   productItem.asset?._id as string,
                   Number(prevQuantity) +
-                    Number(productItem.quantity) * Number(saleItem.quantity)
+                  Number(productItem.quantity) * Number(saleItem.quantity)
                 )
               } else {
                 assetQuantityByAssetId.set(
@@ -223,9 +223,26 @@ const SaleForm = () => {
 
         await addNewManyInventoryTransaction(inventoryTransactions)
 
-        // Todo: insertar la venta.
+        // Todo: insertar la venta. 
+
+        let costTotal = sale.saleItems?.map(saleItem => {
+          let costTotal
+
+          if (saleItem.quantity !== undefined) {
+            costTotal = saleItem.quantity * productsById.get(saleItem.product).costPrice
+          }
+
+          return costTotal
+
+        }).reduce((acc, currentValue) => {
+          if (acc !== undefined && currentValue !== undefined) {
+            return acc + currentValue
+          }
+        }, 0)
+
 
         sale.total = getTotalSale(sale)
+        sale.costTotal = costTotal
         sale.status = SaleStatus.PAID
         response = await addNewSale(sale)
 
@@ -237,9 +254,9 @@ const SaleForm = () => {
           if (saleItem.quantity !== undefined) {
             subTotal = sale.isRetail
               ? saleItem?.quantity *
-                productsById.get(saleItem.product).retailsalePrice
+              productsById.get(saleItem.product).retailsalePrice
               : saleItem?.quantity *
-                productsById.get(saleItem.product).wholesalePrice
+              productsById.get(saleItem.product).wholesalePrice
           }
 
           return {
