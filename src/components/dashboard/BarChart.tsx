@@ -52,7 +52,7 @@ const BarChart = () => {
   const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
   // sales
-  const querySalesReport = useSalesReport({ historyMonthToRetrieve: 12 })
+  const querySalesReport = useSalesReport({ historyMonthToRetrieve: numberOfMonth })
   const sales = querySalesReport.data as ISaleFullRelated[]
 
   const groupedSales = groupSalesByMonth(sales?.filter(sale => sale?.status === 'PAID'), numberOfMonth)
@@ -88,7 +88,7 @@ const BarChart = () => {
 
   const profitRecordList = profitRecords?.map((profitRecord) => {
     return (
-      <Card key={profitRecord.month} variant="outline" mb={3}>
+      <Card key={`${profitRecord.month}-${profitRecord.year}`} variant="outline" mb={3}>
         <CardBody>
           <Flex direction="row" justifyContent={"space-between"}>
             <Text>{profitRecord.monthName} del {profitRecord.year}</Text>
@@ -135,6 +135,20 @@ const BarChart = () => {
           <Divider />
           <CardFooter justifyContent={"center"}>
             <Flex gap={2}>
+              <Button
+                onClick={() => setNumberOfMonth(24)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                24 meses
+              </Button>
+              <Button
+                onClick={() => setNumberOfMonth(18)}
+                colorScheme="purple"
+                variant="ghost"
+              >
+                18 meses
+              </Button>
               <Button
                 onClick={() => setNumberOfMonth(12)}
                 colorScheme="purple"
