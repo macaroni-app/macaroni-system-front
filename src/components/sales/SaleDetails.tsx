@@ -51,24 +51,7 @@ const SaleDetails = () => {
     (saleItem) => saleItem?.sale?._id === saleId
   )
 
-  const saleTotal = saleItems
-    ?.map((saleItem) => {
-      if (
-        saleItem !== undefined &&
-        saleItem?.product?.retailsalePrice !== undefined &&
-        saleItem?.quantity !== undefined
-      ) {
-        return (
-          Number(saleItem?.quantity) *
-          Number(saleItem?.product?.retailsalePrice)
-        )
-      }
-    })
-    .reduce((acc, currentValue) => {
-      if (acc !== undefined && currentValue !== undefined) {
-        return acc + currentValue
-      }
-    }, 0)
+  const saleTotal = saleItems?.map(saleItem => saleItem.subtotal).reduce((acc, currentValue) => acc + currentValue, 0)
 
   const saleDetailsList = saleItems?.map((saleItem) => {
     return (
