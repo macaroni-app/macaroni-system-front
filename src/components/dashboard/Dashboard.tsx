@@ -17,6 +17,7 @@ import { useFixedCosts } from "../../hooks/useFixedCosts"
 import { IFixedCost } from "../fixedCosts/types"
 import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
 import LineChart from "./LineChart"
+import BarChart from "./BarChart"
 
 const Dashboard = () => {
   const { checkRole } = useCheckRole()
@@ -169,10 +170,15 @@ const Dashboard = () => {
         </>
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
-        <GridItem colSpan={{ base: 12 }}>
+        <>
+				<GridItem colSpan={{ base: 12, md: 6 }}>
           {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
           {!queryInventories.isLoading && <QuickInventoryReport />}
         </GridItem>
+				<GridItem colSpan={{base: 12, md: 6}}>
+					<BarChart />
+				</GridItem>
+				</>
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
         <GridItem colSpan={{ base: 12 }}>
