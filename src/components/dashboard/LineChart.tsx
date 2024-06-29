@@ -47,7 +47,7 @@ ChartJS.register(
 )
 
 
-const BarChart = () => {
+const LineChart = () => {
 
   const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
@@ -179,4 +179,4 @@ const BarChart = () => {
   }
 }
 
-export default BarChart
+export default LineChart
