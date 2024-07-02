@@ -158,7 +158,7 @@ const Dashboard = () => {
                 )}
                 {!queryInventories.isLoading && (
                   <SimpleBoard
-                    title="Costo del stock disponible"
+                    title="Costo total del stock"
                     amount={totalAssetCosts}
                     size={assetCosts?.length}
                     fontColor="black"
@@ -171,14 +171,14 @@ const Dashboard = () => {
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <>
-				<GridItem colSpan={{ base: 12, md: 6 }}>
-          {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
-          {!queryInventories.isLoading && <QuickInventoryReport />}
-        </GridItem>
-				<GridItem colSpan={{base: 12, md: 6}}>
-					<BarChart />
-				</GridItem>
-				</>
+          <GridItem colSpan={{ base: 12, md: 6 }}>
+            {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
+            {!queryInventories.isLoading && <QuickInventoryReport />}
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 6 }}>
+            <BarChart />
+          </GridItem>
+        </>
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
         <GridItem colSpan={{ base: 12 }}>

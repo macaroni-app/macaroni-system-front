@@ -39,8 +39,8 @@ ChartJS.register(
 
 const BarChart = () => {
 
-	const queryInventory = useInventories({})
-	const inventories = queryInventory.data
+  const queryInventory = useInventories({})
+  const inventories = queryInventory.data
 
   const options = {
     responsive: true,
@@ -56,7 +56,7 @@ const BarChart = () => {
     labels: inventories?.map(inventory => inventory.asset?.name),
     datasets: [
       {
-        data: inventories?.map(inventory => inventory.quantityAvailable),
+        data: inventories?.map(inventory => Number(inventory.asset?.costPrice) * Number(inventory.quantityAvailable)),
         backgroundColor: ["#805AD5"],
       },
     ],
@@ -76,13 +76,13 @@ const BarChart = () => {
     )
   }
 
-  if (!queryInventory?.isLoading && inventories?.length > 0) {
+  if (!queryInventory?.isLoading && inventories?.length !== undefined && inventories?.length > 0) {
     return (
       <>
         <Card variant="outline" mb={3}>
           <CardHeader textAlign={"center"}>
             <Heading size={"lg"}>
-              Stock disponibles
+              Costo del inventario
             </Heading>
           </CardHeader>
           <CardBody>

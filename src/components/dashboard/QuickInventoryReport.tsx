@@ -4,15 +4,14 @@ import {
   CardHeader,
   Grid,
   GridItem,
-  Text,
   Table,
-  // TableCaption,
   TableContainer,
   Tbody,
   Td,
   Th,
   Thead,
   Tr,
+  Heading,
 } from "@chakra-ui/react"
 
 import { useInventories } from "../../hooks/useInventories"
@@ -41,8 +40,10 @@ const QuickInventoryReport = () => {
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
       <GridItem colSpan={{ base: 12 }}>
         <Card variant="outline">
-          <CardHeader>
-            <Text textAlign={"center"}>Stock disponibles</Text>
+          <CardHeader textAlign={"center"}>
+            <Heading size={"lg"}>
+              Stock disponibles
+            </Heading>
           </CardHeader>
           <CardBody>
             <TableContainer>
