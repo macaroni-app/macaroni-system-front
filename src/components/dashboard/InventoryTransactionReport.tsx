@@ -12,6 +12,7 @@ import {
   Thead,
   Tr,
   Heading,
+  Text
 } from "@chakra-ui/react"
 
 // custom hooks
@@ -54,6 +55,21 @@ const InventoryTransactionReport = () => {
       )
     }
   })
+
+  if (!queryInventoryTransactions?.isLoading && queryInventoryTransactions?.data?.length === 0) {
+    return (
+      <Card variant="outline" mb={3}>
+        <CardHeader textAlign={"center"}>
+          <Heading size={"lg"}>
+            Compras mes de {monthNames[currentMonth]}
+          </Heading>
+        </CardHeader>
+        <CardBody textAlign={"center"}>
+          <Text>No hay datos</Text>
+        </CardBody>
+      </Card>
+    )
+  }
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
