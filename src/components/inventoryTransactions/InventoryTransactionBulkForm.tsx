@@ -65,6 +65,8 @@ const InventoryTransactionBulkForm = () => {
           }
           if (inventoryTransaction.asset === inventory.asset?._id) {
 
+            inventoryTransaction.oldQuantityAvailable = inventory.quantityAvailable
+
             switch (inventoryTransaction.transactionType) {
               case TransactionType.DOWN: {
                 inventoryUpdated.quantityAvailable =
@@ -81,6 +83,7 @@ const InventoryTransactionBulkForm = () => {
                 break
               }
             }
+            inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
 
             inventoriesToUpdate.push(inventoryUpdated)
           }

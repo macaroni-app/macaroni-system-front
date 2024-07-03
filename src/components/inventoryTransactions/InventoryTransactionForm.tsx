@@ -98,6 +98,8 @@ const InventoryTransactionForm = () => {
           quantityAvailable: inventory?.quantityAvailable,
         }
 
+        let inventoryTransacionToSave: IInventoryTransactionLessRelated = { ...inventoryTransaction, oldQuantityAvailable: inventoryUpdated.quantityAvailable }
+
         let inventoriesToUpdate: IInventoryLessRelated[] = []
 
         if (inventoryTransaction.transactionType === TransactionType.UP) {
@@ -133,7 +135,7 @@ const InventoryTransactionForm = () => {
         }
 
         if (editInventoryResponse.isUpdated) {
-          response = await addNewInventoryTransaction(inventoryTransaction)
+          response = await addNewInventoryTransaction({ ...inventoryTransacionToSave, currentQuantityAvailable: inventoryUpdated.quantityAvailable })
 
           if (response.isStored) {
             showMessage(

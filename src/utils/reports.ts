@@ -1,3 +1,4 @@
+import { IInventoryTransactionFullRelated } from "../components/inventoryTransactions/types";
 import { ISaleFullRelated } from "../components/sales/types"
 
 export type MonthData = {
@@ -64,4 +65,42 @@ export const groupSalesByMonth = (sales: ISaleFullRelated[], numberOfMonths: num
   }
 
   return allMonths;
+};
+
+
+export const agruparYSumarTransacciones = (inventoryTransactions: IInventoryTransactionFullRelated[]) => {
+
+  if(inventoryTransactions !== undefined && inventoryTransactions.length > 0) {
+
+    const resultado = inventoryTransactions?.reduce((acc, inventoryTransaction) => {
+      const { asset, transactionType, affectedAmount } = inventoryTransaction;
+  
+      let assetId = asset?._id
+  
+      if (!acc[assetId]) {
+        acc[assetId] = {};
+      }
+  
+      if (!acc[assetId][transactionType]) {
+        acc[assetId][transactionType] = 0;
+      }
+  
+      acc[assetId][transactionType] += affectedAmount;
+
+      return acc;
+    }, {});
+  
+    const resultadoArray = Object?.entries(resultado)?.map(([assetId, transaccionesPorTipo]) => {
+      return Object?.entries(transaccionesPorTipo)?.map(([transactionType, affectedAmount]) => {
+        return {
+          asset: assetId,
+          transactionType,
+          affectedAmount
+        };
+      });
+    }).flat();
+  
+    return resultadoArray;
+  }
+
 };

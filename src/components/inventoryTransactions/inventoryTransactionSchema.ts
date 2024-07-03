@@ -10,6 +10,8 @@ const inventoryTransactions = z.object({
   transactionReason: z.string(),
   transactionType: z.string(),
   affectedAmount: z.number().nonnegative(),
+  oldQuantityAvailable: z.number().nonnegative().optional(),
+  currentQuantityAvailable: z.number().nonnegative().optional(),
   id: z.string().optional()
 })
 
@@ -19,6 +21,8 @@ export const inventoryTransactionSchema = z.object({
   transactionType: z.enum(TRANSACTION_TYPE),
   transactionReason: z.enum(TRANSACTION_REASON),
   affectedAmount: z.number().nonnegative(),
+  oldQuantityAvailable: z.number().nonnegative().optional(),
+  currentQuantityAvailable: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

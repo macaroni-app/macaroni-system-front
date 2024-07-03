@@ -20,6 +20,8 @@ export enum TransactionReason {
 
 export interface IInventoryTransactionFather extends IGenericObject{
   affectedAmount?: number
+  oldQuantityAvailable?: number
+  currentQuantityAvailable?: number
   transactionType?: TransactionType
   transactionReason?: TransactionReason
 }

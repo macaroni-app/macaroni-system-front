@@ -189,6 +189,9 @@ const SaleForm = () => {
         })
         let inventoriesToUpdate: IInventoryLessRelated[] = []
 
+        // para usar en las transacciones: guardar valores viejos
+        let oldInventories: IInventoryFullRelated[] = inventories
+
         assetQuantityByAssetId.forEach((value, key) => {
           inventories.forEach((inventory) => {
             let inventoryUpdated: IInventoryLessRelated = {
@@ -220,6 +223,22 @@ const SaleForm = () => {
             transactionReason: TransactionReason.SELL,
           })
         })
+
+
+        // guardar los valores viejos y nuevos
+        inventoryTransactions.forEach(inventoryTransaction => {
+          oldInventories.forEach(oldInventory => {
+            if (inventoryTransaction.asset === oldInventory.asset?._id) {
+              inventoryTransaction.oldQuantityAvailable = oldInventory.quantityAvailable
+            }
+          })
+          inventoriesToUpdate.forEach(inventoryUpdated => {
+            if (inventoryTransaction.asset === inventoryUpdated.asset) {
+              inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+            }
+          })
+        })
+
 
         await addNewManyInventoryTransaction(inventoryTransactions)
 
