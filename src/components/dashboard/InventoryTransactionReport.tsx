@@ -14,37 +14,46 @@ import {
   Heading,
 } from "@chakra-ui/react"
 
-import { useInventories } from "../../hooks/useInventories"
-
-import { IInventoryFullRelated } from "../inventories/types"
+// custom hooks
 import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
+
+// types
 import { IInventoryTransactionFullRelated } from "../inventoryTransactions/types"
-import { agruparYSumarTransacciones } from "../../utils/reports"
+
+// utils
+import { agruparYSumarTransaccionesPorMes, monthNames, TransactionResult } from "../../utils/reports"
 
 const InventoryTransactionReport = () => {
-  const queryInventories = useInventories({})
-  const inventories = queryInventories.data as IInventoryFullRelated[]
 
   const queryInventoryTransactions = useInventoryTransactions({})
   const inventoryTransactions = queryInventoryTransactions.data as IInventoryTransactionFullRelated[]
 
+  const currentMonth = new Date().getMonth()
 
-  const res = agruparYSumarTransacciones(inventoryTransactions)
-  console.log(res)
+  const transactionGrouped: TransactionResult[] = agruparYSumarTransaccionesPorMes(inventoryTransactions)
 
-  const listInventories = inventories
-    ?.filter((inventory) => inventory.asset?.isActive)
-    ?.map((inventory) => {
-      if (inventory?._id !== undefined && inventory?.createdAt !== undefined) {
-        return (
-          <Tr key={inventory?._id + inventory?.createdAt}>
-            <Td>{inventory.asset?.name}</Td>
-            <Td></Td>
-            <Td isNumeric>{inventory.quantityAvailable}</Td>
-          </Tr>
-        )
-      }
-    })
+  const listTransactions = transactionGrouped?.filter(aTransactionGrouped => aTransactionGrouped.transactionReason === 'BUY')?.map(aTransactionGrouped => {
+    if (aTransactionGrouped?.asset?._id !== undefined && aTransactionGrouped?.asset.createdAt !== undefined) {
+      return (
+        <Tr key={aTransactionGrouped?.asset?._id + aTransactionGrouped?.asset.createdAt}>
+          <Td>{aTransactionGrouped.asset?.name}</Td>
+          <Td></Td>
+          <Td isNumeric>{aTransactionGrouped.affectedAmount}</Td>
+          <Td isNumeric>
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              minimumFractionDigits: 2,
+              currency: "USD",
+            }).format(
+              aTransactionGrouped?.total !== undefined
+                ? Number.parseFloat(aTransactionGrouped?.total?.toFixed(2))
+                : 0
+            )}
+          </Td>
+        </Tr>
+      )
+    }
+  })
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
@@ -52,7 +61,7 @@ const InventoryTransactionReport = () => {
         <Card variant="outline">
           <CardHeader textAlign={"center"}>
             <Heading size={"lg"}>
-              Stock disponibles
+              Compras mes de {monthNames[currentMonth]}
             </Heading>
           </CardHeader>
           <CardBody>
@@ -63,10 +72,11 @@ const InventoryTransactionReport = () => {
                   <Tr>
                     <Th>Insumo</Th>
                     <Th></Th>
-                    <Th isNumeric>Stock</Th>
+                    <Th isNumeric>Cantidad</Th>
+                    <Th isNumeric>Total</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{listInventories}</Tbody>
+                <Tbody>{listTransactions}</Tbody>
               </Table>
             </TableContainer>
           </CardBody>

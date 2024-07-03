@@ -18,6 +18,7 @@ import { IFixedCost } from "../fixedCosts/types"
 import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
 import LineChart from "./LineChart"
 import BarChart from "./BarChart"
+import InventoryTransactionReport from "./InventoryTransactionReport"
 
 const Dashboard = () => {
   const { checkRole } = useCheckRole()
@@ -181,9 +182,14 @@ const Dashboard = () => {
         </>
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
-        <GridItem colSpan={{ base: 12 }}>
-          <LineChart />
-        </GridItem>
+        <>
+          <GridItem colSpan={{ base: 12 }}>
+            <LineChart />
+          </GridItem>
+          <GridItem colSpan={{ base: 12 }}>
+            <InventoryTransactionReport />
+          </GridItem>
+        </>
       )}
     </Grid>
   )

@@ -1,3 +1,4 @@
+import { IAssetLessCategory } from "../components/assets/types";
 import { IInventoryTransactionFullRelated } from "../components/inventoryTransactions/types";
 import { ISaleFullRelated } from "../components/sales/types"
 
@@ -10,7 +11,7 @@ export type MonthData = {
   monthName: string;
 };
 
-const monthNames = [
+export const monthNames = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
@@ -67,40 +68,65 @@ export const groupSalesByMonth = (sales: ISaleFullRelated[], numberOfMonths: num
   return allMonths;
 };
 
+export type TransactionResult = {
+  asset?: IAssetLessCategory
+  transactionReason?: string
+  affectedAmount?: number
+  total?: number
+  month?: string
+}
 
-export const agruparYSumarTransacciones = (inventoryTransactions: IInventoryTransactionFullRelated[]) => {
+interface Accumulator {
+  [assetId: string]: {
+    [transactionReason: string]: {
+      [month: string]: number;
+    }
+  }
+}
+
+export const agruparYSumarTransaccionesPorMes = (inventoryTransactions: IInventoryTransactionFullRelated[]): TransactionResult[] => {
 
   if(inventoryTransactions !== undefined && inventoryTransactions.length > 0) {
-
     const resultado = inventoryTransactions?.reduce((acc, inventoryTransaction) => {
-      const { asset, transactionType, affectedAmount } = inventoryTransaction;
+      const { asset, transactionReason, affectedAmount, createdAt } = inventoryTransaction;
+      const month = new Date(String(createdAt)).toISOString().slice(0, 7); // Obtiene el año-mes en formato YYYY-MM
   
-      let assetId = asset?._id
+      let assetId = asset?._id as string
   
       if (!acc[assetId]) {
         acc[assetId] = {};
       }
   
-      if (!acc[assetId][transactionType]) {
-        acc[assetId][transactionType] = 0;
+      if (transactionReason !== undefined && !acc[assetId][transactionReason]) {
+        acc[assetId][transactionReason] = {};
       }
   
-      acc[assetId][transactionType] += affectedAmount;
-
-      return acc;
-    }, {});
+      if (transactionReason !== undefined && !acc[assetId][transactionReason][month]) {
+        acc[assetId][transactionReason][month] = 0;
+      }
   
-    const resultadoArray = Object?.entries(resultado)?.map(([assetId, transaccionesPorTipo]) => {
-      return Object?.entries(transaccionesPorTipo)?.map(([transactionType, affectedAmount]) => {
-        return {
-          asset: assetId,
-          transactionType,
-          affectedAmount
-        };
+      acc[assetId][transactionReason !== undefined ? transactionReason : ''][month] += Number(affectedAmount)
+  
+      return acc
+    }, {} as Accumulator) 
+  
+    const resultadoArray = Object?.entries(resultado)?.flatMap(([assetId, transactionsByReason]) => {
+      return Object?.entries(transactionsByReason)?.flatMap(([transactionReason, transactionsByMonth]) => {
+        return Object?.entries(transactionsByMonth)?.map(([month, affectedAmount]) => {
+          let asset = inventoryTransactions?.find(inventoryTransaction => inventoryTransaction.asset?._id === assetId)?.asset
+          return {
+            asset,
+            transactionReason,
+            affectedAmount,
+            total: Number(affectedAmount) * Number(asset?.costPrice),
+            month
+          };
+        });
       });
-    }).flat();
+    }) as TransactionResult[]
   
     return resultadoArray;
   }
 
+  return [{asset: undefined, transactionReason: undefined, affectedAmount: undefined, total: undefined, month: undefined}] as TransactionResult[]
 };
