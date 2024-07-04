@@ -12,7 +12,8 @@ import {
   Thead,
   Tr,
   Heading,
-  Text
+  Text,
+  Tfoot
 } from "@chakra-ui/react"
 
 // custom hooks
@@ -32,6 +33,8 @@ const InventoryTransactionReport = () => {
   const currentMonth = new Date().getMonth()
 
   const transactionGrouped: TransactionResult[] = agruparYSumarTransaccionesPorMes(inventoryTransactions)
+
+  const totalCost = transactionGrouped?.filter(transactionGroup => transactionGroup.transactionReason === 'BUY')?.reduce((acc, currentValue) => acc + Number(currentValue?.total), 0)
 
   const listTransactions = transactionGrouped?.filter(aTransactionGrouped => aTransactionGrouped.transactionReason === 'BUY')?.map(aTransactionGrouped => {
     if (aTransactionGrouped?.asset?._id !== undefined && aTransactionGrouped?.asset.createdAt !== undefined) {
@@ -89,10 +92,25 @@ const InventoryTransactionReport = () => {
                     <Th>Insumo</Th>
                     <Th></Th>
                     <Th isNumeric>Cantidad</Th>
-                    <Th isNumeric>Total</Th>
+                    <Th isNumeric>Subtotal</Th>
                   </Tr>
                 </Thead>
                 <Tbody>{listTransactions}</Tbody>
+                <Tfoot>
+                  <Tr>
+                    <Th>Total</Th>
+                    <Th></Th>
+                    <Th></Th>
+                    <Th isNumeric>
+                      {totalCost !== undefined &&
+                        new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(Number(totalCost))}
+                    </Th>
+                  </Tr>
+                </Tfoot>
               </Table>
             </TableContainer>
           </CardBody>
