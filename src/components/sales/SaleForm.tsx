@@ -230,11 +230,18 @@ const SaleForm = () => {
           oldInventories.forEach(oldInventory => {
             if (inventoryTransaction.asset === oldInventory.asset?._id) {
               inventoryTransaction.oldQuantityAvailable = oldInventory.quantityAvailable
+
+              //unit cost
+              inventoryTransaction.unitCost = oldInventory.asset?.costPrice
             }
           })
           inventoriesToUpdate.forEach(inventoryUpdated => {
             if (inventoryTransaction.asset === inventoryUpdated.asset) {
               inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+
+              let asset = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset
+              //unit cost
+              inventoryTransaction.unitCost = asset?.costPrice
             }
           })
         })

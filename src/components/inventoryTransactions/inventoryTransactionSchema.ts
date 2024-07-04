@@ -12,6 +12,7 @@ const inventoryTransactions = z.object({
   affectedAmount: z.number().nonnegative(),
   oldQuantityAvailable: z.number().nonnegative().optional(),
   currentQuantityAvailable: z.number().nonnegative().optional(),
+  unitCost: z.number().nonnegative().optional(),
   id: z.string().optional()
 })
 
@@ -23,6 +24,7 @@ export const inventoryTransactionSchema = z.object({
   affectedAmount: z.number().nonnegative(),
   oldQuantityAvailable: z.number().nonnegative().optional(),
   currentQuantityAvailable: z.number().nonnegative().optional(),
+  unitCost: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

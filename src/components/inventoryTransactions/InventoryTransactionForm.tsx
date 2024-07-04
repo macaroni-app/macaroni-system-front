@@ -81,6 +81,7 @@ const InventoryTransactionForm = () => {
     inventoryTransaction: IInventoryTransactionLessRelated
   ) => {
     setIsLoading(true)
+
     try {
       let response
       if (!inventoryTransactionId) {
@@ -98,7 +99,9 @@ const InventoryTransactionForm = () => {
           quantityAvailable: inventory?.quantityAvailable,
         }
 
-        let inventoryTransacionToSave: IInventoryTransactionLessRelated = { ...inventoryTransaction, oldQuantityAvailable: inventoryUpdated.quantityAvailable }
+        let assetRelated = assets.find(asset => asset._id === inventoryTransaction.asset)
+
+        let inventoryTransacionToSave: IInventoryTransactionLessRelated = { ...inventoryTransaction, oldQuantityAvailable: inventoryUpdated.quantityAvailable, unitCost: assetRelated?.costPrice }
 
         let inventoriesToUpdate: IInventoryLessRelated[] = []
 

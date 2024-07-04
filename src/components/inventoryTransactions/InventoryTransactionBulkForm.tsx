@@ -84,6 +84,8 @@ const InventoryTransactionBulkForm = () => {
               }
             }
             inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+            // unitCost
+            inventoryTransaction.unitCost = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset?.costPrice
 
             inventoriesToUpdate.push(inventoryUpdated)
           }

@@ -22,6 +22,7 @@ export interface IInventoryTransactionFather extends IGenericObject{
   affectedAmount?: number
   oldQuantityAvailable?: number
   currentQuantityAvailable?: number
+  unitCost?: number
   transactionType?: TransactionType
   transactionReason?: TransactionReason
 }
