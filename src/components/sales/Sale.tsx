@@ -148,6 +148,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
       })
     })
     let inventoriesToUpdate: IInventoryLessRelated[] = []
+    let oldInventories: IInventoryFullRelated[] = inventories
 
     assetQuantityByAssetId.forEach((value, key) => {
       inventories.forEach((inventory) => {
@@ -178,6 +179,27 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
         affectedAmount: value,
         transactionType: TransactionType.UP,
         transactionReason: TransactionReason.ADJUSTMENT,
+      })
+    })
+
+    // guardar los valores viejos y nuevos
+    inventoryTransactions.forEach(inventoryTransaction => {
+      oldInventories.forEach(oldInventory => {
+        if (inventoryTransaction.asset === oldInventory.asset?._id) {
+          inventoryTransaction.oldQuantityAvailable = oldInventory.quantityAvailable
+
+          //unit cost
+          inventoryTransaction.unitCost = oldInventory.asset?.costPrice
+        }
+      })
+      inventoriesToUpdate.forEach(inventoryUpdated => {
+        if (inventoryTransaction.asset === inventoryUpdated.asset) {
+          inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+
+          let asset = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset
+          //unit cost
+          inventoryTransaction.unitCost = asset?.costPrice
+        }
       })
     })
 
