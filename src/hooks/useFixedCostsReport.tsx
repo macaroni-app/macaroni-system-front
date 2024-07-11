@@ -1,6 +1,3 @@
-import { useState } from "react"
-
-
 import {
   QueryFunctionContext,
   useQuery,
@@ -12,40 +9,32 @@ import { IFixedCost } from "../components/fixedCosts/types"
 import { IFilters } from "../components/common/types"
 
 // services
-import fixedCostService from "../services/fixedCost"
+import reportsService from "../services/reports"
 
 // hooks
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
-import { useTodayDate } from "./useTodayDate"
 
 interface Props {
   id?: string
-  startDate?: string
-  endDate?: string
+  historyMonthToRetrieve?: number
 }
 
-export const useFixedCosts = (props: Props) => {
+export const useFixedCostsReport = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { id } = props || ""
+  const { id, historyMonthToRetrieve } = props || ""
 
-  const today = useTodayDate();
-
-  const [rangeDateFilter, setRangeDateFilter] = useState({
-    startDate: today,
-    endDate: today,
-  });
 
   const query: UseQueryResult<IFixedCost[], Error> = useQuery({
     queryKey: [
-      "fixedCosts",
+      "reportFixedCosts",
       {
-        filters: { ...rangeDateFilter, id },
+        filters: { id, historyMonthToRetrieve },
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
       const { filters } = queryKey[1] as IFilters
 
-      const { data } = await fixedCostService.getAll(
+      const { data } = await reportsService.getAllFixedCosts(
         { ...filters },
         axiosPrivate
       )

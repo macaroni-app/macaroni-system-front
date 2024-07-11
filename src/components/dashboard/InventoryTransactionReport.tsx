@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react"
 
 // custom hooks
-import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
+import { useInventoryTransactionsReport } from "../../hooks/useInventoryTransactionsReport"
 
 // types
 import { IInventoryTransactionFullRelated } from "../inventoryTransactions/types"
@@ -27,8 +27,8 @@ import { agruparYSumarTransaccionesPorMes, monthNames, TransactionResult } from 
 
 const InventoryTransactionReport = () => {
 
-  const queryInventoryTransactions = useInventoryTransactions({})
-  const inventoryTransactions = queryInventoryTransactions.data as IInventoryTransactionFullRelated[]
+  const queryInventoryTransactionsReport = useInventoryTransactionsReport({ historyMonthToRetrieve: 1 })
+  const inventoryTransactions = queryInventoryTransactionsReport.data as IInventoryTransactionFullRelated[]
 
   const currentMonth = new Date().getMonth()
 
@@ -59,7 +59,7 @@ const InventoryTransactionReport = () => {
     }
   })
 
-  if (!queryInventoryTransactions?.isLoading && queryInventoryTransactions?.data?.length === 0) {
+  if (!queryInventoryTransactionsReport?.isLoading && queryInventoryTransactionsReport?.data?.length === 0) {
     return (
       <Card variant="outline" mb={3}>
         <CardHeader textAlign={"center"}>

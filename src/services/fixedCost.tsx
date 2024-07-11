@@ -5,13 +5,17 @@ const FIXED_COSTS_URL = "/api/v1/fixedCosts"
 
 interface IFilters {
   id?: string
+  startDate?: string
+  endDate?: string
 }
 
 const fixedCostService = {
   getAll: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
     let finalUrl
 
-    if (filters.id) {
+    if (!filters.id && filters.startDate && filters.endDate) {
+      finalUrl = `${FIXED_COSTS_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`
+    } else if (filters.id) {
       finalUrl = `${FIXED_COSTS_URL}?id=${filters.id}`
     } else {
       finalUrl = FIXED_COSTS_URL

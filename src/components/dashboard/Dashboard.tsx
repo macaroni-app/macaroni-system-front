@@ -1,30 +1,31 @@
 import { Grid, GridItem } from "@chakra-ui/react"
 
 // custom hooks
-import { useSales } from "../../hooks/useSales"
 import { useInventories } from "../../hooks/useInventories"
 import { useCheckRole } from "../../hooks/useCheckRole"
+import { useFixedCostsReport } from "../../hooks/useFixedCostsReport"
+import { useSalesReport } from "../../hooks/useSalesReport"
 
 // components
 import QuickInventoryReport from "./QuickInventoryReport"
+import SimpleBoard from "./SimpleBoard"
+import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
+import InventoryTransactionReport from "./InventoryTransactionReport"
+import LineChart from "./LineChart"
+import BarChart from "./BarChart"
 
 // types
 import { ISaleFullRelated } from "../sales/types"
 import { IInventoryFullRelated } from "../inventories/types"
-import SimpleBoard from "./SimpleBoard"
-import ProfileBase from "../common/permissions"
-import { useFixedCosts } from "../../hooks/useFixedCosts"
 import { IFixedCost } from "../fixedCosts/types"
-import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
-import LineChart from "./LineChart"
-import BarChart from "./BarChart"
-import InventoryTransactionReport from "./InventoryTransactionReport"
+
+import ProfileBase from "../common/permissions"
 
 const Dashboard = () => {
   const { checkRole } = useCheckRole()
 
   // sales
-  const querySales = useSales({})
+  const querySales = useSalesReport({ historyMonthToRetrieve: 1 })
   const sales = querySales?.data as ISaleFullRelated[]
 
   const billings = sales
@@ -57,7 +58,7 @@ const Dashboard = () => {
   )
 
   // Net costs
-  const queryFixedCosts = useFixedCosts({})
+  const queryFixedCosts = useFixedCostsReport({ historyMonthToRetrieve: 1 })
   const fixedCosts = queryFixedCosts?.data as IFixedCost[]
   const fixedCostAmounts = fixedCosts?.map(
     (fixedCost) => fixedCost.amount
