@@ -37,12 +37,23 @@ import { IInventoryFullRelated } from "../inventories/types"
 import NewRecordPanel from "../common/NewRecordPanel"
 
 import ProfileBase from "../common/permissions"
+import RangeDateFilter, { RangeDate } from "../dashboard/RangeDateFilter"
+import { useTodayDate } from "../../hooks/useTodayDate"
+import { useState } from "react"
 
 const Sales = () => {
   // const [showFilters, setShowFilters] = useState(
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
-  const querySales = useSales({})
+  const today = useTodayDate();
+  const [rangeDate, setRangeDate] = useState({
+    startDate: today,
+    endDate: today,
+  });
+  const querySales = useSales({
+    startDate: rangeDate.startDate,
+    endDate: rangeDate.endDate,
+  })
   const querySaleItems = useSaleItems({})
   const queryProductItems = useProductItems({})
   const queryInventories = useInventories({})
@@ -68,9 +79,17 @@ const Sales = () => {
   // saleItems
   querySaleItems?.data as ISaleItemFullRelated[]
 
-  // const saleDetails = querySaleDetails?.data
-
-  // const debts = queryDebts?.data
+  const onSubmit = (rangeDate: RangeDate) => {
+    if (
+      rangeDate.startDate !== undefined &&
+      rangeDate.endDate !== undefined
+    ) {
+      setRangeDate({
+        startDate: rangeDate.startDate,
+        endDate: rangeDate.endDate,
+      });
+    }
+  };
 
   // if (querySales?.isError) {
   //   throwError(querySales?.error)
@@ -118,6 +137,8 @@ const Sales = () => {
           roles={ProfileBase.sales.create}
         />
       )}
+
+      {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
 
       {querySales?.isLoading && (
         <>

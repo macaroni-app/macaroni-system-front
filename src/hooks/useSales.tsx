@@ -17,17 +17,19 @@ import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
   id?: string
+  startDate?: string
+  endDate?: string
 }
 
 export const useSales = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { id } = props || ""
+  const { id, startDate, endDate } = props || ""
 
   const query: UseQueryResult<ISaleFullRelated[], Error> = useQuery({
     queryKey: [
       "sales",
       {
-        filters: { id },
+        filters: { startDate, endDate, id },
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {

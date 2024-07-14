@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Grid,
   Card,
@@ -6,26 +8,49 @@ import {
   Spacer,
   Stack,
   Skeleton,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 // components
-import FixedCost from "./FixedCost"
-import WithoutResults from "../common/WithoutResults"
-import NewRecordPanel from "../common/NewRecordPanel"
+import FixedCost from "./FixedCost";
+import WithoutResults from "../common/WithoutResults";
+import NewRecordPanel from "../common/NewRecordPanel";
+import RangeDateFilter, { RangeDate } from "../dashboard/RangeDateFilter";
 
 // custom hooks
-import { useFixedCosts } from "../../hooks/useFixedCosts"
-import { IFixedCost } from "./types"
+import { useFixedCosts } from "../../hooks/useFixedCosts";
+import { IFixedCost } from "./types";
+import { useTodayDate } from "../../hooks/useTodayDate";
 // import { useError } from "../../hooks/useError"
 
-import ProfileBase from "../common/permissions"
+import ProfileBase from "../common/permissions";
 
 const FixedCosts = (): JSX.Element => {
-  const queryFixedCosts = useFixedCosts({})
+  const today = useTodayDate();
+  const [rangeDate, setRangeDate] = useState({
+    startDate: today,
+    endDate: today,
+  });
+  const queryFixedCosts = useFixedCosts({
+    startDate: rangeDate.startDate,
+    endDate: rangeDate.endDate,
+  });
+  let fixedCosts = queryFixedCosts?.data as IFixedCost[];
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const onSubmit = (rangeDate: RangeDate) => {
+    if (
+      rangeDate.startDate !== undefined &&
+      rangeDate.endDate !== undefined
+    ) {
+      setRangeDate({
+        startDate: rangeDate.startDate,
+        endDate: rangeDate.endDate,
+      });
+    }
+  };
 
   // const { throwError } = useError()
 
@@ -34,10 +59,8 @@ const FixedCosts = (): JSX.Element => {
   // }
 
   const handleAddFixedCost = () => {
-    navigate("/fixedCosts/add")
-  }
-
-  const fixedCosts = queryFixedCosts?.data as IFixedCost[]
+    navigate("/fixedCosts/add");
+  };
 
   const fixedCostList = fixedCosts?.map((fixedCost) => {
     if (fixedCost._id !== undefined && fixedCost.createdAt !== undefined) {
@@ -46,9 +69,9 @@ const FixedCosts = (): JSX.Element => {
           key={fixedCost?._id + fixedCost?.createdAt}
           fixedCost={fixedCost}
         />
-      )
+      );
     }
-  })
+  });
 
   if (queryFixedCosts?.isLoading) {
     return (
@@ -122,7 +145,7 @@ const FixedCosts = (): JSX.Element => {
           </CardBody>
         </Card>
       </>
-    )
+    );
   }
 
   return (
@@ -136,6 +159,7 @@ const FixedCosts = (): JSX.Element => {
           roles={ProfileBase.fixedCosts.create}
         />
       )}
+      {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
 
       {!queryFixedCosts?.isError &&
         queryFixedCosts?.data?.length !== undefined &&
@@ -144,10 +168,10 @@ const FixedCosts = (): JSX.Element => {
       {!queryFixedCosts?.isError &&
         queryFixedCosts?.data?.length === 0 &&
         !queryFixedCosts?.isLoading && (
-          <WithoutResults text={"No hay gastos fijos cargadas."} />
+          <WithoutResults text={"No hay gastos fijos cargados."} />
         )}
     </>
-  )
-}
+  );
+};
 
-export default FixedCosts
+export default FixedCosts;

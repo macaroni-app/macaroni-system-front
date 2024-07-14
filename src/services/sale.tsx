@@ -5,13 +5,17 @@ const SALE_URL = "/api/v1/sales"
 
 interface IFilters {
   id?: string
+  startDate?: string
+  endDate?: string
 }
 
 const saleService = {
   getAll: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
     let finalUrl
 
-    if (filters.id) {
+    if (!filters.id && filters.startDate && filters.endDate) {
+      finalUrl = `${SALE_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`
+    } else if (filters.id) {
       finalUrl = `${SALE_URL}?id=${filters.id}`
     } else {
       finalUrl = SALE_URL

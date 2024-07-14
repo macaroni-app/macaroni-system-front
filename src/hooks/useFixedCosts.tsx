@@ -1,6 +1,3 @@
-import { useState } from "react"
-
-
 import {
   QueryFunctionContext,
   useQuery,
@@ -16,8 +13,6 @@ import fixedCostService from "../services/fixedCost"
 
 // hooks
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
-import { useTodayDate } from "./useTodayDate"
-
 interface Props {
   id?: string
   startDate?: string
@@ -26,20 +21,13 @@ interface Props {
 
 export const useFixedCosts = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { id } = props || ""
-
-  const today = useTodayDate();
-
-  const [rangeDateFilter, setRangeDateFilter] = useState({
-    startDate: today,
-    endDate: today,
-  });
+  const { id, startDate, endDate } = props || ""
 
   const query: UseQueryResult<IFixedCost[], Error> = useQuery({
     queryKey: [
       "fixedCosts",
       {
-        filters: { ...rangeDateFilter, id },
+        filters: { startDate, endDate, id },
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {
