@@ -8,6 +8,7 @@ import {
   Spacer,
   Stack,
   Skeleton,
+  GridItem,
 } from "@chakra-ui/react";
 
 import { useNavigate } from "react-router-dom";
@@ -159,17 +160,23 @@ const FixedCosts = (): JSX.Element => {
           roles={ProfileBase.fixedCosts.create}
         />
       )}
-      {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
+      <Grid gap={3} templateColumns="repeat(12, 1fr)">
+        <GridItem colSpan={{ base: 12, lg: 3 }}>
+          {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
+        </GridItem>
+        <GridItem colSpan={{ base: 12, lg: 9 }}>
 
-      {!queryFixedCosts?.isError &&
-        queryFixedCosts?.data?.length !== undefined &&
-        queryFixedCosts?.data?.length > 0 &&
-        !queryFixedCosts?.isLoading && <Grid>{fixedCostList}</Grid>}
-      {!queryFixedCosts?.isError &&
-        queryFixedCosts?.data?.length === 0 &&
-        !queryFixedCosts?.isLoading && (
-          <WithoutResults text={"No hay gastos fijos cargados."} />
-        )}
+          {!queryFixedCosts?.isError &&
+            queryFixedCosts?.data?.length !== undefined &&
+            queryFixedCosts?.data?.length > 0 &&
+            !queryFixedCosts?.isLoading && <Grid>{fixedCostList}</Grid>}
+          {!queryFixedCosts?.isError &&
+            queryFixedCosts?.data?.length === 0 &&
+            !queryFixedCosts?.isLoading && (
+              <WithoutResults text={"No hay gastos fijos cargados."} />
+            )}
+        </GridItem>
+      </Grid>
     </>
   );
 };

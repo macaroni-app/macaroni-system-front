@@ -5,13 +5,17 @@ const INVENTORY_TRANSACTION_URL = "/api/v1/inventoryTransactions"
 
 interface IFilters {
   id?: string
+  startDate?: string
+  endDate?: string
 }
 
 const inventoryTransactionService = {
   getAll: async (filters: IFilters, axiosPrivate: AxiosInstance) => {
     let finalUrl
 
-    if (filters.id) {
+    if (!filters.id && filters.startDate && filters.endDate) {
+      finalUrl = `${INVENTORY_TRANSACTION_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`
+    } else if (filters.id) {
       finalUrl = `${INVENTORY_TRANSACTION_URL}?id=${filters.id}`
     } else {
       finalUrl = INVENTORY_TRANSACTION_URL

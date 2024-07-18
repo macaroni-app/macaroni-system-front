@@ -16,18 +16,20 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate"
 
 interface Props {
   id?: string
+  startDate?: string
+  endDate?: string
 }
 
 export const useInventoryTransactions = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { id } = props || ""
+  const { id, startDate, endDate } = props || ""
 
   const query: UseQueryResult<IInventoryTransactionFullRelated[], Error> =
     useQuery({
       queryKey: [
         "inventoryTransactions",
         {
-          filters: { id },
+          filters: { startDate, endDate, id },
         },
       ],
       queryFn: async ({ queryKey }: QueryFunctionContext) => {

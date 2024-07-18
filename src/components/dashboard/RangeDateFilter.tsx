@@ -42,7 +42,7 @@ const RangeDateFilter = ({ onSubmit, rangeDate }: Props) => {
                 templateColumns="repeat(12, 1fr)"
                 gap={2}
               >
-                <GridItem colSpan={{ base: 12, md: 6 }}>
+                <GridItem colSpan={{ base: 12 }}>
                   <MyInput
                     register={register}
                     formState={formState}
@@ -52,7 +52,7 @@ const RangeDateFilter = ({ onSubmit, rangeDate }: Props) => {
                     label={"Desde"}
                   />
                 </GridItem>
-                <GridItem colSpan={{ base: 12, md: 6 }}>
+                <GridItem colSpan={{ base: 12 }}>
                   <MyInput
                     register={register}
                     formState={formState}

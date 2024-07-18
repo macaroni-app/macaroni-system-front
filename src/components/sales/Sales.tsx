@@ -138,129 +138,134 @@ const Sales = () => {
         />
       )}
 
-      {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
-
-      {querySales?.isLoading && (
-        <>
-          <Card variant="filled" mb={3}>
-            <CardBody>
-              <Flex>
-                <Spacer />
-                <Skeleton
-                  width={"170px"}
-                  startColor="purple.500"
-                  endColor="purple.300"
-                  height="40px"
-                  borderRadius={"5px"}
-                />
-              </Flex>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-          <Card variant="outline" mb={3}>
-            <CardBody>
-              <Stack>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </CardBody>
-          </Card>
-        </>
-      )}
-
-      <Grid gap={2} templateColumns="repeat(12, 1fr)">
-        <GridItem
-          display={{ base: "none", md: "block" }}
-          colSpan={{ base: 12, md: 12, lg: 12 }}
-          colStart={{ base: 1, md: 1, lg: 1 }}
-        >
-          {!querySales?.isLoading && !querySales?.isError && (
-            <Card variant="outline" mb={3}>
-              <CardBody>
-                <Grid
-                  templateColumns="repeat(6, 1fr)"
-                  gap={2}
-                  alignItems={"center"}
-                >
-                  <GridItem>
-                    <Flex direction="column" gap={2}>
-                      <Text fontWeight="bold">Nombre del cliente</Text>
-                    </Flex>
-                  </GridItem>
-                  <GridItem>
-                    <Flex direction="column" gap={2} placeItems={"center"}>
-                      <Text fontWeight="bold">Estado</Text>
-                    </Flex>
-                  </GridItem>
-                  <GridItem>
-                    <Flex direction="column" gap={2} placeItems={"center"}>
-                      <Text fontWeight="bold">Realizado por</Text>
-                    </Flex>
-                  </GridItem>
-                  <GridItem>
-                    <Flex direction="column" gap={2} placeItems={"center"}>
-                      <Text fontWeight="bold">Fecha</Text>
-                    </Flex>
-                  </GridItem>
-                  <GridItem>
-                    <Flex direction="column" gap={2} placeItems={"center"}>
-                      <Text fontWeight="bold">Monto total</Text>
-                    </Flex>
-                  </GridItem>
-                  <GridItem>
-                    <Flex direction="column" gap={2} placeItems={"end"}>
-                      <Text fontWeight="bold">Acciones</Text>
-                    </Flex>
-                  </GridItem>
-                </Grid>
-              </CardBody>
-            </Card>
-          )}
+      <Grid gap={3} templateColumns="repeat(12, 1fr)">
+        <GridItem colSpan={{ base: 12, lg: 3 }}>
+          {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
         </GridItem>
-        <GridItem
-          colSpan={{ base: 12, md: 12, lg: 12 }}
-          colStart={{ base: 1, md: 1, lg: 1 }}
-        >
-          {querySales?.data?.length !== undefined &&
-            querySales?.data?.length > 0 &&
-            !querySales?.isLoading &&
-            !querySales?.isError && <>{saleList}</>}
-          {querySales?.data?.length === 0 &&
-            !querySales?.isError &&
-            !querySales?.isLoading && (
-              <WithoutResults text={"No se encontró resultados."} />
-            )}
+        <GridItem colSpan={{ base: 12, lg: 9 }}>
+          {querySales?.isLoading && (
+            <>
+              <Card variant="filled" mb={3}>
+                <CardBody>
+                  <Flex>
+                    <Spacer />
+                    <Skeleton
+                      width={"170px"}
+                      startColor="purple.500"
+                      endColor="purple.300"
+                      height="40px"
+                      borderRadius={"5px"}
+                    />
+                  </Flex>
+                </CardBody>
+              </Card>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Stack>
+                    <Skeleton height="20px" />
+                    <Skeleton height="20px" />
+                  </Stack>
+                </CardBody>
+              </Card>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Stack>
+                    <Skeleton height="20px" />
+                    <Skeleton height="20px" />
+                  </Stack>
+                </CardBody>
+              </Card>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Stack>
+                    <Skeleton height="20px" />
+                    <Skeleton height="20px" />
+                  </Stack>
+                </CardBody>
+              </Card>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Stack>
+                    <Skeleton height="20px" />
+                    <Skeleton height="20px" />
+                  </Stack>
+                </CardBody>
+              </Card>
+              <Card variant="outline" mb={3}>
+                <CardBody>
+                  <Stack>
+                    <Skeleton height="20px" />
+                    <Skeleton height="20px" />
+                  </Stack>
+                </CardBody>
+              </Card>
+            </>
+          )}
+
+          <Grid gap={2} templateColumns="repeat(12, 1fr)">
+            <GridItem
+              display={{ base: "none", md: "block" }}
+              colSpan={{ base: 12, md: 12, lg: 12 }}
+              colStart={{ base: 1, md: 1, lg: 1 }}
+            >
+              {!querySales?.isLoading && !querySales?.isError && (
+                <Card variant="outline">
+                  <CardBody>
+                    <Grid
+                      templateColumns="repeat(6, 1fr)"
+                      gap={2}
+                      alignItems={"center"}
+                    >
+                      <GridItem>
+                        <Flex direction="column" gap={2}>
+                          <Text fontWeight="bold">Nombre del cliente</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Estado</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Realizado por</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Fecha</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Monto total</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"end"}>
+                          <Text fontWeight="bold">Acciones</Text>
+                        </Flex>
+                      </GridItem>
+                    </Grid>
+                  </CardBody>
+                </Card>
+              )}
+            </GridItem>
+            <GridItem
+              colSpan={{ base: 12, md: 12, lg: 12 }}
+              colStart={{ base: 1, md: 1, lg: 1 }}
+            >
+              {querySales?.data?.length !== undefined &&
+                querySales?.data?.length > 0 &&
+                !querySales?.isLoading &&
+                !querySales?.isError && <>{saleList}</>}
+              {querySales?.data?.length === 0 &&
+                !querySales?.isError &&
+                !querySales?.isLoading && (
+                  <WithoutResults text={"No se encontró resultados."} />
+                )}
+            </GridItem>
+          </Grid>
         </GridItem>
       </Grid>
     </>
