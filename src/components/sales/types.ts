@@ -12,6 +12,7 @@ export interface ISaleFather extends IGenericObject {
   isRetail?: boolean
   total?: number
   costTotal?: number
+  discount?: number
   status?: SaleStatus
   saleItems?: ISaleItemPreview[]
 }

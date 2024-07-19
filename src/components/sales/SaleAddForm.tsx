@@ -128,7 +128,12 @@ const SaleFormAdd = ({
         }
       }, 0)
 
-    return totalSale
+    // aplico descuento
+    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+
+    let totalSaleWithDiscount = totalSale !== undefined ? totalSale - (totalSale * discount) : 0
+
+    return totalSaleWithDiscount
   }
 
   const getSubtotal = (index: number) => {
@@ -178,7 +183,7 @@ const SaleFormAdd = ({
                         noOptionsMessage="No hay datos"
                       />
                     </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12, md: 3 }}>
                       <FormControl>
                         <FormLabel>Total:</FormLabel>
                         <Input
@@ -190,6 +195,16 @@ const SaleFormAdd = ({
                           disabled={true}
                         />
                       </FormControl>
+                    </GridItem>
+                    <GridItem colSpan={{ base: 12, md: 3 }}>
+                      <MyInput
+                        formState={formState}
+                        register={register}
+                        field={'discount'}
+                        type={"number"}
+                        placeholder={"Descuento"}
+                        label={"Descuento"}
+                      />
                     </GridItem>
                   </Grid>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>

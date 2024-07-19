@@ -15,6 +15,7 @@ export const saleSchema = z.object({
   paymentMethod: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
   total: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
   costTotal: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
+  discount: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
   saleItems: z.array(saleItems),
   status: z.enum(SALE_STATUS).optional(),
   isRetail: z.boolean().optional(),

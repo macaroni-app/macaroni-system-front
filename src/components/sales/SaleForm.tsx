@@ -145,7 +145,12 @@ const SaleForm = () => {
         }
       }, 0)
 
-    return totalSale
+    // aplico descuento
+    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+
+    let totalSaleWithDiscount = totalSale !== undefined ? totalSale - (totalSale * discount) : 0
+
+    return totalSaleWithDiscount
   }
 
   const onSubmit: SubmitHandler<ISaleLessRelated> = async (
