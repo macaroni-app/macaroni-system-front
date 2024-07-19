@@ -51,7 +51,7 @@ const SaleDetails = () => {
     (saleItem) => saleItem?.sale?._id === saleId
   )
 
-  const saleTotal = saleItems?.map(saleItem => saleItem.subtotal).reduce((acc, currentValue) => acc + currentValue, 0)
+  const saleTotal = saleItems?.map(saleItem => saleItem.subtotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0)
 
   const saleDetailsList = saleItems?.map((saleItem) => {
     return (
@@ -184,6 +184,20 @@ const SaleDetails = () => {
                       <Text fontSize="lg">Método de pago: </Text>
                       <Text as="b" fontSize="lg">
                         {sale?.paymentMethod?.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Descuento aplicado: </Text>
+                      <Text as="b" fontSize="lg">
+                        {
+                          sale?.discount !== undefined
+                            ? Number(sale?.discount)
+                            : 0
+                        } %
                       </Text>
                     </Flex>
                     <Flex
