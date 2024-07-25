@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import FixedCost from "./FixedCost";
 import WithoutResults from "../common/WithoutResults";
 import NewRecordPanel from "../common/NewRecordPanel";
-import RangeDateFilter, { RangeDate } from "../dashboard/RangeDateFilter";
+import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter";
 
 // custom hooks
 import { useFixedCosts } from "../../hooks/useFixedCosts";

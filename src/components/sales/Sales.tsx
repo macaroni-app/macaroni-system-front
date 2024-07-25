@@ -1,4 +1,5 @@
-// import { useState } from "react";
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import {
   Grid,
@@ -9,18 +10,14 @@ import {
   Text,
   Stack,
   Skeleton,
-  // FormControl,
-  // FormLabel,
-  // Input,
   GridItem,
 } from "@chakra-ui/react"
 
-import { useNavigate } from "react-router-dom"
 
 // components
-// import Dashboard from "../reports/Dashboard";
 import WithoutResults from "../common/WithoutResults"
 import Sale from "./Sale"
+import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter"
 
 import { IProductItemFullRelated } from "../products/types"
 
@@ -29,6 +26,7 @@ import { useSales } from "../../hooks/useSales"
 import { useSaleItems } from "../../hooks/useSaleItems"
 import { useProductItems } from "../../hooks/useProductItems"
 import { useInventories } from "../../hooks/useInventories"
+import { useTodayDate } from "../../hooks/useTodayDate"
 
 // types
 import { ISaleFullRelated, ISaleItemFullRelated } from "./types"
@@ -37,14 +35,8 @@ import { IInventoryFullRelated } from "../inventories/types"
 import NewRecordPanel from "../common/NewRecordPanel"
 
 import ProfileBase from "../common/permissions"
-import RangeDateFilter, { RangeDate } from "../dashboard/RangeDateFilter"
-import { useTodayDate } from "../../hooks/useTodayDate"
-import { useState } from "react"
 
 const Sales = () => {
-  // const [showFilters, setShowFilters] = useState(
-  //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
-  // );
   const today = useTodayDate();
   const [rangeDate, setRangeDate] = useState({
     startDate: today,
@@ -60,12 +52,6 @@ const Sales = () => {
 
   const productItems = queryProductItems.data as IProductItemFullRelated[]
   const inventories = queryInventories.data as IInventoryFullRelated[]
-  // const {
-  //   query: querySaleDetails,
-  //   setRangeDateFilter: setRangeDateFilterSaleDetail,
-  // } = useSaleDetails({ all: false });
-
-  // const queryDebts = useDebts();
 
   // const { throwError } = useError()
 
@@ -121,12 +107,6 @@ const Sales = () => {
           </CardBody>
         </Card>
       )}
-      {/* {!querySales?.isError && !querySales?.isLoading && (
-        <Dashboard
-          querySales={querySales}
-          querySaleDetails={querySaleDetails}
-        />
-      )} */}
 
       {!querySales?.isError && !querySales?.isLoading && (
         <NewRecordPanel

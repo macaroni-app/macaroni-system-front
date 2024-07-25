@@ -17,15 +17,15 @@ import {
 import InventoryTransaction from "./InventoryTransaction"
 import WithoutResults from "../common/WithoutResults"
 import NewRecordPanel from "../common/NewRecordPanel"
-import RangeDateFilter, { RangeDate } from "../dashboard/RangeDateFilter"
+import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter"
 
 // custom hooks
 import { useInventoryTransactions } from "../../hooks/useInventoryTransactions"
 import { IInventoryTransactionFullRelated } from "./types"
 import { useTodayDate } from "../../hooks/useTodayDate"
+import { useCheckRole } from "../../hooks/useCheckRole"
 // import { useError } from "../../hooks/useError"
 
-import { useCheckRole } from "../../hooks/useCheckRole"
 
 import ProfileBase from "../common/permissions"
 
