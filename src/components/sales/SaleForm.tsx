@@ -290,10 +290,14 @@ const SaleForm = () => {
               productsById.get(saleItem.product).wholesalePrice
           }
 
+          let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+
+          let subTotalWithDiscount = subTotal !== undefined ? subTotal - (subTotal * discount) : 0
+
           return {
             ...saleItem,
             sale: response?.data?._id,
-            subtotal: subTotal,
+            subtotal: subTotalWithDiscount,
           }
         })
 

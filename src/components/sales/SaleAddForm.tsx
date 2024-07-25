@@ -155,7 +155,12 @@ const SaleFormAdd = ({
       }
     })
 
-    return subtotal
+    // aplico descuento
+    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+
+    let subTotalWithDiscount = subtotal !== undefined ? subtotal - (subtotal * discount) : 0
+
+    return subTotalWithDiscount
   }
 
 
