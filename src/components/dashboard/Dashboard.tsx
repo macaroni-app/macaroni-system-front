@@ -178,7 +178,8 @@ const Dashboard = () => {
             {!queryInventories.isLoading && <QuickInventoryReport />}
           </GridItem>
           <GridItem colSpan={{ base: 12, md: 6 }}>
-            <BarChart />
+            {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
+            {!queryInventories.isLoading && <BarChart />}
           </GridItem>
         </>
       )}

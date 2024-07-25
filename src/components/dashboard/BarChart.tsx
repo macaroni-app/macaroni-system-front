@@ -19,10 +19,7 @@ import {
   Heading,
 } from "@chakra-ui/react"
 
-// components
-import Loading from "../common/Loading"
-
-// useHooks
+// custom Hooks
 import { useInventories } from "../../hooks/useInventories"
 
 ChartJS.register(
@@ -60,10 +57,6 @@ const BarChart = () => {
         backgroundColor: ["#805AD5"],
       },
     ],
-  }
-
-  if (queryInventory?.isLoading) {
-    return <Loading />
   }
 
   if (!queryInventory?.isLoading && inventories?.length === 0) {
