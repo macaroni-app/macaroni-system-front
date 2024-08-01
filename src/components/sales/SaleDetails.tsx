@@ -39,13 +39,13 @@ import { useSaleItems } from "../../hooks/useSaleItems"
 const SaleDetails = () => {
   const { saleId } = useParams()
 
-  const querySales = useSales({})
+  const querySales = useSales({ id: saleId })
 
   const sale = querySales.data?.filter(
     (sale) => sale._id === saleId
   )[0] as ISaleFullRelated
 
-  const querySaleItems = useSaleItems({})
+  const querySaleItems = useSaleItems({ id: saleId })
 
   const saleItems = querySaleItems?.data?.filter(
     (saleItem) => saleItem?.sale?._id === saleId
