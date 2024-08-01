@@ -59,7 +59,7 @@ const InventoryTransactionReport = () => {
     }
   })
 
-  if (!queryInventoryTransactionsReport?.isLoading && queryInventoryTransactionsReport?.data?.length === 0) {
+  if (!queryInventoryTransactionsReport?.isLoading && listTransactions.length === 0) {
     return (
       <Card variant="outline" mb={3}>
         <CardHeader textAlign={"center"}>
