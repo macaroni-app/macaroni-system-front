@@ -67,13 +67,16 @@ import { useEditSale } from "../../hooks/useEditSale"
 import { useCheckRole } from "../../hooks/useCheckRole"
 import ProfileBase from "../common/permissions"
 
+import { RangeDate } from "../common/RangeDateFilter"
+
 interface Props {
   sale: ISaleFullRelated
   inventories: IInventoryFullRelated[]
   productItems: IProductItemFullRelated[]
+  rangeDate: RangeDate
 }
 
-const Sale = ({ sale, inventories, productItems }: Props) => {
+const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
   const navigate = useNavigate()
 
   const { checkRole } = useCheckRole()
@@ -102,7 +105,7 @@ const Sale = ({ sale, inventories, productItems }: Props) => {
 
   const saleItems = queryClient.getQueryData([
     "saleItems",
-    { filters: {} },
+    { filters: rangeDate },
   ]) as ISaleItemFullRelated[]
 
   const saleItemsFiltered = saleItems?.filter(

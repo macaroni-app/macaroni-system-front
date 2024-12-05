@@ -46,7 +46,10 @@ const Sales = () => {
     startDate: rangeDate.startDate,
     endDate: rangeDate.endDate,
   })
-  const querySaleItems = useSaleItems({})
+  const querySaleItems = useSaleItems({
+    startDate: rangeDate.startDate,
+    endDate: rangeDate.endDate,
+  })
   const queryProductItems = useProductItems({})
   const queryInventories = useInventories({})
 
@@ -89,6 +92,7 @@ const Sales = () => {
           sale={sale}
           productItems={productItems}
           inventories={inventories}
+          rangeDate={rangeDate}
         />
       )
     }
