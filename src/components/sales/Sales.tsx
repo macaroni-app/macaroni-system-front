@@ -18,6 +18,9 @@ import {
 import WithoutResults from "../common/WithoutResults"
 import Sale from "./Sale"
 import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter"
+import SimpleBoard from "../dashboard/SimpleBoard"
+import SimpleBoardSkeleton from "../dashboard/SimpleBoardSkeleton"
+
 
 import { IProductItemFullRelated } from "../products/types"
 
@@ -27,6 +30,7 @@ import { useSaleItems } from "../../hooks/useSaleItems"
 import { useProductItems } from "../../hooks/useProductItems"
 import { useInventories } from "../../hooks/useInventories"
 import { useTodayDate } from "../../hooks/useTodayDate"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 // types
 import { ISaleFullRelated, ISaleItemFullRelated } from "./types"
@@ -36,7 +40,9 @@ import NewRecordPanel from "../common/NewRecordPanel"
 
 import ProfileBase from "../common/permissions"
 
+
 const Sales = () => {
+  const { checkRole } = useCheckRole()
   const today = useTodayDate();
   const [rangeDate, setRangeDate] = useState({
     startDate: today,
@@ -67,6 +73,19 @@ const Sales = () => {
   const sales = querySales?.data as ISaleFullRelated[]
   // saleItems
   querySaleItems?.data as ISaleItemFullRelated[]
+
+  const billings = sales
+    ?.filter((sale) => sale.status === "PAID")
+    ?.map((sale) => sale?.total) as number[]
+
+  const totalBillings = Number.parseFloat(
+    billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
+  )
+
+  const totalCosts = Number(sales?.filter((sale) => sale.status === "PAID")?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
+
+  // profit
+  const totalRevenues = Number(totalBillings - totalCosts)
 
   const onSubmit = (rangeDate: RangeDate) => {
     if (
@@ -122,7 +141,54 @@ const Sales = () => {
         />
       )}
 
-      <Grid gap={3} templateColumns="repeat(12, 1fr)">
+      {/* stats */}
+      <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+        {checkRole(ProfileBase.dashboard.stats) && (
+          <>
+            <GridItem colSpan={{ base: 12, lg: 4 }}>
+              {querySales.isLoading && <SimpleBoardSkeleton numberRows={3} />}
+              {!querySales.isLoading && (
+                <SimpleBoard
+                  title="Facturación"
+                  amount={totalBillings}
+                  size={billings?.length}
+                  fontColor="black"
+                />
+              )}
+            </GridItem>
+            <GridItem colSpan={{ base: 12, lg: 4 }}>
+              {querySales.isLoading && (
+                <SimpleBoardSkeleton numberRows={3} />
+              )}
+              {!querySales.isLoading && (
+                <SimpleBoard
+                  title="Costo"
+                  amount={totalCosts}
+                  size={sales?.length}
+                  fontColor="black"
+                />
+              )}
+            </GridItem>
+            <GridItem colSpan={{ base: 12, lg: 4 }}>
+              {querySales.isLoading && (
+                <SimpleBoardSkeleton numberRows={3} />
+              )}
+              {!querySales.isLoading && (
+                <SimpleBoard
+                  title="Ganancia"
+                  amount={totalRevenues}
+                  size={billings?.length}
+                  fontColor="black"
+                />
+              )}
+            </GridItem>
+          </>
+        )}
+      </Grid>
+
+      {/* end stats */}
+
+      <Grid gap={3} templateColumns="repeat(12, 1fr)" mt={3}>
         <GridItem colSpan={{ base: 12, lg: 3 }}>
           {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
         </GridItem>
