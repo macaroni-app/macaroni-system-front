@@ -2,6 +2,7 @@ import { ICategory } from "../categories/types"
 import { IGenericObject } from "../common/types"
 
 export interface IAssetFather extends IGenericObject {
+  id?: string
   name?: string
   costPrice?: number
 }

@@ -18,6 +18,21 @@ import {
   Flex,
   SimpleGrid,
   IconButton,
+  TableContainer,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react"
 
 import { DeleteIcon } from "@chakra-ui/icons"
@@ -57,6 +72,8 @@ const InventoryTransactionAddBulkForm = ({
         }],
       },
     })
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   // suscripción para los fields
   const inventoryTransactions = watch()
@@ -207,6 +224,53 @@ const InventoryTransactionAddBulkForm = ({
                     Agregar item
                   </Button>
 
+
+                  <Modal size={'xl'} isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>¿Estás seguro de guardar?</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        {inventoryTransactions.inventoryTransactions.at(0)?.asset !== '' && (
+                          <TableContainer>
+                            <Table variant='simple'>
+                              <Thead>
+                                <Tr>
+                                  <Th>Insumo</Th>
+                                  <Th>Tipo</Th>
+                                  <Th>Motivo</Th>
+                                  <Th isNumeric>Cantidad</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {inventoryTransactions.inventoryTransactions.map(inventoryTransaction => {
+                                  return (
+                                    <Tr key={inventoryTransaction.asset}>
+                                      <Td>{assets?.find(asset => asset._id === inventoryTransaction.asset)?.name}</Td>
+                                      <Td>{getTransactinTypeOptions()?.find(transaction => transaction?._id === inventoryTransaction?.transactionType)?.name}</Td>
+                                      <Td>{getTransactinReasonOptions()?.find(transaction => transaction?._id === inventoryTransaction?.transactionReason)?.name}</Td>
+                                      <Td isNumeric>{String(inventoryTransaction?.affectedAmount) === 'NaN' ? '' : String(inventoryTransaction?.affectedAmount)}</Td>
+                                    </Tr>
+                                  )
+                                })}
+                              </Tbody>
+                            </Table>
+
+                          </TableContainer>
+                        )}
+                      </ModalBody>
+
+                      <ModalFooter>
+                        <Button mr={3} isLoading={isLoading} onClick={handleSubmit(onSubmit)}
+                          colorScheme="purple"
+                          variant="solid">
+                          Sí, seguro
+                        </Button>
+                        <Button onClick={onClose} variant='ghost'>Cancelar</Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
+
                   <Stack
                     mt={6}
                     spacing={3}
@@ -215,9 +279,9 @@ const InventoryTransactionAddBulkForm = ({
                   >
                     <Button
                       isLoading={isLoading}
-                      type="submit"
                       colorScheme="purple"
                       variant="solid"
+                      onClick={onOpen}
                     >
                       Guardar
                     </Button>
@@ -232,6 +296,8 @@ const InventoryTransactionAddBulkForm = ({
                 </form>
               </CardBody>
             </Card>
+
+
           </GridItem>
         </Grid>
       )}
