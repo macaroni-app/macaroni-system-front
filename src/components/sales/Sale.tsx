@@ -264,7 +264,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
               >
                 <GridItem colSpan={{ base: 4, md: 1 }}>
                   <Flex direction="column" gap={2}>
-                    <Text fontSize="lg" align="start" mr={2}>
+                    <Text fontSize="xs" align="start" mr={2}>
                       {sale.client?.name}
                     </Text>
                     <Badge

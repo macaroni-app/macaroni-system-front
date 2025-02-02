@@ -268,7 +268,7 @@ const Sales = () => {
                     >
                       <GridItem>
                         <Flex direction="column" gap={2}>
-                          <Text fontWeight="bold">Nombre del cliente</Text>
+                          <Text fontWeight="bold">Cliente</Text>
                         </Flex>
                       </GridItem>
                       <GridItem>
@@ -278,7 +278,7 @@ const Sales = () => {
                       </GridItem>
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"center"}>
-                          <Text fontWeight="bold">Realizado por</Text>
+                          <Text fontWeight="bold">Vendedor</Text>
                         </Flex>
                       </GridItem>
                       <GridItem>
@@ -288,7 +288,7 @@ const Sales = () => {
                       </GridItem>
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"center"}>
-                          <Text fontWeight="bold">Monto total</Text>
+                          <Text fontWeight="bold">Total</Text>
                         </Flex>
                       </GridItem>
                       <GridItem>

@@ -210,7 +210,7 @@ const InventoryTransactions = (): JSX.Element => {
                       >
                         <GridItem>
                           <Flex direction="column" gap={2}>
-                            <Text fontWeight="bold">Nombre del insumo</Text>
+                            <Text fontWeight="bold">Insumo</Text>
                           </Flex>
                         </GridItem>
                         <GridItem>
@@ -220,17 +220,17 @@ const InventoryTransactions = (): JSX.Element => {
                         </GridItem>
                         <GridItem>
                           <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Cantidad afectada</Text>
+                            <Text fontWeight="bold">Cantidad</Text>
                           </Flex>
                         </GridItem>
                         <GridItem>
                           <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Realizado por</Text>
+                            <Text fontWeight="bold">Usuario</Text>
                           </Flex>
                         </GridItem>
                         <GridItem>
                           <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Fecha de creación</Text>
+                            <Text fontWeight="bold">Fecha</Text>
                           </Flex>
                         </GridItem>
                         {checkRole(

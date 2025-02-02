@@ -138,7 +138,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
           >
             <GridItem colSpan={{ base: 3, md: 1 }}>
               <Flex direction="column" gap={2}>
-                <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
+                <Text noOfLines={1} fontSize="xs" align="start" mr={4}>
                   {asset.name}
                 </Text>
                 <Badge

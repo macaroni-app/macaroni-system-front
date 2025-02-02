@@ -108,20 +108,20 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
     return transactionReason === "BUY"
       ? "Compra"
       : transactionReason === "SELL"
-      ? "Venta"
-      : transactionReason === "RETURN"
-      ? "Devolución"
-      : transactionReason === "ADJUSTMENT"
-      ? "Ajuste"
-      : transactionReason === "DONATION"
-      ? "Donación"
-      : transactionReason === "DEFEATED"
-      ? "Vencido"
-      : transactionReason === "LOSS"
-      ? "Pérdida"
-      : transactionReason === "INTERNAL_USAGE"
-      ? "Uso interno"
-      : "Otro"
+        ? "Venta"
+        : transactionReason === "RETURN"
+          ? "Devolución"
+          : transactionReason === "ADJUSTMENT"
+            ? "Ajuste"
+            : transactionReason === "DONATION"
+              ? "Donación"
+              : transactionReason === "DEFEATED"
+                ? "Vencido"
+                : transactionReason === "LOSS"
+                  ? "Pérdida"
+                  : transactionReason === "INTERNAL_USAGE"
+                    ? "Uso interno"
+                    : "Otro"
   }
 
   const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
@@ -141,7 +141,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
           >
             <GridItem colSpan={{ base: 5, md: 1 }}>
               <Flex direction="column" gap={2}>
-                <Text fontSize="lg" align="start" mr={2}>
+                <Text fontSize="xs" align="start" mr={2}>
                   {inventoryTransaction?.asset?.name}
                 </Text>
                 <Text display={{ md: "none" }}>
@@ -191,7 +191,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
             </GridItem>
             <GridItem display={{ base: "none", md: "block" }}>
               <Flex direction="column" gap={2} placeItems={"center"}>
-                <Text color={"gray.500"} fontSize="xs" align="start">
+                <Text color={"gray.500"} fontSize="xs" align="center">
                   {format(
                     new Date(
                       inventoryTransaction?.createdAt
@@ -269,21 +269,21 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                               {checkRole(
                                 ProfileBase.inventoryTransactions.delete
                               ) && (
-                                <Button
-                                  onClick={onOpen}
-                                  variant={"blue"}
-                                  colorScheme="blue"
-                                  justifyContent={"start"}
-                                  size="md"
-                                  _hover={{
-                                    textDecoration: "none",
-                                    color: "purple",
-                                    bg: "purple.100",
-                                  }}
-                                >
-                                  Borrar
-                                </Button>
-                              )}
+                                  <Button
+                                    onClick={onOpen}
+                                    variant={"blue"}
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Borrar
+                                  </Button>
+                                )}
                             </VStack>
                           </PopoverBody>
                         </PopoverContent>

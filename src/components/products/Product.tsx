@@ -172,7 +172,7 @@ const Product = ({ product }: Props) => {
               >
                 <GridItem colSpan={{ base: 3, md: 1 }}>
                   <Flex direction="column" gap={2}>
-                    <Text fontSize="lg" align="start" mr={2}>
+                    <Text fontSize="xs" align="start" mr={2}>
                       {product.name}
                     </Text>
                     <Badge
@@ -207,19 +207,19 @@ const Product = ({ product }: Props) => {
                     <Text as="b">
                       {product?.retailsalePrice
                         ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(
-                            Number.parseFloat(
-                              product?.retailsalePrice.toString()
-                            )
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          Number.parseFloat(
+                            product?.retailsalePrice.toString()
                           )
+                        )
                         : new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(0)}
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
                     </Text>
                   </Flex>
                 </GridItem>
@@ -228,19 +228,19 @@ const Product = ({ product }: Props) => {
                     <Text as="b">
                       {product?.wholesalePrice
                         ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(
-                            Number.parseFloat(
-                              product?.wholesalePrice.toString()
-                            )
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          Number.parseFloat(
+                            product?.wholesalePrice.toString()
                           )
+                        )
                         : new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(0)}
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
                     </Text>
                   </Flex>
                 </GridItem>
@@ -249,19 +249,19 @@ const Product = ({ product }: Props) => {
                     <Text display={{ md: "none" }} as="b">
                       {product?.retailsalePrice
                         ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(
-                            Number.parseFloat(
-                              product?.retailsalePrice.toString()
-                            )
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          Number.parseFloat(
+                            product?.retailsalePrice.toString()
                           )
+                        )
                         : new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "USD",
-                          }).format(0)}
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
                     </Text>
                     {checkRole(ProfileBase.products.viewActions) && (
                       <Popover placement="bottom-start">

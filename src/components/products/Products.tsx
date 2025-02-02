@@ -214,7 +214,7 @@ const Products = () => {
                 >
                   <GridItem>
                     <Flex direction="column" gap={2}>
-                      <Text fontWeight="bold">Nombre del producto</Text>
+                      <Text fontWeight="bold">Producto</Text>
                     </Flex>
                   </GridItem>
                   <GridItem>
