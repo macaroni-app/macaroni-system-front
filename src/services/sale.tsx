@@ -49,10 +49,20 @@ const saleService = {
     saleToUpdate: ISaleLessRelated,
     axiosPrivate: AxiosInstance
   ) => {
-    const { data } = await axiosPrivate.put(`${SALE_URL}/${id}`, saleToUpdate, {
-      withCredentials: true,
-    })
-    return data
+
+    if (saleToUpdate.isBilled === undefined || saleToUpdate.isBilled === null) {
+      const { data } = await axiosPrivate.put(`${SALE_URL}/cancelledSale?id=${id}`, saleToUpdate, {
+        withCredentials: true,
+      })
+      return data
+    }
+
+    if (saleToUpdate.isBilled !== undefined || saleToUpdate.isBilled !== null) {
+      const { data } = await axiosPrivate.put(`${SALE_URL}/setBilledSale?id=${id}`, saleToUpdate, {
+        withCredentials: true,
+      })
+      return data
+    }
   },
 }
 

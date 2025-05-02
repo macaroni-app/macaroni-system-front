@@ -15,6 +15,8 @@ import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { IClient } from "./types"
 import { useEditClient } from "../../hooks/useEditClient"
+import { useDocumentTypes } from "../../hooks/useDocumentTypes"
+import { useCondicionIvaReceptor } from "../../hooks/useCondicionIVAReceptor"
 
 const ClientForm = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -30,16 +32,20 @@ const ClientForm = () => {
   const queryClients = useClients({ id: clientId })
   const clientToUpdate = queryClients?.data ? { ...queryClients?.data[0] } : {}
 
+  const queryDocumentTypes = useDocumentTypes()
+
+  const queryCondicionIva = useCondicionIvaReceptor()
+
   const { addNewClient } = useNewClient()
   const { editClient } = useEditClient()
 
-  const onSubmit = async ({ name }: IClient) => {
+  const onSubmit = async ({ name, condicionIVAReceptorId, documentNumber, documentType, address }: IClient) => {
     setIsLoading(true)
 
     try {
       let response
       if (!clientId) {
-        response = await addNewClient({ name })
+        response = await addNewClient({ name, condicionIVAReceptorId, documentNumber, documentType, address })
         if (response.isStored) {
           showMessage(
             RECORD_CREATED,
@@ -50,7 +56,7 @@ const ClientForm = () => {
       } else {
         response = await editClient({
           clientId,
-          clientToUpdate: { name },
+          clientToUpdate: { name, condicionIVAReceptorId, documentNumber, documentType, address },
         })
         if (response.isUpdated) {
           showMessage(
@@ -81,6 +87,8 @@ const ClientForm = () => {
       clientToUpdate={clientId ? clientToUpdate : {}}
       isEditing={clientId ? true : false}
       isLoading={isLoading}
+      documentTypes={queryDocumentTypes.data as { id: string, name: string }[]}
+      condicionsIvaReceptor={queryCondicionIva.data as { id: string, name: string }[]}
     />
   )
 }

@@ -41,8 +41,11 @@ import { es } from "date-fns/locale"
 
 // types
 import {
+  CONCEPT_TYPE_AFIP,
+  INVOICE_TYPE_AFIP,
   ISaleFullRelated,
   ISaleItemFullRelated,
+  POINT_OF_SALE_AFIP,
   // ISaleItemPreview,
   SaleStatus,
 } from "./types"
@@ -52,6 +55,7 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useEditManyInventory } from "../../hooks/useEditManyInventory"
 import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
+import { useNewInvoice } from "../../hooks/useGenerateInvoice"
 import {
   IInventoryFullRelated,
   IInventoryLessRelated,
@@ -68,6 +72,9 @@ import { useCheckRole } from "../../hooks/useCheckRole"
 import ProfileBase from "../common/permissions"
 
 import { RangeDate } from "../common/RangeDateFilter"
+import { IInvoice } from "../afip/types"
+import { AxiosError } from "axios"
+
 
 interface Props {
   sale: ISaleFullRelated
@@ -81,6 +88,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
 
   const { checkRole } = useCheckRole()
 
+  const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
   const { editSale } = useEditSale()
@@ -88,12 +96,78 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
   // const { deleteManySaleItem } = useDeleteManySaleItem()
   const { showMessage } = useMessage()
 
+  const { generateInvoice } = useNewInvoice()
+
   // const handleEdit = () => {
   //   navigate(`${sale._id}/edit`)
   // }
 
   const handleDetails = () => {
     navigate(`/sales/${sale._id}/details`)
+  }
+
+  const handleGenerateInvoice = async () => {
+
+    setIsLoadingInvoice(true);
+
+    if (sale.status === "CANCELLED") {
+      showMessage(
+        "No se puede facturar porque la venta ya está anulada",
+        AlertStatus.Error,
+        AlertColorScheme.Red
+      )
+      setIsLoadingInvoice(false);
+      onClose()
+      return
+    }
+
+    let invoice: IInvoice = {
+      sale: sale._id,
+      documentType: sale?.client?.documentType,
+      documentNumber: sale.client?.documentNumber,
+      concept: CONCEPT_TYPE_AFIP.PRODUCTOS,
+      invoiceType: INVOICE_TYPE_AFIP.FACTURA_C,
+      totalAmount: sale.total,
+      pointOfSale: POINT_OF_SALE_AFIP.TWELVE,
+      condicionIVAReceptorId: sale.client?.condicionIVAReceptorId
+    }
+
+    try {
+
+      let response = await generateInvoice(invoice)
+      if (response.status === 201) {
+
+        const saleUpdatedResponse = await editSale({
+          saleId: sale._id !== undefined ? sale?._id : "",
+          saleToUpdate: {
+            isBilled: true
+          },
+        })
+
+        if (saleUpdatedResponse.isUpdated && saleUpdatedResponse.status === 200) {
+          showMessage(
+            `${response.message} - CAE: ${response.invoice_details.cae}`,
+            AlertStatus.Success,
+            AlertColorScheme.Green
+          )
+        }
+      }
+
+    } catch (error: unknown) {
+      const err = error as AxiosError
+      if (err.response) {
+        let er = err.response.data as { status: number, message: string }
+        if (er.status === 400) {
+          showMessage(
+            er.message,
+            AlertStatus.Error,
+            AlertColorScheme.Red
+          )
+        }
+      }
+    } finally {
+      setIsLoadingInvoice(false);
+    }
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -122,6 +196,17 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
       onClose()
       return
     }
+
+    if (sale.isBilled === true) {
+      showMessage(
+        "No se puede anular, ya fue facturada la venta",
+        AlertStatus.Error,
+        AlertColorScheme.Red
+      )
+      onClose()
+      return
+    }
+
 
     setIsLoading(true)
 
@@ -258,7 +343,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
           <Card variant="outline">
             <CardBody>
               <Grid
-                templateColumns="repeat(6, 1fr)"
+                templateColumns="repeat(7, 1fr)"
                 gap={2}
                 alignItems="center"
               >
@@ -276,6 +361,16 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                       alignSelf={"flex-start"}
                     >
                       {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
+                    </Badge>
+                    <Badge
+                      display={{ md: "none" }}
+                      variant={"subtle"}
+                      colorScheme={
+                        sale.isBilled === false ? "red" : "green"
+                      }
+                      alignSelf={"flex-start"}
+                    >
+                      {sale.isBilled === false ? "No facturado" : "Facturado"}
                     </Badge>
                     <Text
                       display={{ md: "none" }}
@@ -303,6 +398,18 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                       }
                     >
                       {sale.status === "CANCELLED" ? "Anulada" : "Pagado"}
+                    </Badge>
+                  </Flex>
+                </GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Badge
+                      variant={"subtle"}
+                      colorScheme={
+                        sale.isBilled === false ? "red" : "green"
+                      }
+                    >
+                      {sale.isBilled === false ? "No facturado" : "Facturado"}
                     </Badge>
                   </Flex>
                 </GridItem>
@@ -344,7 +451,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                   </Flex>
                 </GridItem>
 
-                <GridItem colStart={{ base: 6 }}>
+                <GridItem colStart={{ base: 7 }}>
                   <Flex direction="column" gap={2}>
                     <Text display={{ md: "none" }} as="b">
                       {sale?.total
@@ -411,6 +518,24 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                               >
                                 Editar
                               </Button> */}
+                                {checkRole(ProfileBase.sales.invoice) && (
+                                  <Button
+                                    onClick={() => handleGenerateInvoice()}
+                                    variant={"blue"}
+                                    isLoading={isLoadingInvoice}
+                                    loadingText="Generando..."
+                                    colorScheme="blue"
+                                    justifyContent={"start"}
+                                    size="md"
+                                    _hover={{
+                                      textDecoration: "none",
+                                      color: "purple",
+                                      bg: "purple.100",
+                                    }}
+                                  >
+                                    Generar factura
+                                  </Button>
+                                )}
                                 {checkRole(ProfileBase.sales.cancel) && (
                                   <Button
                                     onClick={onOpen}

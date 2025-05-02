@@ -94,6 +94,11 @@ const HeaderMenu = (): JSX.Element => {
             Gastos fijos
           </MenuItem>
         )}
+        {checkRole(ProfileBase.businesses.view) && (
+          <MenuItem onClick={() => navigate("/businesses")}>
+            Negocios
+          </MenuItem>
+        )}
         {checkRole(ProfileBase.users.view) && (
           <MenuItem onClick={() => navigate("/users")}>Usuarios</MenuItem>
         )}

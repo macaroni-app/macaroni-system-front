@@ -25,21 +25,21 @@ import { useNavigate } from "react-router-dom"
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 
-import { useDeleteClient } from "../../hooks/useDeleteClient"
-import { useChangeIsActiveClient } from "../../hooks/useChangeIsActiveClient"
+import { useChangeIsActiveBusiness } from "../../hooks/useChangeIsActiveBusiness"
 import { useMessage } from "../../hooks/useMessage"
+import { useDeleteBusiness } from "../../hooks/useDeleteBusiness"
 
-import { IClient } from "./types"
+import { IBusiness } from "./types"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useCheckRole } from "../../hooks/useCheckRole"
 import ProfileBase from "../common/permissions"
 
 interface Props {
-  client: IClient
+  business: IBusiness
 }
 
-const Client = ({ client }: Props) => {
+const Business = ({ business }: Props) => {
   const navigate = useNavigate()
 
   const { checkRole } = useCheckRole()
@@ -47,29 +47,29 @@ const Client = ({ client }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
 
-  const { deleteClient } = useDeleteClient()
+  const { deleteBusiness } = useDeleteBusiness()
   const { showMessage } = useMessage()
-  const { changeIsActiveClient } = useChangeIsActiveClient()
+  const { changeIsActiveBusiness } = useChangeIsActiveBusiness()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleEdit = () => {
-    navigate(`${client._id}/edit`)
+    navigate(`${business._id}/edit`)
   }
 
   const handleChangeIsActive = async (isActive: boolean) => {
     setIsLoading(true)
 
-    if (client === undefined) {
+    if (business === undefined) {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
 
     let response = undefined
 
-    if (client !== undefined && client._id !== undefined) {
-      response = await changeIsActiveClient({
-        clientId: client._id,
+    if (business !== undefined && business._id !== undefined) {
+      response = await changeIsActiveBusiness({
+        businessId: business._id,
         isActive,
       })
     }
@@ -90,30 +90,30 @@ const Client = ({ client }: Props) => {
     }
 
     setDeleteModal(false)
-    navigate("/clients")
+    navigate("/businesses ")
   }
 
   const handleDetails = () => {
-    navigate(`/clients/${client._id}/details`)
+    navigate(`/businesses/${business._id}/details`)
   }
 
   const handleDelete = async () => {
     setIsLoading(true)
 
-    if (client === undefined) {
+    if (business === undefined) {
       showMessage("Ocurrió un error", AlertStatus.Error, AlertColorScheme.Red)
       setIsLoading(false)
     }
 
     let response = undefined
 
-    if (client !== undefined && client._id !== undefined) {
-      response = await deleteClient(client._id)
+    if (business !== undefined && business._id !== undefined) {
+      response = await deleteBusiness(business._id)
     }
 
     if (response?.isDeleted) {
       showMessage(
-        "Cliente eliminado.",
+        "Negocio eliminado.",
         AlertStatus.Success,
         AlertColorScheme.Purple
       )
@@ -125,7 +125,7 @@ const Client = ({ client }: Props) => {
       setIsLoading(false)
     }
     setDeleteModal(false)
-    navigate("/clients")
+    navigate("/businesses")
   }
 
   return (
@@ -136,21 +136,21 @@ const Client = ({ client }: Props) => {
             <GridItem colSpan={5}>
               <Flex direction="column" gap={2}>
                 <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
-                  {client.name}
+                  {business.name}
                 </Text>
                 <Badge
                   variant="subtle"
-                  colorScheme={client?.isActive ? "green" : "red"}
+                  colorScheme={business?.isActive ? "green" : "red"}
                   alignSelf={"start"}
                 >
-                  {client?.isActive ? "Activo" : "Inactivo"}
+                  {business?.isActive ? "Activo" : "Inactivo"}
                 </Badge>
               </Flex>
             </GridItem>
 
             <GridItem colSpan={1} colStart={6}>
               <Flex direction="column" gap={2}>
-                {checkRole(ProfileBase.clients.viewActions) && (
+                {checkRole(ProfileBase.businesses.viewActions) && (
                   <Popover placement="bottom-start">
                     <PopoverTrigger>
                       <IconButton
@@ -172,7 +172,7 @@ const Client = ({ client }: Props) => {
                         <PopoverArrow />
                         <PopoverBody p={0}>
                           <VStack spacing={1} align="stretch">
-                            {checkRole(ProfileBase.clients.view) && (
+                            {checkRole(ProfileBase.businesses.view) && (
                               <Button
                                 onClick={() => handleDetails()}
                                 variant={"blue"}
@@ -188,7 +188,7 @@ const Client = ({ client }: Props) => {
                                 Ver detalles
                               </Button>
                             )}
-                            {checkRole(ProfileBase.clients.edit) && (
+                            {checkRole(ProfileBase.businesses.edit) && (
                               <Button
                                 onClick={() => handleEdit()}
                                 variant={"blue"}
@@ -204,7 +204,7 @@ const Client = ({ client }: Props) => {
                                 Editar
                               </Button>
                             )}
-                            {checkRole(ProfileBase.clients.deactivate) && (
+                            {checkRole(ProfileBase.businesses.deactivate) && (
                               <Button
                                 onClick={() => {
                                   setDeleteModal(false)
@@ -220,10 +220,10 @@ const Client = ({ client }: Props) => {
                                   bg: "purple.100",
                                 }}
                               >
-                                {client.isActive ? "Desactivar" : "Activar"}
+                                {business.isActive ? "Desactivar" : "Activar"}
                               </Button>
                             )}
-                            {checkRole(ProfileBase.clients.delete) && (
+                            {checkRole(ProfileBase.businesses.delete) && (
                               <Button
                                 onClick={() => {
                                   setDeleteModal(true)
@@ -259,13 +259,13 @@ const Client = ({ client }: Props) => {
         handleDelete={handleDelete}
         isLoading={isLoading}
         isOpen={isOpen}
-        model={client}
-        modelName="Cliente"
+        model={business}
+        modelName="Negocio"
         onClose={onClose}
-        key={client._id}
+        key={business._id}
       />
     </GridItem>
   )
 }
 
-export default Client
+export default Business

@@ -11,136 +11,37 @@ import {
   Box,
   Stack,
   Skeleton,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Badge,
 } from "@chakra-ui/react"
 
 import { useNavigate, useParams } from "react-router-dom"
 
 // types
-import { ISaleFullRelated } from "./types"
+import { IClient } from "./types"
 
-import { ChevronLeftIcon, DownloadIcon } from "@chakra-ui/icons"
-
-import { useInvoices } from "../../hooks/useInvoices"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
 
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
 
-import { generateInvoicePDF } from "./generatePdfInvoice"
-
 // custom hooks
-import { useSales } from "../../hooks/useSales"
-import { useSaleItems } from "../../hooks/useSaleItems"
+import { useClients } from "../../hooks/useClients"
 
-const SaleDetails = () => {
-  const { saleId } = useParams()
+const ClientDetails = () => {
+  const { clientId } = useParams()
 
-  const querySales = useSales({ id: saleId })
+  const queryClients = useClients({ id: clientId })
 
-  const sale = querySales.data?.filter(
-    (sale) => sale._id === saleId
-  )[0] as ISaleFullRelated
+  const client = queryClients.data?.filter(
+    (client) => client._id === clientId
+  )[0] as IClient
 
-  const querySaleItems = useSaleItems({ id: saleId })
-
-  const queryInvoice = useInvoices({ saleId: saleId })
-
-  const saleItems = querySaleItems?.data?.filter(
-    (saleItem) => saleItem?.sale?._id === saleId
-  )
-
-  const profit = Number(sale?.total) - Number(sale?.costTotal)
-  const profitPorcentage = (profit / Number(sale?.costTotal)) * 100
-
-  const saleTotal = saleItems?.map(saleItem => saleItem.subtotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0)
-
-  const saleDetailsList = saleItems?.map((saleItem) => {
-    return (
-      <Tr key={saleItem._id}>
-        <Td>{saleItem?.product?.name}</Td>
-        <Td>
-          <Badge>{saleItem?.product?.productType?.name}</Badge>
-        </Td>
-        <Td>
-          {saleItem?.quantity !== undefined &&
-            Number.parseFloat(saleItem?.quantity.toString())}
-        </Td>
-        <Td isNumeric>
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            minimumFractionDigits: 2,
-            currency: "USD",
-          }).format(
-            saleItem?.subtotal !== undefined
-              ? Number.parseFloat(saleItem?.subtotal?.toFixed(2))
-              : 0
-          )}
-        </Td>
-      </Tr>
-    )
-  })
 
   const navigate = useNavigate()
 
   const handleGoBack = () => {
-    navigate("/sales")
+    navigate("/clients")
   }
-
-  const handleGeneratePdf = async () => {
-    // Todo: generar un service para traer el invoice guardado recien y poder generar el pdf
-
-    const invoice = queryInvoice.data
-
-    const clientIvaCondition = sale.client?.condicionIVAReceptorId == "6" ? 'Responsable Monotributo' : 'Consumidor Final'
-
-    if (invoice != null) {
-      const invoiceData = {
-        pointOfSale: Number(invoice.pointOfSale),
-        invoiceNumber: Number(invoice.invoiceNumber),
-        invoiceType: Number(invoice.invoiceType),
-        issueDate: String(invoice.cbteFch),
-        businessName: String(sale.business?.name),
-        businessCuit: Number(invoice.cuit),
-        businessAddress: String(sale.business?.address),
-        businessIvaCondition: String(sale.business?.ivaCondition),
-        clientName: String(sale.client?.name),
-        clientCuit: Number(invoice.documentNumber),
-        clientAddress: String(sale.client?.address),
-        clientIvaCondition: String(clientIvaCondition),
-        clientDocType: Number(invoice.documentType),
-        items: saleItems != undefined ? saleItems?.map(saleItem => {
-          return {
-            code: '',
-            description: String(saleItem.product?.name),
-            quantity: Number(saleItem.quantity),
-            unitPrice: sale.isRetail ? Number(saleItem.product?.retailsalePrice) : Number(saleItem.product?.wholesalePrice),
-            subtotal: Number(saleItem.subtotal)
-          }
-        }) : [],
-        subtotal: Number(invoice.totalAmount),
-        total: Number(invoice.totalAmount),
-        otherTaxes: 0,
-        cae: Number(invoice.cae),
-        caeExpiration: String(invoice.expirationDate),
-        saleCondition: String(sale.paymentMethod?.name)
-      };
-
-      generateInvoicePDF(invoiceData);
-    }
-  }
-
-  // const handleEditProduct = () => {
-  //   navigate(`/sales/${sale._id}/edit`)
-  // }
 
   return (
     <>
@@ -162,21 +63,11 @@ const SaleDetails = () => {
                   Volver
                 </Button>
                 <Spacer />
-                {queryInvoice.data != null && (
-                  <Button
-                    onClick={() => handleGeneratePdf()}
-                    colorScheme="purple"
-                    variant="solid"
-                  >
-                    <DownloadIcon boxSize={3} me={2} />
-                    Factura
-                  </Button>
-                )}
               </Flex>
             </CardBody>
           </Card>
         </GridItem>
-        {querySales?.isLoading && (
+        {queryClients?.isLoading && (
           <GridItem
             mt={1}
             colSpan={{ base: 10, lg: 8 }}
@@ -207,7 +98,7 @@ const SaleDetails = () => {
             </Card>
           </GridItem>
         )}
-        {!querySales?.isLoading && (
+        {!queryClients?.isLoading && (
           <GridItem
             mt={1}
             colSpan={{ base: 10, lg: 8 }}
@@ -228,10 +119,50 @@ const SaleDetails = () => {
                     >
                       <Text fontSize="lg">Cliente: </Text>
                       <Text as="b" fontSize="lg">
-                        {sale?.client?.name}
+                        {client?.name}
                       </Text>
                     </Flex>
                     <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Cuit: </Text>
+                      <Text as="b" fontSize="lg">
+                        {client?.documentNumber}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Tipo documento: </Text>
+                      <Text as="b" fontSize="lg">
+                        {client?.documentType === '80' ? 'CUIT' : 'Doc. (Otro)'}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Condición frente al IVA: </Text>
+                      <Text as="b" fontSize="lg">
+                        {client?.condicionIVAReceptorId === '6' ? 'Responsable Monotributo' : 'Consumidor Final'}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Dirección: </Text>
+                      <Text as="b" fontSize="lg">
+                        {client?.address}
+                      </Text>
+                    </Flex>
+                    {/* <Flex
                       mb={2}
                       direction="row"
                       justifyContent={"space-between"}
@@ -350,65 +281,9 @@ const SaleDetails = () => {
                           <Badge colorScheme="red">Cancelado</Badge>
                         )}
                       </Text>
-                    </Flex>
-                    <Flex
-                      mb={2}
-                      direction="row"
-                      justifyContent={"space-between"}
-                    >
-                      <Text fontSize="lg">Afip: </Text>
-                      <Text as="b" fontSize="lg">
-                        {sale?.isBilled === true ? (
-                          <Badge colorScheme="green">Facturado</Badge>
-                        ) : (
-                          <Badge colorScheme="red">No Facturado</Badge>
-                        )}
-                      </Text>
-                    </Flex>
+                    </Flex> */}
                   </GridItem>
                 </Grid>
-              </CardBody>
-            </Card>
-          </GridItem>
-        )}
-
-        {!querySales?.isLoading && (
-          <GridItem
-            mt={3}
-            colSpan={{ base: 10, lg: 8 }}
-            colStart={{ base: 2, lg: 3 }}
-          >
-            <Card variant="outline">
-              <CardBody>
-                <TableContainer>
-                  <Table size="sm">
-                    <Thead>
-                      <Tr>
-                        <Th>Producto</Th>
-                        <Th>Tipo</Th>
-                        <Th>Cantidad</Th>
-                        <Th isNumeric>Subtotal</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>{saleDetailsList}</Tbody>
-                    <Tfoot>
-                      <Tr>
-                        <Th>Total</Th>
-                        <Th></Th>
-                        <Th></Th>
-                        <Th isNumeric>
-                          {saleItems !== undefined &&
-                            saleItems.length > 0 &&
-                            new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              minimumFractionDigits: 2,
-                              currency: "USD",
-                            }).format(Number(saleTotal))}
-                        </Th>
-                      </Tr>
-                    </Tfoot>
-                  </Table>
-                </TableContainer>
               </CardBody>
             </Card>
           </GridItem>
@@ -418,4 +293,4 @@ const SaleDetails = () => {
   )
 }
 
-export default SaleDetails
+export default ClientDetails

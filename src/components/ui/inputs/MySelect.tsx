@@ -21,6 +21,7 @@ interface Props {
   control: Control<any, any>
   data?: ICategory[]
   noOptionsMessage?: string
+  objectName?: string
 }
 
 type Option = {
@@ -38,9 +39,18 @@ const MySelect = (props: Props) => {
     control,
     isRequired,
     noOptionsMessage,
+    objectName
   } = props
 
+
   const options: PropsValue<any> = data?.map((model) => {
+
+    if (objectName === 'documentType') {
+      return { label: model.name, value: model.id }
+    }
+    if (objectName === 'condicionIVAReceptorId') {
+      return { label: model.name, value: model.id }
+    }
     return { label: model.name, value: model._id }
   })
 

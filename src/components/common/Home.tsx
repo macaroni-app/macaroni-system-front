@@ -36,6 +36,7 @@ import InventoryTransactionForm from "../inventoryTransactions/InventoryTransact
 import Categories from "../categories/Categories"
 import CategoryForm from "../categories/CategoryForm"
 import Clients from "../clients/Clients"
+import ClientDetails from "../clients/ClientDetails"
 import ClientForm from "../clients/ClientForm"
 import PaymentMethods from "../paymentMethods/PaymentMethods"
 import PaymentMethodForm from "../paymentMethods/PaymentMethodForm"
@@ -47,11 +48,14 @@ import UserNewPasswordForm from "../users/UserNewPassword"
 import Dashboard from "../dashboard/Dashboard"
 import FixedCosts from "../fixedCosts/FixedCosts"
 import FixedCostForm from "../fixedCosts/FixedCostForm"
+import Businesses from "../businesses/Businesses"
+import BusinessDetails from "../businesses/BusinessDetails"
 // import Unauthorized from "./Unauthorized"
 import PageNotFound from "./PageNotFound"
 
 import ProfileBase from "./permissions"
 import InventoryTransactionBulkForm from "../inventoryTransactions/InventoryTransactionBulkForm"
+import BusinessForm from "../businesses/BusinessForm"
 
 const Home = () => {
   return (
@@ -403,6 +407,11 @@ const Home = () => {
         >
           <Route path="/clients/:clientId/edit" element={<ClientForm />} />
         </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.clients.view} />}
+        >
+          <Route path="/clients/:clientId/details" element={<ClientDetails />} />
+        </Route>
 
         {/* PAYMENT_METHODS */}
         <Route
@@ -481,6 +490,51 @@ const Home = () => {
           <Route
             path="/fixedCosts/:fixedCostId/edit"
             element={<FixedCostForm />}
+          />
+        </Route>
+
+        {/* BUSINESSES */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.businesses.view} />
+          }
+        >
+          <Route
+            path="/businesses"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <Businesses />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.businesses.view} />}
+        >
+          <Route path="/businesses/:businessId/details" element={<BusinessDetails />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.businesses.create} />
+          }
+        >
+          <Route path="/businesses/add" element={<BusinessForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.businesses.edit} />
+          }
+        >
+          <Route
+            path="/businesses/:businessId/edit"
+            element={<BusinessForm />}
           />
         </Route>
 

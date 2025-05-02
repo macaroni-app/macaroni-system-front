@@ -1,12 +1,11 @@
 import {z} from "zod"
 
-export const clientSchema = z.object({
+export const businessSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(1, "Complete el campo"),
-  condicionIVAReceptorId: z.string().optional(),
-  documentType: z.string().optional(),
-  documentNumber: z.number().optional(),
+  cuit: z.string().optional(),
   address: z.string().optional(),
+  ivaCondition: z.string().optional(),
   isDeleted: z.boolean().optional(),
   isActive: z.boolean().optional(),
   createdAt: z.date().optional(),

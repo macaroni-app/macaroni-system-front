@@ -1,3 +1,4 @@
+import { IBusiness } from "../businesses/types"
 import { IClient } from "../clients/types"
 import { IGenericObject } from "../common/types"
 import { IPaymentMethod } from "../paymentMethods/types"
@@ -8,8 +9,24 @@ export enum SaleStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum CONCEPT_TYPE_AFIP {
+  PRODUCTOS = 1,
+  SERVICIOS = 2,
+  PRODUCTOS_Y_SERVICIOS = 3
+}
+
+export enum INVOICE_TYPE_AFIP {
+  FACTURA_C = 11
+}
+
+export enum POINT_OF_SALE_AFIP {
+  ONE = 1,
+  TWELVE = 12
+}
+
 export interface ISaleFather extends IGenericObject {
   isRetail?: boolean
+  isBilled?: boolean
   total?: number
   costTotal?: number
   discount?: number
@@ -18,11 +35,13 @@ export interface ISaleFather extends IGenericObject {
 }
 export interface ISaleFullRelated extends ISaleFather{
   client?: IClient
+  business?: IBusiness
   paymentMethod?: IPaymentMethod
 }
 
 export interface ISaleLessRelated extends ISaleFather {
   client?: string
+  business?: string
   paymentMethod?: string
 }
 

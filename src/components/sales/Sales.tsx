@@ -62,6 +62,7 @@ const Sales = () => {
   const productItems = queryProductItems.data as IProductItemFullRelated[]
   const inventories = queryInventories.data as IInventoryFullRelated[]
 
+
   // const { throwError } = useError()
 
   const navigate = useNavigate()
@@ -262,7 +263,7 @@ const Sales = () => {
                 <Card variant="outline">
                   <CardBody>
                     <Grid
-                      templateColumns="repeat(6, 1fr)"
+                      templateColumns="repeat(7, 1fr)"
                       gap={2}
                       alignItems={"center"}
                     >
@@ -274,6 +275,11 @@ const Sales = () => {
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"center"}>
                           <Text fontWeight="bold">Estado</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Afip</Text>
                         </Flex>
                       </GridItem>
                       <GridItem>

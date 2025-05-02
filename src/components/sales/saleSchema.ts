@@ -19,6 +19,7 @@ export const saleSchema = z.object({
   saleItems: z.array(saleItems),
   status: z.enum(SALE_STATUS).optional(),
   isRetail: z.boolean().optional(),
+  isBilled: z.boolean().optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),

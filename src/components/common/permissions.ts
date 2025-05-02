@@ -12,6 +12,7 @@ const ProfileBase = {
     stats: [ROLES.ADMIN, ROLES.SUPERVISOR]
   },
   sales: {
+    invoice: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     create: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     edit: [ROLES.ADMIN],
     cancel: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
@@ -73,6 +74,14 @@ const ProfileBase = {
     delete: [ROLES.ADMIN],
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER]
+  },
+  businesses: {
+    create: [ROLES.ADMIN],
+    edit: [ROLES.ADMIN],
+    deactivate: [ROLES.ADMIN],
+    delete: [ROLES.ADMIN],
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    viewActions: [ROLES.ADMIN]
   },
   fixedCosts: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR],

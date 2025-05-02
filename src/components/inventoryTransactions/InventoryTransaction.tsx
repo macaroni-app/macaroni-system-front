@@ -125,8 +125,8 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
   }
 
   const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
-    ? 6
-    : 5
+    ? 8
+    : 7
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -166,10 +166,10 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                       : ""
                   )}
                   {inventoryTransaction.transactionType === "UP" && (
-                    <TriangleUpIcon boxSize={3} ms={2} mb={1} />
+                    <TriangleUpIcon boxSize={3} mb={1} />
                   )}
                   {inventoryTransaction.transactionType === "DOWN" && (
-                    <TriangleDownIcon boxSize={3} ms={2} mb={1} />
+                    <TriangleDownIcon boxSize={3} mb={1} />
                   )}
                 </Badge>
               </Flex>
@@ -178,6 +178,20 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
               <Flex direction="column" gap={2} placeItems={"center"}>
                 <Text fontSize="xs" align="start">
                   {inventoryTransaction?.affectedAmount}
+                </Text>
+              </Flex>
+            </GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
+              <Flex direction="column" gap={2} placeItems={"center"}>
+                <Text fontSize="xs" align="start">
+                  {inventoryTransaction?.oldQuantityAvailable}
+                </Text>
+              </Flex>
+            </GridItem>
+            <GridItem display={{ base: "none", md: "block" }}>
+              <Flex direction="column" gap={2} placeItems={"center"}>
+                <Text fontSize="xs" align="start">
+                  {inventoryTransaction?.currentQuantityAvailable}
                 </Text>
               </Flex>
             </GridItem>
@@ -206,7 +220,7 @@ const InventoryTransaction = ({ inventoryTransaction }: Props) => {
                 </Text>
               </Flex>
             </GridItem>
-            <GridItem colStart={{ base: 6 }}>
+            <GridItem colStart={{ base: 8 }}>
               <Flex direction="column" gap={2}>
                 <Badge
                   display={{ md: "none" }}

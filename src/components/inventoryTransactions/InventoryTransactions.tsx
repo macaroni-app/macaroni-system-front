@@ -92,8 +92,8 @@ const InventoryTransactions = (): JSX.Element => {
   )
 
   const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
-    ? 6
-    : 5
+    ? 8
+    : 7
 
   if (queryInventoryTransactions?.isLoading) {
     return (
@@ -221,6 +221,16 @@ const InventoryTransactions = (): JSX.Element => {
                         <GridItem>
                           <Flex direction="column" gap={2} placeItems={"center"}>
                             <Text fontWeight="bold">Cantidad</Text>
+                          </Flex>
+                        </GridItem>
+                        <GridItem>
+                          <Flex direction="column" gap={2} placeItems={"center"}>
+                            <Text fontWeight="bold">Stock Antes</Text>
+                          </Flex>
+                        </GridItem>
+                        <GridItem>
+                          <Flex direction="column" gap={2} placeItems={"center"}>
+                            <Text fontWeight="bold">Stock Actual</Text>
                           </Flex>
                         </GridItem>
                         <GridItem>

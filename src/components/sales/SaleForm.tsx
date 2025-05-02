@@ -29,7 +29,7 @@ import { useEditManyInventory } from "../../hooks/useEditManyInventory"
 import { useMessage } from "../../hooks/useMessage"
 import { useError, Error } from "../../hooks/useError"
 
-import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
+import { RECORD_CREATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { useProductItems } from "../../hooks/useProductItems"
 import { IProductItemFullRelated } from "../products/types"
@@ -46,6 +46,8 @@ import {
 } from "../inventoryTransactions/types"
 import { useNewSale } from "../../hooks/useNewSale"
 import { useNewManySaleItem } from "../../hooks/useNewManySaleItem"
+import { useBusinesses } from "../../hooks/useBusinesses"
+import { IBusiness } from "../businesses/types"
 
 type ISaleResponse = {
   data?: ISaleFullRelated
@@ -72,6 +74,7 @@ const SaleForm = () => {
   const queryPaymentMethod = usePaymentMethods({})
   const querySaleItems = useSaleItems({})
   const queryInventories = useInventories({})
+  const queryBusinesses = useBusinesses({})
 
   // const { addNewProduct } = useNewProduct();
   // const { addNewManyProductItem } = useNewManyProductItem();
@@ -88,6 +91,8 @@ const SaleForm = () => {
   const paymentMethods = queryPaymentMethod.data as IPaymentMethod[]
   const saleItems = querySaleItems.data as ISaleItemLessRelated[]
   const inventories = queryInventories.data as IInventoryFullRelated[]
+  const businesses = queryBusinesses.data as IBusiness[]
+  const currentBusiness = businesses?.find(business => business?.cuit === '23393153504')
 
   const productsById = new Map()
 
@@ -275,6 +280,7 @@ const SaleForm = () => {
         sale.total = getTotalSale(sale)
         sale.costTotal = costTotal
         sale.status = SaleStatus.PAID
+        sale.business = currentBusiness?._id
         response = await addNewSale(sale)
 
         // Todo: insertar los items de la venta.
