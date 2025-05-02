@@ -128,7 +128,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
       concept: CONCEPT_TYPE_AFIP.PRODUCTOS,
       invoiceType: INVOICE_TYPE_AFIP.FACTURA_C,
       totalAmount: sale.total,
-      pointOfSale: POINT_OF_SALE_AFIP.TWELVE,
+      pointOfSale: POINT_OF_SALE_AFIP.ONE,
       condicionIVAReceptorId: sale.client?.condicionIVAReceptorId
     }
 
