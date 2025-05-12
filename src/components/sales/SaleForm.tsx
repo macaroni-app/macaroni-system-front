@@ -433,7 +433,7 @@ const SaleForm = () => {
           onCancelOperation={onCancelOperation}
           isLoading={isLoading}
           products={products}
-          clients={clients}
+          clients={clients?.filter(client => client.isActive)}
           paymentMethods={paymentMethods}
         />
       )}
