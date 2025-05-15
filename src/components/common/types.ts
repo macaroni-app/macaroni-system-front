@@ -20,4 +20,5 @@ export interface IGenericObject {
   deletedAt?: Date
   createdBy?: ICreatedBy
   updatedBy?: string
+  sortingDate?: Date
 }

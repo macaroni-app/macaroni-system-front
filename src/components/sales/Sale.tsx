@@ -36,8 +36,8 @@ import { useMessage } from "../../hooks/useMessage"
 
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
 
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+// import { format } from "date-fns"
+// import { es } from "date-fns/locale"
 
 // types
 import {
@@ -87,6 +87,16 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
   const navigate = useNavigate()
 
   const { checkRole } = useCheckRole()
+
+  const saleCreatedDatetime = new Date(String(sale?.sortingDate)).toLocaleString('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
 
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
@@ -378,13 +388,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                       fontSize="xs"
                       align="start"
                     >
-                      {format(
-                        new Date(sale?.createdAt ? sale?.createdAt : ""),
-                        "eeee dd yyyy",
-                        {
-                          locale: es,
-                        }
-                      )}
+                      {saleCreatedDatetime}
                     </Text>
                   </Flex>
                 </GridItem>
@@ -423,13 +427,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                 <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text color={"gray.500"} fontSize="xs" align="start">
-                      {format(
-                        new Date(sale?.createdAt ? sale?.createdAt : ""),
-                        "eeee dd yyyy",
-                        {
-                          locale: es,
-                        }
-                      )}
+                      {saleCreatedDatetime}
                     </Text>
                   </Flex>
                 </GridItem>
