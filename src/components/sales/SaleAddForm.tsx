@@ -65,7 +65,7 @@ const SaleFormAdd = ({
         saleItems: [{ product: "", quantity: 1 }],
       },
       values: {
-        isRetail: saleToUpdate?.isRetail || false,
+        isRetail: saleToUpdate?.isRetail || true,
         total: saleToUpdate?.total || undefined,
         discount: saleToUpdate?.discount || undefined,
         saleItems: [{ product: "", quantity: 1 }],
