@@ -100,7 +100,43 @@ const SaleDetails = () => {
 
     const invoice = queryInvoice.data
 
-    const clientIvaCondition = sale.client?.condicionIVAReceptorId == "6" ? 'Responsable Monotributo' : 'Consumidor Final'
+    let clientIvaCondition = '';
+    const condicionIVAReceptorId = sale.client?.condicionIVAReceptorId;
+    switch (condicionIVAReceptorId) {
+      case '1':
+        clientIvaCondition = 'IVA Responsable Inscripto';
+        break;
+      case '6':
+        clientIvaCondition = 'Responsable Monotributo';
+        break;
+      case '13':
+        clientIvaCondition = 'Monotributista Social';
+        break;
+      case '16':
+        clientIvaCondition = 'Monotributo Trabajador Independiente Promovido';
+        break;
+      case '4':
+        clientIvaCondition = 'IVA Sujeto Exento';
+        break;
+      case '7':
+        clientIvaCondition = 'Sujeto No Categorizado';
+        break;
+      case '8':
+        clientIvaCondition = 'Proveedor del Exterior';
+        break;
+      case '9':
+        clientIvaCondition = 'Cliente del Exterior';
+        break;
+      case '10':
+        clientIvaCondition = 'IVA Liberado – Ley N° 19.640';
+        break;
+      case '15':
+        clientIvaCondition = 'IVA No Alcanzado';
+        break;
+      case '5':
+        clientIvaCondition = 'Consumidor Final';
+        break;
+    }
 
     if (invoice != null) {
       const invoiceData = {

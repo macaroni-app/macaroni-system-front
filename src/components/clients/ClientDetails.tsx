@@ -43,6 +43,56 @@ const ClientDetails = () => {
     navigate("/clients")
   }
 
+  // { id: '1', name: 'IVA Responsable Inscripto' },
+  // { id: '6', name: 'Responsable Monotributo' },
+  // { id: '13', name: 'Monotributista Social' },
+  // { id: '16', name: 'Monotributo Trabajador Independiente Promovido' },
+  // { id: '4', name: 'IVA Sujeto Exento' },
+  // { id: '7', name: 'Sujeto No Categorizado' },
+  // { id: '8', name: 'Proveedor del Exterior' },
+  // { id: '9', name: 'Cliente del Exterior' },
+  // { id: '10', name: 'IVA Liberado – Ley N° 19.640' },
+  // { id: '15', name: 'IVA No Alcanzado' },
+  // { id: '5', name: 'Consumidor Final' }
+
+  let condicionIVAReceptor = '';
+  const condicionIVAReceptorId = client?.condicionIVAReceptorId;
+  switch (condicionIVAReceptorId) {
+    case '1':
+      condicionIVAReceptor = 'IVA Responsable Inscripto';
+      break;
+    case '6':
+      condicionIVAReceptor = 'Responsable Monotributo';
+      break;
+    case '13':
+      condicionIVAReceptor = 'Monotributista Social';
+      break;
+    case '16':
+      condicionIVAReceptor = 'Monotributo Trabajador Independiente Promovido';
+      break;
+    case '4':
+      condicionIVAReceptor = 'IVA Sujeto Exento';
+      break;
+    case '7':
+      condicionIVAReceptor = 'Sujeto No Categorizado';
+      break;
+    case '8':
+      condicionIVAReceptor = 'Proveedor del Exterior';
+      break;
+    case '9':
+      condicionIVAReceptor = 'Cliente del Exterior';
+      break;
+    case '10':
+      condicionIVAReceptor = 'IVA Liberado – Ley N° 19.640';
+      break;
+    case '15':
+      condicionIVAReceptor = 'IVA No Alcanzado';
+      break;
+    case '5':
+      condicionIVAReceptor = 'Consumidor Final';
+      break;
+  }
+
   return (
     <>
       <Grid templateColumns="repeat(12, 1fr)" gap={1}>
@@ -149,7 +199,7 @@ const ClientDetails = () => {
                     >
                       <Text fontSize="lg">Condición frente al IVA: </Text>
                       <Text as="b" fontSize="lg">
-                        {client?.condicionIVAReceptorId === '6' ? 'Responsable Monotributo' : 'Consumidor Final'}
+                        {condicionIVAReceptor}
                       </Text>
                     </Flex>
                     <Flex
