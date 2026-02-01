@@ -37,7 +37,7 @@ export const useInventories = (props: Props) => {
       )
       return data
     },
-    staleTime: Infinity,
+    staleTime: 0,
   })
 
   return query
