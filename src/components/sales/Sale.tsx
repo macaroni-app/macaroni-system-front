@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 
 import {
   Grid,
@@ -25,16 +25,16 @@ import {
   ModalBody,
   ModalCloseButton,
   Badge,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { useQueryClient } from "@tanstack/react-query"
-import { useNavigate } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
-import { useMessage } from "../../hooks/useMessage"
+import { useMessage } from "../../hooks/useMessage";
 // import { useDeleteSale } from "../../hooks/useDeleteSale"
 // import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
@@ -48,87 +48,90 @@ import {
   POINT_OF_SALE_AFIP,
   // ISaleItemPreview,
   SaleStatus,
-} from "./types"
+} from "./types";
 
-import { SALE_CANCELLED } from "../../utils/constants"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import { SALE_CANCELLED } from "../../utils/constants";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 
-import { useEditManyInventory } from "../../hooks/useEditManyInventory"
-import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
-import { useNewInvoice } from "../../hooks/useGenerateInvoice"
+import { useEditManyInventory } from "../../hooks/useEditManyInventory";
+import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
+import { useNewInvoice } from "../../hooks/useGenerateInvoice";
 import {
   IInventoryFullRelated,
   IInventoryLessRelated,
-} from "../inventories/types"
+} from "../inventories/types";
 import {
   IInventoryTransactionLessRelated,
   TransactionReason,
   TransactionType,
-} from "../inventoryTransactions/types"
-import { IProductItemFullRelated } from "../products/types"
-import { useEditSale } from "../../hooks/useEditSale"
+} from "../inventoryTransactions/types";
+import { IProductItemFullRelated } from "../products/types";
+import { useEditSale } from "../../hooks/useEditSale";
 
-import { useCheckRole } from "../../hooks/useCheckRole"
-import ProfileBase from "../common/permissions"
+import { useCheckRole } from "../../hooks/useCheckRole";
+import ProfileBase from "../common/permissions";
 
-import { RangeDate } from "../common/RangeDateFilter"
-import { IInvoice } from "../afip/types"
-import { AxiosError } from "axios"
-
+import { RangeDate } from "../common/RangeDateFilter";
+import { IInvoice } from "../afip/types";
+import { AxiosError } from "axios";
 
 interface Props {
-  sale: ISaleFullRelated
-  inventories: IInventoryFullRelated[]
-  productItems: IProductItemFullRelated[]
-  rangeDate: RangeDate
+  sale: ISaleFullRelated;
+  inventories: IInventoryFullRelated[];
+  productItems: IProductItemFullRelated[];
+  rangeDate: RangeDate;
 }
 
 const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { checkRole } = useCheckRole()
+  const popover = useDisclosure();
+  const cancelModal = useDisclosure();
 
-  const saleCreatedDatetime = new Date(String(sale?.sortingDate)).toLocaleString('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
+  const { checkRole } = useCheckRole();
+
+  const saleCreatedDatetime = new Date(
+    String(sale?.sortingDate),
+  ).toLocaleString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { editSale } = useEditSale()
+  const { editSale } = useEditSale();
   // const { deleteSale } = useDeleteSale()
   // const { deleteManySaleItem } = useDeleteManySaleItem()
-  const { showMessage } = useMessage()
+  const { showMessage } = useMessage();
 
-  const { generateInvoice } = useNewInvoice()
+  const { generateInvoice } = useNewInvoice();
 
   // const handleEdit = () => {
   //   navigate(`${sale._id}/edit`)
   // }
 
   const handleDetails = () => {
-    navigate(`/sales/${sale._id}/details`)
-  }
+    navigate(`/sales/${sale._id}/details`);
+  };
 
   const handleGenerateInvoice = async () => {
-
     setIsLoadingInvoice(true);
 
     if (sale.status === "CANCELLED") {
       showMessage(
         "No se puede facturar porque la venta ya está anulada",
         AlertStatus.Error,
-        AlertColorScheme.Red
-      )
+        AlertColorScheme.Red,
+      );
       setIsLoadingInvoice(false);
-      onClose()
-      return
+      popover.onClose();
+      return;
     }
 
     let invoice: IInvoice = {
@@ -139,114 +142,110 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
       invoiceType: INVOICE_TYPE_AFIP.FACTURA_C,
       totalAmount: sale.total,
       pointOfSale: POINT_OF_SALE_AFIP.ONE,
-      condicionIVAReceptorId: sale.client?.condicionIVAReceptorId
-    }
+      condicionIVAReceptorId: sale.client?.condicionIVAReceptorId,
+    };
 
     try {
-
-      let response = await generateInvoice(invoice)
+      let response = await generateInvoice(invoice);
       if (response.status === 201) {
-
         const saleUpdatedResponse = await editSale({
           saleId: sale._id !== undefined ? sale?._id : "",
           saleToUpdate: {
-            isBilled: true
+            isBilled: true,
           },
-        })
+        });
 
-        if (saleUpdatedResponse.isUpdated && saleUpdatedResponse.status === 200) {
+        if (
+          saleUpdatedResponse.isUpdated &&
+          saleUpdatedResponse.status === 200
+        ) {
           showMessage(
             `${response.message} - CAE: ${response.invoice_details.cae}`,
             AlertStatus.Success,
-            AlertColorScheme.Green
-          )
+            AlertColorScheme.Green,
+          );
+          popover.onClose();
         }
       }
-
     } catch (error: unknown) {
-      const err = error as AxiosError
+      const err = error as AxiosError;
       if (err.response) {
-        let er = err.response.data as { status: number, message: string }
+        let er = err.response.data as { status: number; message: string };
         if (er.status === 400) {
-          showMessage(
-            er.message,
-            AlertStatus.Error,
-            AlertColorScheme.Red
-          )
+          showMessage(er.message, AlertStatus.Error, AlertColorScheme.Red);
+          console.log(err);
         }
+        popover.onClose();
       }
     } finally {
       setIsLoadingInvoice(false);
     }
-  }
+  };
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const queryClient = useQueryClient();
 
-  const queryClient = useQueryClient()
-
-  const { editManyInventory } = useEditManyInventory()
-  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
+  const { editManyInventory } = useEditManyInventory();
+  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction();
 
   const saleItems = queryClient.getQueryData([
     "saleItems",
     { filters: rangeDate },
-  ]) as ISaleItemFullRelated[]
+  ]) as ISaleItemFullRelated[];
 
   const saleItemsFiltered = saleItems?.filter(
-    (saleItem) => saleItem.sale?._id === sale._id
-  ) as ISaleItemFullRelated[]
+    (saleItem) => saleItem.sale?._id === sale._id,
+  ) as ISaleItemFullRelated[];
 
   const handleDelete = async () => {
     if (sale.status === "CANCELLED") {
       showMessage(
         "Ya esta anulada la venta",
         AlertStatus.Error,
-        AlertColorScheme.Red
-      )
-      onClose()
-      return
+        AlertColorScheme.Red,
+      );
+      cancelModal.onClose();
+      return;
     }
 
     if (sale.isBilled === true) {
       showMessage(
         "No se puede anular, ya fue facturada la venta",
         AlertStatus.Error,
-        AlertColorScheme.Red
-      )
-      onClose()
-      return
+        AlertColorScheme.Red,
+      );
+      cancelModal.onClose();
+      return;
     }
 
-
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Todo: actualizar el inventario de cada insumo.
-    let assetQuantityByAssetId = new Map<string, number>()
+    let assetQuantityByAssetId = new Map<string, number>();
 
     productItems.forEach((productItem) => {
       saleItemsFiltered?.forEach((saleItem) => {
         if (saleItem.product?._id === productItem.product?._id) {
           if (assetQuantityByAssetId.has(productItem?.asset?._id as string)) {
             let prevQuantity = assetQuantityByAssetId.get(
-              productItem?.asset?._id as string
-            )
+              productItem?.asset?._id as string,
+            );
             assetQuantityByAssetId.set(
               productItem.asset?._id as string,
               Number(prevQuantity) +
-              Number(productItem.quantity) * Number(saleItem.quantity)
-            )
+                Number(productItem.quantity) * Number(saleItem.quantity),
+            );
           } else {
             assetQuantityByAssetId.set(
               productItem.asset?._id as string,
               (Number(productItem.quantity) *
-                Number(saleItem.quantity)) as number
-            )
+                Number(saleItem.quantity)) as number,
+            );
           }
         }
-      })
-    })
-    let inventoriesToUpdate: IInventoryLessRelated[] = []
-    let oldInventories: IInventoryFullRelated[] = inventories
+      });
+    });
+    let inventoriesToUpdate: IInventoryLessRelated[] = [];
+    let oldInventories: IInventoryFullRelated[] = inventories;
 
     assetQuantityByAssetId.forEach((value, key) => {
       inventories.forEach((inventory) => {
@@ -254,22 +253,22 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
           asset: inventory.asset?._id,
           id: inventory._id,
           quantityAvailable: inventory.quantityAvailable,
-        }
+        };
         if (key === inventory.asset?._id) {
           inventoryUpdated.quantityAvailable =
             inventoryUpdated.quantityAvailable !== undefined
               ? inventoryUpdated.quantityAvailable + value
-              : inventoryUpdated.quantityAvailable
-          inventoriesToUpdate.push(inventoryUpdated)
+              : inventoryUpdated.quantityAvailable;
+          inventoriesToUpdate.push(inventoryUpdated);
         }
-      })
-    })
+      });
+    });
 
-    await editManyInventory(inventoriesToUpdate)
+    await editManyInventory(inventoriesToUpdate);
 
     // Todo: registrar las transacciones del inventario de cada insumo.
 
-    let inventoryTransactions: IInventoryTransactionLessRelated[] = []
+    let inventoryTransactions: IInventoryTransactionLessRelated[] = [];
 
     assetQuantityByAssetId.forEach((value, key) => {
       inventoryTransactions.push({
@@ -277,31 +276,35 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
         affectedAmount: value,
         transactionType: TransactionType.UP,
         transactionReason: TransactionReason.ADJUSTMENT,
-      })
-    })
+      });
+    });
 
     // guardar los valores viejos y nuevos
-    inventoryTransactions.forEach(inventoryTransaction => {
-      oldInventories.forEach(oldInventory => {
+    inventoryTransactions.forEach((inventoryTransaction) => {
+      oldInventories.forEach((oldInventory) => {
         if (inventoryTransaction.asset === oldInventory.asset?._id) {
-          inventoryTransaction.oldQuantityAvailable = oldInventory.quantityAvailable
+          inventoryTransaction.oldQuantityAvailable =
+            oldInventory.quantityAvailable;
 
           //unit cost
-          inventoryTransaction.unitCost = oldInventory.asset?.costPrice
+          inventoryTransaction.unitCost = oldInventory.asset?.costPrice;
         }
-      })
-      inventoriesToUpdate.forEach(inventoryUpdated => {
+      });
+      inventoriesToUpdate.forEach((inventoryUpdated) => {
         if (inventoryTransaction.asset === inventoryUpdated.asset) {
-          inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+          inventoryTransaction.currentQuantityAvailable =
+            inventoryUpdated.quantityAvailable;
 
-          let asset = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset
+          let asset = inventories.find(
+            (inventory) => inventory.asset?._id === inventoryUpdated.asset,
+          )?.asset;
           //unit cost
-          inventoryTransaction.unitCost = asset?.costPrice
+          inventoryTransaction.unitCost = asset?.costPrice;
         }
-      })
-    })
+      });
+    });
 
-    await addNewManyInventoryTransaction(inventoryTransactions)
+    await addNewManyInventoryTransaction(inventoryTransactions);
 
     // delete sale
     // const response = await deleteSale({ saleId: sale._id })
@@ -315,7 +318,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
         total: sale.total,
         isRetail: sale.isRetail,
       },
-    })
+    });
 
     // const saleItemsToDelete: ISaleItemPreview[] = []
     // saleItems.forEach((saleItem) => {
@@ -329,8 +332,8 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
     // })
 
     if (response.isUpdated && response.status === 200) {
-      showMessage(SALE_CANCELLED, AlertStatus.Success, AlertColorScheme.Purple)
-      onClose()
+      showMessage(SALE_CANCELLED, AlertStatus.Success, AlertColorScheme.Purple);
+      cancelModal.onClose();
       // delete productItems
       // const response = await deleteManySaleItem(
       //   saleItemsToDelete as ISaleItemPreview[]
@@ -344,7 +347,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
       //   showMessage(SALE_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
       // }
     }
-  }
+  };
 
   return (
     <>
@@ -375,9 +378,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                     <Badge
                       display={{ md: "none" }}
                       variant={"subtle"}
-                      colorScheme={
-                        sale.isBilled === false ? "red" : "green"
-                      }
+                      colorScheme={sale.isBilled === false ? "red" : "green"}
                       alignSelf={"flex-start"}
                     >
                       {sale.isBilled === false ? "No facturado" : "Facturado"}
@@ -409,9 +410,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                   <Flex direction="column" gap={2} placeItems={"center"}>
                     <Badge
                       variant={"subtle"}
-                      colorScheme={
-                        sale.isBilled === false ? "red" : "green"
-                      }
+                      colorScheme={sale.isBilled === false ? "red" : "green"}
                     >
                       {sale.isBilled === false ? "No facturado" : "Facturado"}
                     </Badge>
@@ -436,15 +435,15 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                     <Text as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(Number.parseFloat(sale?.total.toString()))
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(Number.parseFloat(sale?.total.toString()))
                         : new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(0)}
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(0)}
                     </Text>
                   </Flex>
                 </GridItem>
@@ -454,29 +453,37 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                     <Text display={{ md: "none" }} as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(Number.parseFloat(sale?.total.toString()))
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(Number.parseFloat(sale?.total.toString()))
                         : new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          minimumFractionDigits: 2,
-                          currency: "USD",
-                        }).format(0)}
+                            style: "currency",
+                            minimumFractionDigits: 2,
+                            currency: "USD",
+                          }).format(0)}
                     </Text>
                     {checkRole(ProfileBase.sales.viewActions) && (
-                      <Popover placement="bottom-start">
+                      <Popover
+                        placement="bottom-start"
+                        isOpen={popover.isOpen}
+                        onClose={popover.onClose}
+                      >
                         <PopoverTrigger>
                           <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              popover.onToggle();
+                            }}
                             alignSelf="end"
                             variant={"link"}
                             colorScheme="blackAlpha"
                             size="md"
                             icon={
-                              <>
+                              <Flex gap={1}>
                                 <AddIcon boxSize="3" />
                                 <ChevronDownIcon boxSize="4" />
-                              </>
+                              </Flex>
                             }
                             aria-label={""}
                           />
@@ -536,7 +543,10 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                                 )}
                                 {checkRole(ProfileBase.sales.cancel) && (
                                   <Button
-                                    onClick={onOpen}
+                                    onClick={() => {
+                                      popover.onClose();
+                                      cancelModal.onOpen();
+                                    }}
                                     variant={"blue"}
                                     colorScheme="blue"
                                     justifyContent={"start"}
@@ -564,8 +574,8 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
           <Modal
             closeOnOverlayClick={false}
             size={{ base: "xs", md: "lg" }}
-            isOpen={isOpen}
-            onClose={onClose}
+            isOpen={cancelModal.isOpen}
+            onClose={cancelModal.onClose}
             isCentered
           >
             <ModalOverlay />
@@ -591,7 +601,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
                 </Button>
                 <Button
                   isDisabled={isLoading}
-                  onClick={onClose}
+                  onClick={cancelModal.onClose}
                   variant="ghost"
                 >
                   Cancelar
@@ -602,7 +612,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
         </GridItem>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Sale
+export default Sale;
