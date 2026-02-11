@@ -1,21 +1,21 @@
 // libs
-import { useState } from "react"
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // schema
-import { userSchema } from "./userSchema"
+import { userSchema } from "./userSchema";
 
 // types
-import { Credentials } from "../../services/types"
-import { IUserContext } from "../../context/types"
+import { Credentials } from "../../services/types";
+import { IUserContext } from "../../context/types";
 
 // services
-import loginService from "../../services/login"
+import loginService from "../../services/login";
 
 // custom hooks
-import { useAuthContext } from "../../hooks/useAuthContext"
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 import {
   Grid,
@@ -35,36 +35,36 @@ import {
   Heading,
   InputRightElement,
   IconButton,
-} from "@chakra-ui/react"
-import { jwtDecode } from "jwt-decode"
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
+} from "@chakra-ui/react";
+import { jwtDecode } from "jwt-decode";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-import { useMessage } from "../../hooks/useMessage"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
+import { useMessage } from "../../hooks/useMessage";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 
 // import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 
 interface UserPayload {
-  email: string
-  exp: number
-  firstName: string
-  iat: number
-  id: string
-  lastName: string
-  role: number
+  email: string;
+  exp: number;
+  firstName: string;
+  iat: number;
+  id: string;
+  lastName: string;
+  role: number;
 }
 
 const Login = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const location = useLocation()
+  const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/"
+  const from = location.state?.from?.pathname || "/";
 
-  const { setAuth } = useAuthContext() as IUserContext
+  const { setAuth } = useAuthContext() as IUserContext;
 
-  const [show, setShow] = useState(false)
-  const handleClick = () => setShow(!show)
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
 
   const {
     register,
@@ -72,18 +72,19 @@ const Login = (): JSX.Element => {
     handleSubmit,
   } = useForm<Credentials>({
     resolver: zodResolver(userSchema),
-  })
+    mode: "onBlur",
+  });
 
-  const { showMessage } = useMessage()
+  const { showMessage } = useMessage();
 
   const onSubmit: SubmitHandler<Credentials> = async (credentials) => {
     try {
-      const response = await loginService.login({ ...credentials })
-      const accessToken = response?.data?.accessToken
+      const response = await loginService.login({ ...credentials });
+      const accessToken = response?.data?.accessToken;
 
-      const decoded = jwtDecode(accessToken) as UserPayload
+      const decoded = jwtDecode(accessToken) as UserPayload;
 
-      const role = decoded?.role
+      const role = decoded?.role;
 
       setAuth({
         accessToken,
@@ -91,24 +92,39 @@ const Login = (): JSX.Element => {
         firstName: decoded.firstName,
         lastName: decoded.lastName,
         id: decoded.id,
-      })
-      navigate(from, { replace: true })
+      });
+      navigate(from, { replace: true });
     } catch (error: any) {
       if (!error?.response) {
-        showMessage("Error del servidor", AlertStatus.Error, AlertColorScheme.Red)
+        showMessage(
+          "Error del servidor",
+          AlertStatus.Error,
+          AlertColorScheme.Red,
+        );
       } else if (error?.response?.status === 400) {
-        showMessage("Campos incompletos", AlertStatus.Error, AlertColorScheme.Red)
-      } else if (error.response?.status === 401 || error.response?.status === 404) {
+        showMessage(
+          "Campos incompletos",
+          AlertStatus.Error,
+          AlertColorScheme.Red,
+        );
+      } else if (
+        error.response?.status === 401 ||
+        error.response?.status === 404
+      ) {
         showMessage(
           "Credenciales incorrectas",
           AlertStatus.Error,
-          AlertColorScheme.Red
-        )
+          AlertColorScheme.Red,
+        );
       } else {
-        showMessage("Falló el inicio de sesión", AlertStatus.Error, AlertColorScheme.Red)
+        showMessage(
+          "Falló el inicio de sesión",
+          AlertStatus.Error,
+          AlertColorScheme.Red,
+        );
       }
     }
-  }
+  };
 
   return (
     <>
@@ -183,7 +199,7 @@ const Login = (): JSX.Element => {
                   spacing={3}
                   align="stretch"
                 >
-                   <Button
+                  <Button
                     isLoading={isSubmitting}
                     type="submit"
                     colorScheme="blue"
@@ -220,7 +236,7 @@ const Login = (): JSX.Element => {
         </GridItem>
       </Grid>
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
