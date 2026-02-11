@@ -26,13 +26,11 @@ import {
   // Image,
   FormLabel,
   FormControl,
-  // FormErrorMessage,
+  FormErrorMessage,
   Input,
   VStack,
   StackDivider,
   InputGroup,
-  // InputRightElement,
-  // IconButton,
   CardHeader,
   Heading,
   InputRightElement,
@@ -40,6 +38,9 @@ import {
 } from "@chakra-ui/react"
 import { jwtDecode } from "jwt-decode"
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
+
+import { useMessage } from "../../hooks/useMessage"
+import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 // import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
 
@@ -65,9 +66,15 @@ const Login = (): JSX.Element => {
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
 
-  const { register, handleSubmit } = useForm<Credentials>({
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+  } = useForm<Credentials>({
     resolver: zodResolver(userSchema),
   })
+
+  const { showMessage } = useMessage()
 
   const onSubmit: SubmitHandler<Credentials> = async (credentials) => {
     try {
@@ -86,18 +93,20 @@ const Login = (): JSX.Element => {
         id: decoded.id,
       })
       navigate(from, { replace: true })
-    } catch (error) {
-      // if (!error?.response) {
-      //   showMessage("Error del servidor", "error", "red")
-      // } else if (error?.response?.status === 400) {
-      //   showMessage("Campos incompletos", "error", "red")
-      // } else if (error.response?.status === 404) {
-      //   showMessage("Credenciales incorrectas", "error", "red")
-      // } else {
-      //   showMessage("Falló el inicio de sesión", "error", "red")
-      // }
-    } finally {
-      // formik.resetForm({ email: "", password: "", isLoading: false })
+    } catch (error: any) {
+      if (!error?.response) {
+        showMessage("Error del servidor", AlertStatus.Error, AlertColorScheme.Red)
+      } else if (error?.response?.status === 400) {
+        showMessage("Campos incompletos", AlertStatus.Error, AlertColorScheme.Red)
+      } else if (error.response?.status === 401 || error.response?.status === 404) {
+        showMessage(
+          "Credenciales incorrectas",
+          AlertStatus.Error,
+          AlertColorScheme.Red
+        )
+      } else {
+        showMessage("Falló el inicio de sesión", AlertStatus.Error, AlertColorScheme.Red)
+      }
     }
   }
 
@@ -121,39 +130,31 @@ const Login = (): JSX.Element => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl
-                    // isInvalid={formik.touched.email && formik.errors.email}
-                    >
+                    <FormControl isInvalid={!!errors.email}>
                       <FormLabel htmlFor="email">Email</FormLabel>
                       <Input
                         type="email"
                         id="email"
                         placeholder="Ingresá tu email"
-                        required
                         {...register("email")}
                       />
-                      {/* {formik.touched.email && formik.errors.email && (
+                      {errors.email && (
                         <FormErrorMessage>
-                          {formik.errors.email}
+                          {errors.email.message}
                         </FormErrorMessage>
-                      )} */}
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
                 <Grid mb={4}>
                   <GridItem>
-                    <FormControl
-                    // isInvalid={
-                    //   formik.touched.password && formik.errors.password
-                    // }
-                    >
+                    <FormControl isInvalid={!!errors.password}>
                       <FormLabel htmlFor="password">Contraseña</FormLabel>
                       <InputGroup size="md">
                         <Input
                           type={show ? "text" : "password"}
                           id="password"
                           placeholder="Ingresá tu contraseña"
-                          required
                           {...register("password")}
                         />
                         <InputRightElement width="2.5rem">
@@ -168,11 +169,11 @@ const Login = (): JSX.Element => {
                           />
                         </InputRightElement>
                       </InputGroup>
-                      {/* {formik.touched.password && formik.errors.password && (
+                      {errors.password && (
                         <FormErrorMessage>
-                          {formik.errors.password}
+                          {errors.password.message}
                         </FormErrorMessage>
-                      )} */}
+                      )}
                     </FormControl>
                   </GridItem>
                 </Grid>
@@ -182,8 +183,8 @@ const Login = (): JSX.Element => {
                   spacing={3}
                   align="stretch"
                 >
-                  <Button
-                    // isLoading={formik.values.isLoading}
+                   <Button
+                    isLoading={isSubmitting}
                     type="submit"
                     colorScheme="blue"
                     variant="solid"
