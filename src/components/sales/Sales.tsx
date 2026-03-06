@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Grid,
@@ -11,38 +11,35 @@ import {
   Stack,
   Skeleton,
   GridItem,
-} from "@chakra-ui/react"
-
+} from "@chakra-ui/react";
 
 // components
-import WithoutResults from "../common/WithoutResults"
-import Sale from "./Sale"
-import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter"
-import SimpleBoard from "../dashboard/SimpleBoard"
-import SimpleBoardSkeleton from "../dashboard/SimpleBoardSkeleton"
+import WithoutResults from "../common/WithoutResults";
+import Sale from "./Sale";
+import RangeDateFilter, { RangeDate } from "../common/RangeDateFilter";
+import SimpleBoard from "../dashboard/SimpleBoard";
+import SimpleBoardSkeleton from "../dashboard/SimpleBoardSkeleton";
 
-
-import { IProductItemFullRelated } from "../products/types"
+import { IProductItemFullRelated } from "../products/types";
 
 // custom hooks
-import { useSales } from "../../hooks/useSales"
-import { useSaleItems } from "../../hooks/useSaleItems"
-import { useProductItems } from "../../hooks/useProductItems"
-import { useInventories } from "../../hooks/useInventories"
-import { useTodayDate } from "../../hooks/useTodayDate"
-import { useCheckRole } from "../../hooks/useCheckRole"
+import { useSales } from "../../hooks/useSales";
+import { useSaleItems } from "../../hooks/useSaleItems";
+import { useProductItems } from "../../hooks/useProductItems";
+import { useInventories } from "../../hooks/useInventories";
+import { useTodayDate } from "../../hooks/useTodayDate";
+import { useCheckRole } from "../../hooks/useCheckRole";
 
 // types
-import { ISaleFullRelated, ISaleItemFullRelated } from "./types"
-import { IInventoryFullRelated } from "../inventories/types"
+import { ISaleFullRelated, ISaleItemFullRelated } from "./types";
+import { IInventoryFullRelated } from "../inventories/types";
 
-import NewRecordPanel from "../common/NewRecordPanel"
+import NewRecordPanel from "../common/NewRecordPanel";
 
-import ProfileBase from "../common/permissions"
-
+import ProfileBase from "../common/permissions";
 
 const Sales = () => {
-  const { checkRole } = useCheckRole()
+  const { checkRole } = useCheckRole();
   const today = useTodayDate();
   const [rangeDate, setRangeDate] = useState({
     startDate: today,
@@ -51,48 +48,51 @@ const Sales = () => {
   const querySales = useSales({
     startDate: rangeDate.startDate,
     endDate: rangeDate.endDate,
-  })
+  });
   const querySaleItems = useSaleItems({
     startDate: rangeDate.startDate,
     endDate: rangeDate.endDate,
-  })
-  const queryProductItems = useProductItems({})
-  const queryInventories = useInventories({})
+  });
+  const queryProductItems = useProductItems({});
+  const queryInventories = useInventories({});
 
-  const productItems = queryProductItems.data as IProductItemFullRelated[]
-  const inventories = queryInventories.data as IInventoryFullRelated[]
+  const inventoriesByAsset = queryInventories.inventoriesByAssetId;
 
+  const productItems = queryProductItems.data as IProductItemFullRelated[];
+  const inventories = queryInventories.inventories as IInventoryFullRelated[];
 
   // const { throwError } = useError()
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleAddSale = () => {
-    navigate("add")
-  }
+    navigate("add");
+  };
 
-  const sales = querySales?.data as ISaleFullRelated[]
+  const sales = querySales?.data as ISaleFullRelated[];
   // saleItems
-  querySaleItems?.data as ISaleItemFullRelated[]
+  querySaleItems?.data as ISaleItemFullRelated[];
 
   const billings = sales
     ?.filter((sale) => sale.status === "PAID")
-    ?.map((sale) => sale?.total) as number[]
+    ?.map((sale) => sale?.total) as number[];
 
   const totalBillings = Number.parseFloat(
-    billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
-  )
+    billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2),
+  );
 
-  const totalCosts = Number(sales?.filter((sale) => sale.status === "PAID")?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
+  const totalCosts = Number(
+    sales
+      ?.filter((sale) => sale.status === "PAID")
+      ?.map((sale) => sale.costTotal)
+      .reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0),
+  );
 
   // profit
-  const totalRevenues = Number(totalBillings - totalCosts)
+  const totalRevenues = Number(totalBillings - totalCosts);
 
   const onSubmit = (rangeDate: RangeDate) => {
-    if (
-      rangeDate.startDate !== undefined &&
-      rangeDate.endDate !== undefined
-    ) {
+    if (rangeDate.startDate !== undefined && rangeDate.endDate !== undefined) {
       setRangeDate({
         startDate: rangeDate.startDate,
         endDate: rangeDate.endDate,
@@ -112,11 +112,12 @@ const Sales = () => {
           sale={sale}
           productItems={productItems}
           inventories={inventories}
+          inventoriesByAsset={inventoriesByAsset}
           rangeDate={rangeDate}
         />
-      )
+      );
     }
-  })
+  });
 
   return (
     <>
@@ -158,9 +159,7 @@ const Sales = () => {
               )}
             </GridItem>
             <GridItem colSpan={{ base: 12, lg: 4 }}>
-              {querySales.isLoading && (
-                <SimpleBoardSkeleton numberRows={3} />
-              )}
+              {querySales.isLoading && <SimpleBoardSkeleton numberRows={3} />}
               {!querySales.isLoading && (
                 <SimpleBoard
                   title="Costo"
@@ -171,9 +170,7 @@ const Sales = () => {
               )}
             </GridItem>
             <GridItem colSpan={{ base: 12, lg: 4 }}>
-              {querySales.isLoading && (
-                <SimpleBoardSkeleton numberRows={3} />
-              )}
+              {querySales.isLoading && <SimpleBoardSkeleton numberRows={3} />}
               {!querySales.isLoading && (
                 <SimpleBoard
                   title="Ganancia"
@@ -325,7 +322,7 @@ const Sales = () => {
         </GridItem>
       </Grid>
     </>
-  )
-}
+  );
+};
 
-export default Sales
+export default Sales;

@@ -53,13 +53,10 @@ import {
 import { SALE_CANCELLED } from "../../utils/constants";
 import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 
-import { useEditManyInventory } from "../../hooks/useEditManyInventory";
+import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
 import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
 import { useNewInvoice } from "../../hooks/useGenerateInvoice";
-import {
-  IInventoryFullRelated,
-  IInventoryLessRelated,
-} from "../inventories/types";
+import { IInventoryFullRelated } from "../inventories/types";
 import {
   IInventoryTransactionLessRelated,
   TransactionReason,
@@ -80,9 +77,16 @@ interface Props {
   inventories: IInventoryFullRelated[];
   productItems: IProductItemFullRelated[];
   rangeDate: RangeDate;
+  inventoriesByAsset?: Map<string, IInventoryFullRelated>;
 }
 
-const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
+const Sale = ({
+  sale,
+  inventories,
+  productItems,
+  rangeDate,
+  inventoriesByAsset,
+}: Props) => {
   const navigate = useNavigate();
 
   const popover = useDisclosure();
@@ -184,7 +188,7 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
 
   const queryClient = useQueryClient();
 
-  const { editManyInventory } = useEditManyInventory();
+  const { adjustManyInventory } = useAdjustManyInventory();
   const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction();
 
   const saleItems = queryClient.getQueryData([
@@ -244,27 +248,38 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
         }
       });
     });
-    let inventoriesToUpdate: IInventoryLessRelated[] = [];
+    let inventoryAdjustments: Array<{
+      id?: string;
+      asset?: string;
+      quantityDelta: number;
+    }> = [];
     let oldInventories: IInventoryFullRelated[] = inventories;
 
     assetQuantityByAssetId.forEach((value, key) => {
-      inventories.forEach((inventory) => {
-        let inventoryUpdated: IInventoryLessRelated = {
-          asset: inventory.asset?._id,
-          id: inventory._id,
-          quantityAvailable: inventory.quantityAvailable,
-        };
-        if (key === inventory.asset?._id) {
-          inventoryUpdated.quantityAvailable =
-            inventoryUpdated.quantityAvailable !== undefined
-              ? inventoryUpdated.quantityAvailable + value
-              : inventoryUpdated.quantityAvailable;
-          inventoriesToUpdate.push(inventoryUpdated);
-        }
+      const inv = inventoriesByAsset?.get(String(key));
+      if (!inv) return;
+      // delta positivo porque estamos reponiendo stock al anular la venta
+      inventoryAdjustments.push({
+        id: inv._id,
+        asset: inv.asset?._id,
+        quantityDelta: Number(value),
       });
     });
 
-    await editManyInventory(inventoriesToUpdate);
+    const adjustInventoryResponse =
+      inventoryAdjustments.length > 0
+        ? await adjustManyInventory(inventoryAdjustments)
+        : undefined;
+
+    const updatedInventories = adjustInventoryResponse?.data?.updated ?? [];
+
+    const updatedInventoryById = new Map<string, any>();
+
+    updatedInventories.forEach((inventoryUpdated: any) => {
+      if (inventoryUpdated.id) {
+        updatedInventoryById.set(String(inventoryUpdated.id), inventoryUpdated);
+      }
+    });
 
     // Todo: registrar las transacciones del inventario de cada insumo.
 
@@ -283,23 +298,23 @@ const Sale = ({ sale, inventories, productItems, rangeDate }: Props) => {
     inventoryTransactions.forEach((inventoryTransaction) => {
       oldInventories.forEach((oldInventory) => {
         if (inventoryTransaction.asset === oldInventory.asset?._id) {
-          inventoryTransaction.oldQuantityAvailable =
-            oldInventory.quantityAvailable;
-
-          //unit cost
           inventoryTransaction.unitCost = oldInventory.asset?.costPrice;
         }
       });
-      inventoriesToUpdate.forEach((inventoryUpdated) => {
-        if (inventoryTransaction.asset === inventoryUpdated.asset) {
-          inventoryTransaction.currentQuantityAvailable =
-            inventoryUpdated.quantityAvailable;
+      inventoryAdjustments.forEach((adj) => {
+        if (inventoryTransaction.asset === adj.asset) {
+          const oldInv = inventoriesByAsset?.get(String(adj.asset));
+          const updatedInv = adj.id
+            ? updatedInventoryById.get(String(adj.id))
+            : undefined;
 
-          let asset = inventories.find(
-            (inventory) => inventory.asset?._id === inventoryUpdated.asset,
-          )?.asset;
-          //unit cost
-          inventoryTransaction.unitCost = asset?.costPrice;
+          inventoryTransaction.oldQuantityAvailable =
+            updatedInv?.oldQuantityAvailable ?? oldInv?.quantityAvailable;
+          inventoryTransaction.currentQuantityAvailable =
+            updatedInv?.currentQuantityAvailable ??
+            updatedInv?.quantityAvailable ??
+            (oldInv?.quantityAvailable ?? 0) + adj.quantityDelta;
+          inventoryTransaction.unitCost = oldInv?.asset?.costPrice;
         }
       });
     });

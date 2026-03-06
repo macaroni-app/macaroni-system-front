@@ -1,128 +1,152 @@
-import { useState } from "react"
+import { useState } from "react";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 // types
-import { IInventoryTransactionLessRelatedBulk, TransactionType } from "./types"
-import { IAssetFullCategory } from "../assets/types"
-import { IInventoryFullRelated, IInventoryLessRelated } from "../inventories/types"
-
+import { IInventoryTransactionLessRelatedBulk, TransactionType } from "./types";
+import { IAssetFullCategory } from "../assets/types";
 
 // components
-import InventoryTransactionAddBulkForm from "./InventoryTransactionAddBulk"
+import InventoryTransactionAddBulkForm from "./InventoryTransactionAddBulk";
 
 // custom hooks
-import { useAssets } from "../../hooks/useAssets"
-import { useInventories } from "../../hooks/useInventories"
-import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
-import { useMessage } from "../../hooks/useMessage"
-
+import { useAssets } from "../../hooks/useAssets";
+import { useInventories } from "../../hooks/useInventories";
+import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
+import { useMessage } from "../../hooks/useMessage";
 
 // messages
-import { Error, useError } from "../../hooks/useError"
-import { RECORD_CREATED } from "../../utils/constants"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
-import { useEditManyInventory } from "../../hooks/useEditManyInventory"
-
+import { Error, useError } from "../../hooks/useError";
+import { RECORD_CREATED } from "../../utils/constants";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
 
 const InventoryTransactionBulkForm = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { throwError } = useError()
+  const { throwError } = useError();
 
-  const { showMessage } = useMessage()
+  const { showMessage } = useMessage();
 
-  const queryInventories = useInventories({})
-  const inventories = queryInventories.data as IInventoryFullRelated[]
+  const queryInventories = useInventories({});
+  const inventoriesByAsset = queryInventories.inventoriesByAssetId;
 
-  const queryAssets = useAssets({})
-  const assets = queryAssets?.data as IAssetFullCategory[]
+  const queryAssets = useAssets({});
+  const assets = queryAssets?.data as IAssetFullCategory[];
+  const { adjustManyInventory } = useAdjustManyInventory();
 
-  const { editManyInventory } = useEditManyInventory()
+  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction();
 
-  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onSubmit = async (
-    inventoryTransactions: IInventoryTransactionLessRelatedBulk
+    inventoryTransactions: IInventoryTransactionLessRelatedBulk,
   ) => {
-
-
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-
       // Todo: actualizar el inventario de cada insumo.
 
-      let inventoriesToUpdate: IInventoryLessRelated[] = []
+      let adjustments: Array<{
+        id?: string;
+        asset?: string;
+        quantityDelta: number;
+      }> = [];
 
-      inventoryTransactions.inventoryTransactions.forEach((inventoryTransaction) => {
-        inventories.forEach((inventory) => {
-          let inventoryUpdated: IInventoryLessRelated = {
-            asset: inventory.asset?._id,
-            id: inventory._id,
-            quantityAvailable: inventory.quantityAvailable,
-          }
-          if (inventoryTransaction.asset === inventory.asset?._id) {
+      inventoryTransactions.inventoryTransactions.forEach(
+        (inventoryTransaction) => {
+          const inv = inventoriesByAsset?.get(
+            String(inventoryTransaction.asset),
+          );
+          if (!inv) return;
 
-            inventoryTransaction.oldQuantityAvailable = inventory.quantityAvailable
+          inventoryTransaction.oldQuantityAvailable = inv.quantityAvailable;
 
-            switch (inventoryTransaction.transactionType) {
-              case TransactionType.DOWN: {
-                inventoryUpdated.quantityAvailable =
-                  inventoryUpdated.quantityAvailable !== undefined
-                    ? inventoryUpdated.quantityAvailable - Number(inventoryTransaction.affectedAmount)
-                    : inventoryUpdated.quantityAvailable
-                break
-              }
-              case TransactionType.UP: {
-                inventoryUpdated.quantityAvailable =
-                  inventoryUpdated.quantityAvailable !== undefined
-                    ? inventoryUpdated.quantityAvailable + Number(inventoryTransaction.affectedAmount)
-                    : inventoryUpdated.quantityAvailable
-                break
-              }
+          let quantityDelta = 0;
+          switch (inventoryTransaction.transactionType) {
+            case TransactionType.DOWN: {
+              quantityDelta = -Number(inventoryTransaction.affectedAmount);
+              break;
             }
-            inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
-            // unitCost
-            inventoryTransaction.unitCost = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset?.costPrice
-
-            inventoriesToUpdate.push(inventoryUpdated)
+            case TransactionType.UP: {
+              quantityDelta = Number(inventoryTransaction.affectedAmount);
+              break;
+            }
           }
-        })
-      })
 
-      const response = await editManyInventory(inventoriesToUpdate)
+          inventoryTransaction.currentQuantityAvailable =
+            (inv.quantityAvailable ?? 0) + quantityDelta;
+          inventoryTransaction.unitCost = inv.asset?.costPrice;
+
+          adjustments.push({
+            id: inv._id,
+            asset: inv.asset?._id,
+            quantityDelta,
+          });
+        },
+      );
+
+      const response = await adjustManyInventory(adjustments);
+
+      const updatedInventories = response?.data?.updated ?? [];
+      const updatedInventoryById = new Map<string, any>();
+
+      updatedInventories.forEach((inventoryUpdated: any) => {
+        if (inventoryUpdated.id) {
+          updatedInventoryById.set(
+            String(inventoryUpdated.id),
+            inventoryUpdated,
+          );
+        }
+      });
+
+      inventoryTransactions.inventoryTransactions.forEach(
+        (inventoryTransaction, index) => {
+          const adjustment = adjustments[index];
+          const updatedInv = adjustment?.id
+            ? updatedInventoryById.get(String(adjustment.id))
+            : undefined;
+
+          if (updatedInv !== undefined) {
+            inventoryTransaction.oldQuantityAvailable =
+              updatedInv.oldQuantityAvailable ??
+              inventoryTransaction.oldQuantityAvailable;
+            inventoryTransaction.currentQuantityAvailable =
+              updatedInv.currentQuantityAvailable ??
+              updatedInv.quantityAvailable ??
+              inventoryTransaction.currentQuantityAvailable;
+          }
+        },
+      );
 
       if (response.isUpdated && response.status === 200) {
-
         // Todo: registrar las transacciones del inventario de cada insumo.
 
-        const response = await addNewManyInventoryTransaction(inventoryTransactions.inventoryTransactions)
+        const response = await addNewManyInventoryTransaction(
+          inventoryTransactions.inventoryTransactions,
+        );
 
         if (response.status === 200 || response.status === 201) {
-
           if (response.isStored) {
             showMessage(
               RECORD_CREATED,
               AlertStatus.Success,
-              AlertColorScheme.Purple
-            )
+              AlertColorScheme.Purple,
+            );
           }
 
-          navigate("/inventoryTransactions")
+          navigate("/inventoryTransactions");
         }
       }
     } catch (error: unknown) {
-      throwError(error as Error)
+      throwError(error as Error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onCancelOperation = () => {
-    navigate("/inventoryTransactions")
-  }
+    navigate("/inventoryTransactions");
+  };
 
   return (
     <InventoryTransactionAddBulkForm
@@ -132,7 +156,7 @@ const InventoryTransactionBulkForm = () => {
       isLoading={isLoading}
       assets={assets}
     />
-  )
-}
+  );
+};
 
-export default InventoryTransactionBulkForm
+export default InventoryTransactionBulkForm;

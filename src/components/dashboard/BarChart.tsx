@@ -8,8 +8,8 @@ import {
   Legend,
   Tooltip,
   Title,
-} from "chart.js"
-import { Bar } from "react-chartjs-2"
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 import {
   Text,
   Card,
@@ -17,10 +17,10 @@ import {
   Divider,
   CardHeader,
   Heading,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
 // custom Hooks
-import { useInventories } from "../../hooks/useInventories"
+import { useInventories } from "../../hooks/useInventories";
 
 ChartJS.register(
   LinearScale,
@@ -30,14 +30,12 @@ ChartJS.register(
   LineElement,
   Legend,
   Tooltip,
-  Title
-)
-
+  Title,
+);
 
 const BarChart = () => {
-
-  const queryInventory = useInventories({})
-  const inventories = queryInventory.data
+  const queryInventory = useInventories({});
+  const inventories = queryInventory.inventories;
 
   const options = {
     responsive: true,
@@ -47,17 +45,21 @@ const BarChart = () => {
         display: false,
       },
     },
-  }
+  };
 
   const data = {
-    labels: inventories?.map(inventory => inventory.asset?.name),
+    labels: inventories?.map((inventory) => inventory.asset?.name),
     datasets: [
       {
-        data: inventories?.map(inventory => Number(inventory.asset?.costPrice) * Number(inventory.quantityAvailable)),
+        data: inventories?.map(
+          (inventory) =>
+            Number(inventory.asset?.costPrice) *
+            Number(inventory.quantityAvailable),
+        ),
         backgroundColor: ["#805AD5"],
       },
     ],
-  }
+  };
 
   if (!queryInventory?.isLoading && inventories?.length === 0) {
     return (
@@ -66,17 +68,19 @@ const BarChart = () => {
           <Text>No hay datos</Text>
         </CardBody>
       </Card>
-    )
+    );
   }
 
-  if (!queryInventory?.isLoading && inventories?.length !== undefined && inventories?.length > 0) {
+  if (
+    !queryInventory?.isLoading &&
+    inventories?.length !== undefined &&
+    inventories?.length > 0
+  ) {
     return (
       <>
         <Card variant="outline" mb={3}>
           <CardHeader textAlign={"center"}>
-            <Heading size={"lg"}>
-              Costo del inventario
-            </Heading>
+            <Heading size={"lg"}>Costo del inventario</Heading>
           </CardHeader>
           <CardBody>
             <Bar options={options} data={data} />
@@ -84,8 +88,8 @@ const BarChart = () => {
           <Divider />
         </Card>
       </>
-    )
+    );
   }
-}
+};
 
-export default BarChart
+export default BarChart;

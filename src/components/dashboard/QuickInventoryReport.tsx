@@ -12,15 +12,15 @@ import {
   Thead,
   Tr,
   Heading,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { useInventories } from "../../hooks/useInventories"
+import { useInventories } from "../../hooks/useInventories";
 
-import { IInventoryFullRelated } from "../inventories/types"
+import { IInventoryFullRelated } from "../inventories/types";
 
 const QuickInventoryReport = () => {
-  const queryInventories = useInventories({})
-  const inventories = queryInventories.data as IInventoryFullRelated[]
+  const queryInventories = useInventories({});
+  const inventories = queryInventories.inventories as IInventoryFullRelated[];
 
   const listInventories = inventories
     ?.filter((inventory) => inventory.asset?.isActive)
@@ -32,18 +32,16 @@ const QuickInventoryReport = () => {
             <Td></Td>
             <Td isNumeric>{inventory.quantityAvailable}</Td>
           </Tr>
-        )
+        );
       }
-    })
+    });
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
       <GridItem colSpan={{ base: 12 }}>
         <Card variant="outline">
           <CardHeader textAlign={"center"}>
-            <Heading size={"lg"}>
-              Stock disponibles
-            </Heading>
+            <Heading size={"lg"}>Stock disponibles</Heading>
           </CardHeader>
           <CardBody>
             <TableContainer>
@@ -63,7 +61,7 @@ const QuickInventoryReport = () => {
         </Card>
       </GridItem>
     </Grid>
-  )
-}
+  );
+};
 
-export default QuickInventoryReport
+export default QuickInventoryReport;

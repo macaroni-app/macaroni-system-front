@@ -6,26 +6,26 @@ import {
   Spacer,
   Stack,
   Skeleton,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 // components
-import Inventory from "./Inventory"
-import WithoutResults from "../common/WithoutResults"
-import NewRecordPanel from "../common/NewRecordPanel"
+import Inventory from "./Inventory";
+import WithoutResults from "../common/WithoutResults";
+import NewRecordPanel from "../common/NewRecordPanel";
 
 // custom hooks
-import { useInventories } from "../../hooks/useInventories"
-import { IInventoryFullRelated } from "./types"
+import { useInventories } from "../../hooks/useInventories";
+import { IInventoryFullRelated } from "./types";
 // import { useError } from "../../hooks/useError"
 
-import ProfileBase from "../common/permissions"
+import ProfileBase from "../common/permissions";
 
 const Inventories = (): JSX.Element => {
-  const queryInventories = useInventories({})
+  const queryInventories = useInventories({});
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // const { throwError } = useError()
 
@@ -34,10 +34,10 @@ const Inventories = (): JSX.Element => {
   // }
 
   const handleAddInventory = () => {
-    navigate("/inventories/add")
-  }
+    navigate("/inventories/add");
+  };
 
-  const inventories = queryInventories?.data as IInventoryFullRelated[]
+  const inventories = queryInventories?.inventories as IInventoryFullRelated[];
 
   const inventoryList = inventories?.map((inventory) => {
     if (inventory._id !== undefined && inventory.createdAt !== undefined) {
@@ -46,9 +46,9 @@ const Inventories = (): JSX.Element => {
           key={inventory?._id + inventory?.createdAt}
           inventory={inventory}
         />
-      )
+      );
     }
-  })
+  });
 
   if (queryInventories?.isLoading) {
     return (
@@ -122,7 +122,7 @@ const Inventories = (): JSX.Element => {
           </CardBody>
         </Card>
       </>
-    )
+    );
   }
 
   return (
@@ -138,16 +138,16 @@ const Inventories = (): JSX.Element => {
       )}
 
       {!queryInventories?.isError &&
-        queryInventories?.data?.length !== undefined &&
-        queryInventories?.data?.length > 0 &&
+        queryInventories?.inventories?.length !== undefined &&
+        queryInventories?.inventories?.length > 0 &&
         !queryInventories?.isLoading && <Grid>{inventoryList}</Grid>}
       {!queryInventories?.isError &&
-        queryInventories?.data?.length === 0 &&
+        queryInventories?.inventories?.length === 0 &&
         !queryInventories?.isLoading && (
           <WithoutResults text={"No hay inventarios cargados."} />
         )}
     </>
-  )
-}
+  );
+};
 
-export default Inventories
+export default Inventories;

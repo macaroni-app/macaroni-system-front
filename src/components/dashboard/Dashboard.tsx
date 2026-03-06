@@ -1,77 +1,82 @@
-import { Grid, GridItem } from "@chakra-ui/react"
+import { Grid, GridItem } from "@chakra-ui/react";
 
 // custom hooks
-import { useInventories } from "../../hooks/useInventories"
-import { useCheckRole } from "../../hooks/useCheckRole"
-import { useFixedCostsReport } from "../../hooks/useFixedCostsReport"
-import { useSalesReport } from "../../hooks/useSalesReport"
+import { useInventories } from "../../hooks/useInventories";
+import { useCheckRole } from "../../hooks/useCheckRole";
+import { useFixedCostsReport } from "../../hooks/useFixedCostsReport";
+import { useSalesReport } from "../../hooks/useSalesReport";
 
 // components
-import QuickInventoryReport from "./QuickInventoryReport"
-import SimpleBoard from "./SimpleBoard"
-import SimpleBoardSkeleton from "./SimpleBoardSkeleton"
-import InventoryTransactionReport from "./InventoryTransactionReport"
-import LineChart from "./LineChart"
-import BarChart from "./BarChart"
+import QuickInventoryReport from "./QuickInventoryReport";
+import SimpleBoard from "./SimpleBoard";
+import SimpleBoardSkeleton from "./SimpleBoardSkeleton";
+import InventoryTransactionReport from "./InventoryTransactionReport";
+import LineChart from "./LineChart";
+import BarChart from "./BarChart";
 
 // types
-import { ISaleFullRelated } from "../sales/types"
-import { IInventoryFullRelated } from "../inventories/types"
-import { IFixedCost } from "../fixedCosts/types"
+import { ISaleFullRelated } from "../sales/types";
+import { IInventoryFullRelated } from "../inventories/types";
+import { IFixedCost } from "../fixedCosts/types";
 
-import ProfileBase from "../common/permissions"
+import ProfileBase from "../common/permissions";
 
 const Dashboard = () => {
-  const { checkRole } = useCheckRole()
+  const { checkRole } = useCheckRole();
 
   // sales
-  const querySales = useSalesReport({ historyMonthToRetrieve: 1 })
-  const sales = querySales?.data as ISaleFullRelated[]
+  const querySales = useSalesReport({ historyMonthToRetrieve: 1 });
+  const sales = querySales?.data as ISaleFullRelated[];
 
   const billings = sales
     ?.filter((sale) => sale.status === "PAID")
-    ?.map((sale) => sale?.total) as number[]
+    ?.map((sale) => sale?.total) as number[];
 
   const totalBillings = Number.parseFloat(
-    billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
-  )
+    billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2),
+  );
 
-  const totalCosts = Number(sales?.filter((sale) => sale.status === "PAID")?.map(sale => sale.costTotal).reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0))
+  const totalCosts = Number(
+    sales
+      ?.filter((sale) => sale.status === "PAID")
+      ?.map((sale) => sale.costTotal)
+      .reduce((acc, currentValue) => Number(acc) + Number(currentValue), 0),
+  );
 
   // profit
-  const totalRevenues = Number(totalBillings - totalCosts)
+  const totalRevenues = Number(totalBillings - totalCosts);
 
   // assets costs
-  const queryInventories = useInventories({})
-  const inventories = queryInventories?.data as IInventoryFullRelated[]
+  const queryInventories = useInventories({});
+  const inventories = queryInventories?.inventories as IInventoryFullRelated[];
 
   const assetCosts = inventories
     ?.filter((inventory) => inventory.asset?.isActive)
     ?.map(
       (inventory) =>
         Number(inventory?.asset?.costPrice) *
-        Number(inventory?.quantityAvailable)
-    ) as number[]
+        Number(inventory?.quantityAvailable),
+    ) as number[];
 
   const totalAssetCosts = Number.parseFloat(
-    assetCosts?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2)
-  )
+    assetCosts?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2),
+  );
 
   // Net costs
-  const queryFixedCosts = useFixedCostsReport({ historyMonthToRetrieve: 1 })
-  const fixedCosts = queryFixedCosts?.data as IFixedCost[]
+  const queryFixedCosts = useFixedCostsReport({ historyMonthToRetrieve: 1 });
+  const fixedCosts = queryFixedCosts?.data as IFixedCost[];
   const fixedCostAmounts = fixedCosts?.map(
-    (fixedCost) => fixedCost.amount
-  ) as number[]
+    (fixedCost) => fixedCost.amount,
+  ) as number[];
 
   const totalFixedCosts = Number.parseFloat(
     fixedCostAmounts
       ?.reduce((acc, currentValue) => acc + currentValue, 0)
-      .toFixed(2)
-  )
+      .toFixed(2),
+  );
 
   // Net revenues
-  const netRevenue = Number(totalRevenues - totalFixedCosts)
+  const netRevenue = Number(totalRevenues - totalFixedCosts);
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
@@ -174,11 +179,15 @@ const Dashboard = () => {
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <>
           <GridItem colSpan={{ base: 12, md: 6 }}>
-            {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
+            {queryInventories.isLoading && (
+              <SimpleBoardSkeleton numberRows={7} />
+            )}
             {!queryInventories.isLoading && <QuickInventoryReport />}
           </GridItem>
           <GridItem colSpan={{ base: 12, md: 6 }}>
-            {queryInventories.isLoading && <SimpleBoardSkeleton numberRows={7} />}
+            {queryInventories.isLoading && (
+              <SimpleBoardSkeleton numberRows={7} />
+            )}
             {!queryInventories.isLoading && <BarChart />}
           </GridItem>
         </>
@@ -194,7 +203,7 @@ const Dashboard = () => {
         </>
       )}
     </Grid>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState } from "react";
 
-import { SubmitHandler } from "react-hook-form"
+import { SubmitHandler } from "react-hook-form";
 
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom";
 
 // types
 import {
@@ -11,109 +11,109 @@ import {
   ISaleFullRelated,
   SaleStatus,
   ISaleItemOmitSale,
-} from "./types"
-import { IProductFullRelated } from "../products/types"
-import { IClient } from "../clients/types"
-import { IPaymentMethod } from "../paymentMethods/types"
+} from "./types";
+import { IProductFullRelated } from "../products/types";
+import { IClient } from "../clients/types";
+import { IPaymentMethod } from "../paymentMethods/types";
 
 // components
-import SaleFormAdd from "./SaleAddForm"
+import SaleFormAdd from "./SaleAddForm";
 // import ProductFormEdit from "./ProductEditForm";
 
 // custom hooks
-import { useProducts } from "../../hooks/useProducts"
-import { useClients } from "../../hooks/useClients"
-import { usePaymentMethods } from "../../hooks/usePaymentMethods"
-import { useSaleItems } from "../../hooks/useSaleItems"
-import { useEditManyInventory } from "../../hooks/useEditManyInventory"
-import { useMessage } from "../../hooks/useMessage"
-import { useError, Error } from "../../hooks/useError"
+import { useProducts } from "../../hooks/useProducts";
+import { useClients } from "../../hooks/useClients";
+import { usePaymentMethods } from "../../hooks/usePaymentMethods";
+// removed unused useSaleItems import
+// import { useEditManyInventory } from "../../hooks/useEditManyInventory";
+import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
+import { useMessage } from "../../hooks/useMessage";
+import { useError, Error } from "../../hooks/useError";
 
-import { RECORD_CREATED } from "../../utils/constants"
-import { AlertColorScheme, AlertStatus } from "../../utils/enums"
-import { useProductItems } from "../../hooks/useProductItems"
-import { IProductItemFullRelated } from "../products/types"
-import { useInventories } from "../../hooks/useInventories"
-import {
-  IInventoryFullRelated,
-  IInventoryLessRelated,
-} from "../inventories/types"
-import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction"
+import { RECORD_CREATED } from "../../utils/constants";
+import { AlertColorScheme, AlertStatus } from "../../utils/enums";
+import { useProductItems } from "../../hooks/useProductItems";
+import { IProductItemFullRelated } from "../products/types";
+import { useInventories } from "../../hooks/useInventories";
+import { IInventoryFullRelated } from "../inventories/types";
+import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
 import {
   IInventoryTransactionLessRelated,
   TransactionReason,
   TransactionType,
-} from "../inventoryTransactions/types"
-import { useNewSale } from "../../hooks/useNewSale"
-import { useNewManySaleItem } from "../../hooks/useNewManySaleItem"
-import { useBusinesses } from "../../hooks/useBusinesses"
-import { IBusiness } from "../businesses/types"
+} from "../inventoryTransactions/types";
+import { useNewSale } from "../../hooks/useNewSale";
+import { useNewManySaleItem } from "../../hooks/useNewManySaleItem";
+import { useBusinesses } from "../../hooks/useBusinesses";
+import { IBusiness } from "../businesses/types";
 
 type ISaleResponse = {
-  data?: ISaleFullRelated
-  isStored?: boolean
-  isUpdated?: boolean
-  status?: number
-}
+  data?: ISaleFullRelated;
+  isStored?: boolean;
+  isUpdated?: boolean;
+  status?: number;
+};
 
 const SaleForm = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { showMessage } = useMessage()
+  const { showMessage } = useMessage();
 
-  const { throwError } = useError()
+  const { throwError } = useError();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { saleId } = useParams()
+  const { saleId } = useParams();
 
   // products
-  const queryProducts = useProducts({})
-  const queryProductItems = useProductItems({})
-  const queryClients = useClients({})
-  const queryPaymentMethod = usePaymentMethods({})
-  const querySaleItems = useSaleItems({})
-  const queryInventories = useInventories({})
-  const queryBusinesses = useBusinesses({})
+  const queryProducts = useProducts({});
+  const queryProductItems = useProductItems({});
+  const queryClients = useClients({});
+  const queryPaymentMethod = usePaymentMethods({});
+  const queryInventories = useInventories({});
+  const queryBusinesses = useBusinesses({});
 
   // const { addNewProduct } = useNewProduct();
   // const { addNewManyProductItem } = useNewManyProductItem();
   // const { editProduct } = useEditProduct();
   // const { editManyProductItem } = useEditManyProductItem();
-  const { addNewSale } = useNewSale()
-  const { editManyInventory } = useEditManyInventory()
-  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction()
-  const { addNewManySaleItem } = useNewManySaleItem()
+  const { addNewSale } = useNewSale();
+  const { adjustManyInventory } = useAdjustManyInventory();
+  const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction();
+  const { addNewManySaleItem } = useNewManySaleItem();
 
-  const products = queryProducts.data as IProductFullRelated[]
-  const productItems = queryProductItems.data as IProductItemFullRelated[]
-  const clients = queryClients.data as IClient[]
-  const paymentMethods = queryPaymentMethod.data as IPaymentMethod[]
-  const saleItems = querySaleItems.data as ISaleItemLessRelated[]
-  const inventories = queryInventories.data as IInventoryFullRelated[]
-  const businesses = queryBusinesses.data as IBusiness[]
-  const currentBusiness = businesses?.find(business => business?.cuit === '23393153504')
+  const products = queryProducts.data as IProductFullRelated[];
+  const productItems = queryProductItems.data as IProductItemFullRelated[];
+  const clients = queryClients.data as IClient[];
+  const paymentMethods = queryPaymentMethod.data as IPaymentMethod[];
+  // saleItems fetched via query but not used directly here
+  const inventories = queryInventories.inventories as IInventoryFullRelated[];
+  const inventoriesByAsset = queryInventories.inventoriesByAssetId;
+  const businesses = queryBusinesses.data as IBusiness[];
+  const currentBusiness = businesses?.find(
+    (business) => business?.cuit === "23393153504",
+  );
 
-  const productsById = new Map()
+  const productsById = new Map<string, IProductFullRelated>();
 
   products?.forEach((product) => {
-    productsById.set(product._id, product)
-  })
+    if (product?._id) productsById.set(product._id, product);
+  });
 
   const getTotalSale = (sale: ISaleLessRelated) => {
-    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product)
+    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product);
 
-    let productWithSalePrice: IProductFullRelated[] = []
+    let productWithSalePrice: IProductFullRelated[] = [];
 
     productIds?.forEach((productId) =>
       products?.forEach((product) => {
         if (product._id === productId) {
-          productWithSalePrice.push(product)
+          productWithSalePrice.push(product);
         }
-      })
-    )
+      }),
+    );
 
-    let productWithQuantity: ISaleItemOmitSale[] = []
+    let productWithQuantity: ISaleItemOmitSale[] = [];
 
     productWithSalePrice.forEach((product) => {
       sale.saleItems?.forEach((saleItem) => {
@@ -121,109 +121,125 @@ const SaleForm = () => {
           productWithQuantity.push({
             product,
             quantity: saleItem.quantity,
-          })
+          });
         }
-      })
-    })
+      });
+    });
 
-    let totalSale = productWithQuantity
-      ?.map((productWithQ) => {
-        if (
-          productWithQ.product?.retailsalePrice !== undefined &&
-          productWithQ.quantity !== undefined
-        ) {
-          if (sale.isRetail) {
-            return (
-              Number(productWithQ.product.retailsalePrice) *
-              Number(productWithQ.quantity)
-            )
+    const totalSale =
+      productWithQuantity
+        .map((productWithQ) => {
+          if (
+            productWithQ.product?.retailsalePrice !== undefined &&
+            productWithQ.quantity !== undefined
+          ) {
+            const price = sale.isRetail
+              ? Number(productWithQ.product.retailsalePrice)
+              : Number(productWithQ.product.wholesalePrice);
+            return price * Number(productWithQ.quantity);
           }
-          return (
-            Number(productWithQ.product.wholesalePrice) *
-            Number(productWithQ.quantity)
-          )
-        }
-      })
-      .reduce((acc, currentValue) => {
-        if (acc !== undefined && currentValue !== undefined) {
-          return acc + currentValue
-        }
-      }, 0)
+          return 0;
+        })
+        .reduce((acc, current) => acc + (current ?? 0), 0) ?? 0;
 
-    // aplico descuento
-    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+    const discount =
+      sale?.discount !== undefined && !isNaN(sale?.discount)
+        ? sale.discount / 100
+        : 0;
 
-    let totalSaleWithDiscount = totalSale !== undefined ? totalSale - (totalSale * discount) : 0
+    const totalSaleWithDiscount = totalSale - totalSale * discount;
 
-    return totalSaleWithDiscount
-  }
+    return totalSaleWithDiscount;
+  };
 
   const onSubmit: SubmitHandler<ISaleLessRelated> = async (
-    sale: ISaleLessRelated
+    sale: ISaleLessRelated,
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       let response: ISaleResponse = {
         data: undefined,
         isStored: undefined,
         status: undefined,
-      }
+      };
 
       if (!saleId) {
         // Todo: actualizar el inventario de cada insumo.
-        let assetQuantityByAssetId = new Map<string, number>()
+        const assetQuantityByAssetId = new Map<string, number>();
 
         productItems.forEach((productItem) => {
-          sale.saleItems?.forEach((saleItem) => {
-            if (saleItem.product === productItem.product?._id) {
-              if (
-                assetQuantityByAssetId.has(productItem?.asset?._id as string)
-              ) {
-                let prevQuantity = assetQuantityByAssetId.get(
-                  productItem?.asset?._id as string
-                )
-                assetQuantityByAssetId.set(
-                  productItem.asset?._id as string,
-                  Number(prevQuantity) +
-                  Number(productItem.quantity) * Number(saleItem.quantity)
-                )
-              } else {
-                assetQuantityByAssetId.set(
-                  productItem.asset?._id as string,
-                  (Number(productItem.quantity) *
-                    Number(saleItem.quantity)) as number
-                )
-              }
-            }
-          })
-        })
-        let inventoriesToUpdate: IInventoryLessRelated[] = []
+          // ensure productItem has asset and product
+          const assetId = productItem?.asset?._id;
+          const productId = productItem?.product?._id;
+          if (!assetId || !productId) return;
 
-        // para usar en las transacciones: guardar valores viejos
-        let oldInventories: IInventoryFullRelated[] = inventories
+          sale.saleItems?.forEach((saleItem) => {
+            if (
+              saleItem.product === productId &&
+              saleItem.quantity !== undefined
+            ) {
+              const addAmount =
+                Number(productItem.quantity ?? 0) *
+                Number(saleItem.quantity ?? 0);
+              const prev = assetQuantityByAssetId.get(assetId) ?? 0;
+              assetQuantityByAssetId.set(assetId, prev + addAmount);
+            }
+          });
+        });
+
+        // enviaremos ajustes (deltas) en lugar de cantidades absolutas
+        let inventoryAdjustments: Array<{
+          id?: string;
+          asset?: string;
+          quantityDelta: number;
+        }> = [];
+
+        // para usar en las transacciones: guardar valores viejos (snapshot)
+        const oldInventories: IInventoryFullRelated[] =
+          inventories?.map((inv) => ({
+            ...inv,
+            asset: inv.asset ? { ...inv.asset } : undefined,
+          })) ?? [];
+
+        // usar el Map O(1) de inventoriesByAsset
+        // (ya está disponible por el hook)
 
         assetQuantityByAssetId.forEach((value, key) => {
-          inventories.forEach((inventory) => {
-            let inventoryUpdated: IInventoryLessRelated = {
-              asset: inventory.asset?._id,
-              id: inventory._id,
-              quantityAvailable: inventory.quantityAvailable,
-            }
-            if (key === inventory.asset?._id) {
-              inventoryUpdated.quantityAvailable =
-                inventoryUpdated.quantityAvailable !== undefined
-                  ? inventoryUpdated.quantityAvailable - value
-                  : inventoryUpdated.quantityAvailable
-              inventoriesToUpdate.push(inventoryUpdated)
-            }
-          })
-        })
+          if (!inventoriesByAsset) return;
+          const inv = inventoriesByAsset.get(key);
+          if (!inv) return;
 
-        await editManyInventory(inventoriesToUpdate)
+          // delta negativo porque estamos descontando stock por una venta
+          const quantityDelta = -Number(value);
+
+          inventoryAdjustments.push({
+            id: inv._id,
+            asset: inv.asset?._id,
+            quantityDelta,
+          });
+        });
+
+        const adjustInventoryResponse =
+          inventoryAdjustments.length > 0
+            ? await adjustManyInventory(inventoryAdjustments)
+            : undefined;
+
+        const updatedInventories = adjustInventoryResponse?.data?.updated ?? [];
+
+        const updatedInventoryById = new Map<string, any>();
+
+        updatedInventories.forEach((inventoryUpdated: any) => {
+          if (inventoryUpdated.id) {
+            updatedInventoryById.set(
+              String(inventoryUpdated.id),
+              inventoryUpdated,
+            );
+          }
+        });
 
         // Todo: registrar las transacciones del inventario de cada insumo.
 
-        let inventoryTransactions: IInventoryTransactionLessRelated[] = []
+        let inventoryTransactions: IInventoryTransactionLessRelated[] = [];
 
         assetQuantityByAssetId.forEach((value, key) => {
           inventoryTransactions.push({
@@ -231,90 +247,92 @@ const SaleForm = () => {
             affectedAmount: value,
             transactionType: TransactionType.DOWN,
             transactionReason: TransactionReason.SELL,
-          })
-        })
-
+          });
+        });
 
         // guardar los valores viejos y nuevos
-        inventoryTransactions.forEach(inventoryTransaction => {
-          oldInventories.forEach(oldInventory => {
+        inventoryTransactions.forEach((inventoryTransaction) => {
+          oldInventories.forEach((oldInventory) => {
             if (inventoryTransaction.asset === oldInventory.asset?._id) {
-              inventoryTransaction.oldQuantityAvailable = oldInventory.quantityAvailable
-
-              //unit cost
-              inventoryTransaction.unitCost = oldInventory.asset?.costPrice
+              inventoryTransaction.unitCost = oldInventory.asset?.costPrice;
             }
-          })
-          inventoriesToUpdate.forEach(inventoryUpdated => {
-            if (inventoryTransaction.asset === inventoryUpdated.asset) {
-              inventoryTransaction.currentQuantityAvailable = inventoryUpdated.quantityAvailable
+          });
+          inventoryAdjustments.forEach((adj) => {
+            if (inventoryTransaction.asset === adj.asset) {
+              const oldInv = inventoriesByAsset?.get(String(adj.asset));
+              const updatedInv = adj.id
+                ? updatedInventoryById.get(String(adj.id))
+                : undefined;
 
-              let asset = inventories.find(inventory => inventory.asset?._id === inventoryUpdated.asset)?.asset
-              //unit cost
-              inventoryTransaction.unitCost = asset?.costPrice
+              inventoryTransaction.oldQuantityAvailable =
+                updatedInv?.oldQuantityAvailable ?? oldInv?.quantityAvailable;
+              inventoryTransaction.currentQuantityAvailable =
+                updatedInv?.currentQuantityAvailable ??
+                updatedInv?.quantityAvailable ??
+                (oldInv?.quantityAvailable ?? 0) + adj.quantityDelta;
+              inventoryTransaction.unitCost = oldInv?.asset?.costPrice;
             }
-          })
-        })
+          });
+        });
 
+        await addNewManyInventoryTransaction(inventoryTransactions);
 
-        await addNewManyInventoryTransaction(inventoryTransactions)
+        // Todo: insertar la venta.
 
-        // Todo: insertar la venta. 
+        const costTotal =
+          sale.saleItems
+            ?.map((saleItem) => {
+              if (saleItem.quantity === undefined) return 0;
+              const prod = productsById.get(String(saleItem.product));
+              if (!prod || prod.costPrice === undefined) return 0;
+              return Number(saleItem.quantity) * Number(prod.costPrice);
+            })
+            .reduce((acc, cur) => acc + (cur ?? 0), 0) ?? 0;
 
-        let costTotal = sale.saleItems?.map(saleItem => {
-          let costTotal
-
-          if (saleItem.quantity !== undefined) {
-            costTotal = saleItem.quantity * productsById.get(saleItem.product).costPrice
-          }
-
-          return costTotal
-
-        }).reduce((acc, currentValue) => {
-          if (acc !== undefined && currentValue !== undefined) {
-            return acc + currentValue
-          }
-        }, 0)
-
-
-        sale.total = getTotalSale(sale)
-        sale.costTotal = costTotal
-        sale.status = SaleStatus.PAID
-        sale.business = currentBusiness?._id
-        response = await addNewSale(sale)
+        sale.total = getTotalSale(sale);
+        sale.costTotal = costTotal;
+        sale.status = SaleStatus.PAID;
+        sale.business = currentBusiness?._id;
+        response = await addNewSale(sale);
 
         // Todo: insertar los items de la venta.
 
-        let saleItemWithSale = sale?.saleItems?.map((saleItem) => {
-          let subTotal
+        const saleItemWithSale = (sale?.saleItems ?? [])
+          .map((saleItem) => {
+            const prod = productsById.get(String(saleItem.product));
+            if (!prod) return null;
 
-          if (saleItem.quantity !== undefined) {
-            subTotal = sale.isRetail
-              ? saleItem?.quantity *
-              productsById.get(saleItem.product).retailsalePrice
-              : saleItem?.quantity *
-              productsById.get(saleItem.product).wholesalePrice
-          }
+            const qty = Number(saleItem.quantity ?? 0);
+            const price = sale.isRetail
+              ? prod.retailsalePrice
+              : prod.wholesalePrice;
+            const subTotal = qty * Number(price ?? 0);
 
-          let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+            const discount =
+              sale?.discount !== undefined && !isNaN(sale?.discount)
+                ? sale.discount / 100
+                : 0;
 
-          let subTotalWithDiscount = subTotal !== undefined ? subTotal - (subTotal * discount) : 0
+            const subTotalWithDiscount = subTotal - subTotal * discount;
 
-          return {
-            ...saleItem,
-            sale: response?.data?._id,
-            subtotal: subTotalWithDiscount,
-          }
-        })
+            return {
+              ...saleItem,
+              sale: response?.data?._id,
+              subtotal: subTotalWithDiscount,
+            };
+          })
+          .filter(Boolean) as ISaleItemLessRelated[];
 
-        await addNewManySaleItem(saleItemWithSale as ISaleItemLessRelated[])
+        if (saleItemWithSale.length > 0) {
+          await addNewManySaleItem(saleItemWithSale as ISaleItemLessRelated[]);
+        }
 
         if (response.isStored) {
           showMessage(
             RECORD_CREATED,
             AlertStatus.Success,
-            AlertColorScheme.Purple
-          )
+            AlertColorScheme.Purple,
+          );
         }
       } else {
         // let assetIds = product?.productItems?.map(
@@ -396,18 +414,18 @@ const SaleForm = () => {
         // }
       }
       if (response.status === 200 || response.status === 201) {
-        navigate("/sales")
+        navigate("/sales");
       }
     } catch (error: unknown) {
-      throwError(error as Error)
+      throwError(error as Error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onCancelOperation = () => {
-    navigate("/sales")
-  }
+    navigate("/sales");
+  };
 
   return (
     <>
@@ -433,12 +451,12 @@ const SaleForm = () => {
           onCancelOperation={onCancelOperation}
           isLoading={isLoading}
           products={products}
-          clients={clients?.filter(client => client.isActive)}
+          clients={clients?.filter((client) => client.isActive)}
           paymentMethods={paymentMethods}
         />
       )}
     </>
-  )
-}
+  );
+};
 
-export default SaleForm
+export default SaleForm;
