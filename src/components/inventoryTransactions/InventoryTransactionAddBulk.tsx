@@ -3,7 +3,11 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // types
-import { IInventoryTransactionLessRelatedBulk } from "./types"
+import {
+  IInventoryTransactionLessRelatedBulk,
+  TransactionReason,
+  TransactionType,
+} from "./types"
 import { IAssetFullCategory } from "../assets/types"
 import { inventoryTransactionBulkSchema } from "./inventoryTransactionSchema"
 
@@ -66,9 +70,9 @@ const InventoryTransactionAddBulkForm = ({
           affectedAmount:
             undefined,
           transactionType:
-            undefined,
+            TransactionType.UP,
           transactionReason:
-            undefined,
+            TransactionReason.BUY,
         }],
       },
     })
@@ -216,9 +220,9 @@ const InventoryTransactionAddBulkForm = ({
                       affectedAmount:
                         undefined,
                       transactionType:
-                        undefined,
+                        TransactionType.UP,
                       transactionReason:
-                        undefined,
+                        TransactionReason.BUY,
                     })}
                   >
                     Agregar item
