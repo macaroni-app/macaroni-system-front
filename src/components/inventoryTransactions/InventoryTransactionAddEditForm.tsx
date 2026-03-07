@@ -23,6 +23,8 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import {
   IInventoryTransactionFullRelated,
   IInventoryTransactionLessRelated,
+  TransactionReason,
+  TransactionType,
 } from "./types"
 import { IAssetFullCategory } from "../assets/types"
 import { inventoryTransactionSchema } from "./inventoryTransactionSchema"
@@ -54,9 +56,11 @@ const InventoryTransactionAddEditForm = (props: Props) => {
         affectedAmount:
           inventoryTransactionToUpdate?.affectedAmount || undefined,
         transactionType:
-          inventoryTransactionToUpdate?.transactionType || undefined,
+          inventoryTransactionToUpdate?.transactionType ||
+          (isEditing ? undefined : TransactionType.UP),
         transactionReason:
-          inventoryTransactionToUpdate?.transactionReason || undefined,
+          inventoryTransactionToUpdate?.transactionReason ||
+          (isEditing ? undefined : TransactionReason.BUY),
       },
     })
 
