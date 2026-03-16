@@ -1,39 +1,42 @@
-import { Outlet } from "react-router-dom"
-import { useState, useEffect } from "react"
-import useRefreshToken from "../../hooks/useRefreshToken"
-import { useAuthContext } from "../../hooks/useAuthContext"
-import { Spinner, AbsoluteCenter, Box } from "@chakra-ui/react"
-import { IUserContext } from "../../context/types"
+import { Outlet } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import useRefreshToken from "../../hooks/useRefreshToken";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { Spinner, AbsoluteCenter, Box } from "@chakra-ui/react";
+import { IUserContext } from "../../context/types";
 
 const PersistLogin = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const refresh = useRefreshToken()
-  const { auth, persist } = useAuthContext() as IUserContext
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const refresh = useRefreshToken();
+  const { auth, persist } = useAuthContext() as IUserContext;
+  const effectRan = useRef(false);
 
   useEffect((): (() => void) => {
-    let isMounted = true
+    let isMounted = true;
 
     const verifyRefreshToken = async () => {
       try {
-        await refresh()
+        await refresh();
       } catch (err) {
-        console.error(err)
+        console.error(err);
       } finally {
-        isMounted && setIsLoading(false)
+        if (isMounted) setIsLoading(false);
       }
+    };
+
+    // In React.StrictMode (dev) effects run twice on mount.
+    // Avoid firing refresh twice when refresh token rotation is enabled.
+    if (effectRan.current || !import.meta.env.DEV) {
+      !auth?.accessToken && persist
+        ? verifyRefreshToken()
+        : setIsLoading(false);
     }
 
-    // persist added here AFTER tutorial video
-    // Avoids unwanted call to verifyRefreshToken
-    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false)
-
-    return () => (isMounted = false)
-  }, [])
-
-  // useEffect(() => {
-  //   console.log(`isLoading: ${isLoading}`);
-  //   console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
-  // }, [isLoading]);
+    return () => {
+      isMounted = false;
+      effectRan.current = true;
+    };
+  }, []);
 
   return (
     <>
@@ -55,7 +58,7 @@ const PersistLogin = () => {
         <Outlet />
       )}
     </>
-  )
-}
+  );
+};
 
-export default PersistLogin
+export default PersistLogin;
