@@ -6,18 +6,18 @@ import {
   CardBody,
   Heading,
   Stack,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
 // Components
-import MyInput from "../ui/inputs/MyInput"
-import Loading from "../common/Loading"
-import MySelect from "../ui/inputs/MySelect"
+import MyInput from "../ui/inputs/MyInput";
+import Loading from "../common/Loading";
+import MySelect from "../ui/inputs/MySelect";
 
 // libs
-import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // custom hook
-import { SubmitHandler, useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form";
 
 // types
 import {
@@ -25,17 +25,17 @@ import {
   IInventoryTransactionLessRelated,
   TransactionReason,
   TransactionType,
-} from "./types"
-import { IAssetFullCategory } from "../assets/types"
-import { inventoryTransactionSchema } from "./inventoryTransactionSchema"
+} from "./types";
+import { IAssetFullCategory } from "../assets/types";
+import { inventoryTransactionSchema } from "./inventoryTransactionSchema";
 
 interface Props {
-  onSubmit: SubmitHandler<IInventoryTransactionLessRelated>
-  onCancelOperation: () => void
-  inventoryTransactionToUpdate?: IInventoryTransactionFullRelated
-  isEditing: boolean
-  isLoading: boolean
-  assets: IAssetFullCategory[]
+  onSubmit: SubmitHandler<IInventoryTransactionLessRelated>;
+  onCancelOperation: () => void;
+  inventoryTransactionToUpdate?: IInventoryTransactionFullRelated;
+  isEditing: boolean;
+  isLoading: boolean;
+  assets: IAssetFullCategory[];
 }
 
 const InventoryTransactionAddEditForm = (props: Props) => {
@@ -46,7 +46,7 @@ const InventoryTransactionAddEditForm = (props: Props) => {
     isEditing,
     isLoading,
     assets,
-  } = props
+  } = props;
 
   const { register, formState, handleSubmit, control } =
     useForm<IInventoryTransactionLessRelated>({
@@ -62,14 +62,14 @@ const InventoryTransactionAddEditForm = (props: Props) => {
           inventoryTransactionToUpdate?.transactionReason ||
           (isEditing ? undefined : TransactionReason.BUY),
       },
-    })
+    });
 
   const getTransactinTypeOptions = () => {
     return [
       { _id: "UP", name: "Aumentar" },
       { _id: "DOWN", name: "Disminuir" },
-    ]
-  }
+    ];
+  };
 
   const getTransactinReasonOptions = () => {
     return [
@@ -81,15 +81,15 @@ const InventoryTransactionAddEditForm = (props: Props) => {
       { _id: "DEFEATED", name: "Vencido" },
       { _id: "LOSS", name: "Pérdida" },
       { _id: "INTERNAL_USAGE", name: "Uso interno" },
-    ]
-  }
+    ];
+  };
 
   const getNoOptionMessage = () => {
     if (assets?.length === 0) {
-      return "Todos los insumos ya tienen inventario"
+      return "Todos los insumos ya tienen inventario";
     }
-    return "No hay datos"
-  }
+    return "No hay datos";
+  };
 
   return (
     <>
@@ -117,6 +117,18 @@ const InventoryTransactionAddEditForm = (props: Props) => {
                         data={assets}
                         isRequired={true}
                         noOptionsMessage={getNoOptionMessage()}
+                      />
+                    </GridItem>
+                  </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <MyInput
+                        register={register}
+                        formState={formState}
+                        field={"affectedAmount"}
+                        type={"number"}
+                        placeholder={"Cantidad afectada"}
+                        label={"Cantidad afectada"}
                       />
                     </GridItem>
                   </Grid>
@@ -150,18 +162,6 @@ const InventoryTransactionAddEditForm = (props: Props) => {
                       />
                     </GridItem>
                   </Grid>
-                  <Grid mb={4}>
-                    <GridItem>
-                      <MyInput
-                        register={register}
-                        formState={formState}
-                        field={"affectedAmount"}
-                        type={"number"}
-                        placeholder={"Cantidad afectada"}
-                        label={"Cantidad afectada"}
-                      />
-                    </GridItem>
-                  </Grid>
 
                   <Stack
                     spacing={3}
@@ -191,7 +191,7 @@ const InventoryTransactionAddEditForm = (props: Props) => {
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default InventoryTransactionAddEditForm
+export default InventoryTransactionAddEditForm;

@@ -1,15 +1,15 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // types
 import {
   IInventoryTransactionLessRelatedBulk,
   TransactionReason,
   TransactionType,
-} from "./types"
-import { IAssetFullCategory } from "../assets/types"
-import { inventoryTransactionBulkSchema } from "./inventoryTransactionSchema"
+} from "./types";
+import { IAssetFullCategory } from "../assets/types";
+import { inventoryTransactionBulkSchema } from "./inventoryTransactionSchema";
 
 import {
   Grid,
@@ -37,22 +37,21 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { DeleteIcon } from "@chakra-ui/icons"
+import { DeleteIcon } from "@chakra-ui/icons";
 
 // components
-import Loading from "../common/Loading"
-import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
-
+import Loading from "../common/Loading";
+import MyInput from "../ui/inputs/MyInput";
+import MySelect from "../ui/inputs/MySelect";
 
 interface Props {
-  onSubmit: SubmitHandler<IInventoryTransactionLessRelatedBulk>
-  onCancelOperation: () => void
-  isEditing: boolean
-  isLoading: boolean
-  assets: IAssetFullCategory[]
+  onSubmit: SubmitHandler<IInventoryTransactionLessRelatedBulk>;
+  onCancelOperation: () => void;
+  isEditing: boolean;
+  isLoading: boolean;
+  assets: IAssetFullCategory[];
 }
 
 const InventoryTransactionAddBulkForm = ({
@@ -65,34 +64,33 @@ const InventoryTransactionAddBulkForm = ({
     useForm<IInventoryTransactionLessRelatedBulk>({
       resolver: zodResolver(inventoryTransactionBulkSchema),
       values: {
-        inventoryTransactions: [{
-          asset: '',
-          affectedAmount:
-            undefined,
-          transactionType:
-            TransactionType.UP,
-          transactionReason:
-            TransactionReason.BUY,
-        }],
+        inventoryTransactions: [
+          {
+            asset: "",
+            affectedAmount: undefined,
+            transactionType: TransactionType.UP,
+            transactionReason: TransactionReason.BUY,
+          },
+        ],
       },
-    })
+    });
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // suscripción para los fields
-  const inventoryTransactions = watch()
+  const inventoryTransactions = watch();
 
   const { fields, remove, append } = useFieldArray({
     name: "inventoryTransactions",
     control,
-  })
+  });
 
   const getTransactinTypeOptions = () => {
     return [
       { _id: "UP", name: "Aumentar" },
       { _id: "DOWN", name: "Disminuir" },
-    ]
-  }
+    ];
+  };
 
   const getTransactinReasonOptions = () => {
     return [
@@ -104,16 +102,15 @@ const InventoryTransactionAddBulkForm = ({
       { _id: "DEFEATED", name: "Vencido" },
       { _id: "LOSS", name: "Pérdida" },
       { _id: "INTERNAL_USAGE", name: "Uso interno" },
-    ]
-  }
+    ];
+  };
 
   const getNoOptionMessage = () => {
     if (assets?.length === 0) {
-      return "Todos los insumos ya tienen inventario"
+      return "Todos los insumos ya tienen inventario";
     }
-    return "No hay datos"
-  }
-
+    return "No hay datos";
+  };
 
   return (
     <>
@@ -127,7 +124,6 @@ const InventoryTransactionAddBulkForm = ({
                   Agregar transacciones:
                 </Heading>
                 <form noValidate onSubmit={handleSubmit(onSubmit)}>
-
                   {fields.map((field, index) => {
                     return (
                       <Flex key={index} direction={"column"} gap={1}>
@@ -155,6 +151,14 @@ const InventoryTransactionAddBulkForm = ({
                                     isRequired={true}
                                     noOptionsMessage={getNoOptionMessage()}
                                   />
+                                  <MyInput
+                                    formState={formState}
+                                    register={register}
+                                    field={`inventoryTransactions.${index}.affectedAmount`}
+                                    type={"number"}
+                                    placeholder={"Cantidad"}
+                                    label={"Cantidad"}
+                                  />
                                   <MySelect
                                     field={`inventoryTransactions.${index}.transactionType`}
                                     formState={formState}
@@ -176,14 +180,6 @@ const InventoryTransactionAddBulkForm = ({
                                     data={getTransactinReasonOptions()}
                                     isRequired={true}
                                     noOptionsMessage={getNoOptionMessage()}
-                                  />
-                                  <MyInput
-                                    formState={formState}
-                                    register={register}
-                                    field={`inventoryTransactions.${index}.affectedAmount`}
-                                    type={"number"}
-                                    placeholder={"Cantidad"}
-                                    label={"Cantidad"}
                                   />
                                 </SimpleGrid>
                               </GridItem>
@@ -207,7 +203,7 @@ const InventoryTransactionAddBulkForm = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    )
+                    );
                   })}
                   <Button
                     key={"addRows"}
@@ -215,29 +211,28 @@ const InventoryTransactionAddBulkForm = ({
                     size={"sm"}
                     colorScheme="blue"
                     alignSelf={"start"}
-                    onClick={() => append({
-                      asset: '',
-                      affectedAmount:
-                        undefined,
-                      transactionType:
-                        TransactionType.UP,
-                      transactionReason:
-                        TransactionReason.BUY,
-                    })}
+                    onClick={() =>
+                      append({
+                        asset: "",
+                        affectedAmount: undefined,
+                        transactionType: TransactionType.UP,
+                        transactionReason: TransactionReason.BUY,
+                      })
+                    }
                   >
                     Agregar item
                   </Button>
 
-
-                  <Modal size={'xl'} isOpen={isOpen} onClose={onClose}>
+                  <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent>
                       <ModalHeader>¿Estás seguro de guardar?</ModalHeader>
                       <ModalCloseButton />
                       <ModalBody>
-                        {inventoryTransactions.inventoryTransactions.at(0)?.asset !== '' && (
+                        {inventoryTransactions.inventoryTransactions.at(0)
+                          ?.asset !== "" && (
                           <TableContainer>
-                            <Table variant='simple'>
+                            <Table variant="simple">
                               <Thead>
                                 <Tr>
                                   <Th>Insumo</Th>
@@ -247,30 +242,69 @@ const InventoryTransactionAddBulkForm = ({
                                 </Tr>
                               </Thead>
                               <Tbody>
-                                {inventoryTransactions.inventoryTransactions.map(inventoryTransaction => {
-                                  return (
-                                    <Tr key={inventoryTransaction.asset}>
-                                      <Td>{assets?.find(asset => asset._id === inventoryTransaction.asset)?.name}</Td>
-                                      <Td>{getTransactinTypeOptions()?.find(transaction => transaction?._id === inventoryTransaction?.transactionType)?.name}</Td>
-                                      <Td>{getTransactinReasonOptions()?.find(transaction => transaction?._id === inventoryTransaction?.transactionReason)?.name}</Td>
-                                      <Td isNumeric>{String(inventoryTransaction?.affectedAmount) === 'NaN' ? '' : String(inventoryTransaction?.affectedAmount)}</Td>
-                                    </Tr>
-                                  )
-                                })}
+                                {inventoryTransactions.inventoryTransactions.map(
+                                  (inventoryTransaction) => {
+                                    return (
+                                      <Tr key={inventoryTransaction.asset}>
+                                        <Td>
+                                          {
+                                            assets?.find(
+                                              (asset) =>
+                                                asset._id ===
+                                                inventoryTransaction.asset,
+                                            )?.name
+                                          }
+                                        </Td>
+                                        <Td>
+                                          {
+                                            getTransactinTypeOptions()?.find(
+                                              (transaction) =>
+                                                transaction?._id ===
+                                                inventoryTransaction?.transactionType,
+                                            )?.name
+                                          }
+                                        </Td>
+                                        <Td>
+                                          {
+                                            getTransactinReasonOptions()?.find(
+                                              (transaction) =>
+                                                transaction?._id ===
+                                                inventoryTransaction?.transactionReason,
+                                            )?.name
+                                          }
+                                        </Td>
+                                        <Td isNumeric>
+                                          {String(
+                                            inventoryTransaction?.affectedAmount,
+                                          ) === "NaN"
+                                            ? ""
+                                            : String(
+                                                inventoryTransaction?.affectedAmount,
+                                              )}
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  },
+                                )}
                               </Tbody>
                             </Table>
-
                           </TableContainer>
                         )}
                       </ModalBody>
 
                       <ModalFooter>
-                        <Button mr={3} isLoading={isLoading} onClick={handleSubmit(onSubmit)}
+                        <Button
+                          mr={3}
+                          isLoading={isLoading}
+                          onClick={handleSubmit(onSubmit)}
                           colorScheme="purple"
-                          variant="solid">
+                          variant="solid"
+                        >
                           Sí, seguro
                         </Button>
-                        <Button onClick={onClose} variant='ghost'>Cancelar</Button>
+                        <Button onClick={onClose} variant="ghost">
+                          Cancelar
+                        </Button>
                       </ModalFooter>
                     </ModalContent>
                   </Modal>
@@ -300,13 +334,11 @@ const InventoryTransactionAddBulkForm = ({
                 </form>
               </CardBody>
             </Card>
-
-
           </GridItem>
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default InventoryTransactionAddBulkForm
+export default InventoryTransactionAddBulkForm;
