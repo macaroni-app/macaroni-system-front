@@ -7,5 +7,5 @@ export default defineConfig({
   build: {
     outDir: 'dist'
   },
-  base: './', // Ruta base relativa
+  base: '/', // Assets absolutos para BrowserRouter en Vercel
 })
