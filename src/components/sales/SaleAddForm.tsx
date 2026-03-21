@@ -1,11 +1,11 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // types
-import { ISaleLessRelated, ISaleFullRelated, ISaleItemOmitSale } from "./types"
+import { ISaleLessRelated, ISaleFullRelated, ISaleItemOmitSale } from "./types";
 
-import { saleSchema } from "./saleSchema"
+import { saleSchema } from "./saleSchema";
 
 import {
   Grid,
@@ -24,26 +24,26 @@ import {
   Checkbox,
   FormLabel,
   Input,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { DeleteIcon } from "@chakra-ui/icons"
+import { DeleteIcon } from "@chakra-ui/icons";
 
 // components
-import Loading from "../common/Loading"
-import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
-import { IProductFullRelated } from "../products/types"
-import { IClient } from "../clients/types"
-import { IPaymentMethod } from "../paymentMethods/types"
+import Loading from "../common/Loading";
+import MyInput from "../ui/inputs/MyInput";
+import MySelect from "../ui/inputs/MySelect";
+import { IProductFullRelated } from "../products/types";
+import { IClient } from "../clients/types";
+import { IPaymentMethod } from "../paymentMethods/types";
 
 interface Props {
-  onSubmit: SubmitHandler<ISaleLessRelated>
-  onCancelOperation: () => void
-  saleToUpdate?: ISaleFullRelated
-  products?: IProductFullRelated[]
-  clients?: IClient[]
-  paymentMethods?: IPaymentMethod[]
-  isLoading: boolean
+  onSubmit: SubmitHandler<ISaleLessRelated>;
+  onCancelOperation: () => void;
+  saleToUpdate?: ISaleFullRelated;
+  products?: IProductFullRelated[];
+  clients?: IClient[];
+  paymentMethods?: IPaymentMethod[];
+  isLoading: boolean;
 }
 
 const SaleFormAdd = ({
@@ -68,32 +68,39 @@ const SaleFormAdd = ({
         isRetail: saleToUpdate?.isRetail || true,
         total: saleToUpdate?.total || undefined,
         discount: saleToUpdate?.discount || undefined,
+        client:
+          saleToUpdate?.client?._id ||
+          clients?.filter((client) => client.name === "Consumidor Final").at(0)
+            ?._id,
+        paymentMethod:
+          saleToUpdate?.paymentMethod?._id ||
+          paymentMethods?.filter((pm) => pm.name === "Contado").at(0)?._id,
         saleItems: [{ product: "", quantity: 1 }],
       },
-    })
+    });
 
   // suscripción para los fields
-  const sale = watch()
+  const sale = watch();
 
   const { fields, remove, append } = useFieldArray({
     name: "saleItems",
     control,
-  })
+  });
 
   const getTotalSale = () => {
-    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product)
+    let productIds = sale?.saleItems?.map((saleItem) => saleItem.product);
 
-    let productWithSalePrice: IProductFullRelated[] = []
+    let productWithSalePrice: IProductFullRelated[] = [];
 
     productIds?.forEach((productId) =>
       products?.forEach((product) => {
         if (product._id === productId) {
-          productWithSalePrice.push(product)
+          productWithSalePrice.push(product);
         }
-      })
-    )
+      }),
+    );
 
-    let productWithQuantity: ISaleItemOmitSale[] = []
+    let productWithQuantity: ISaleItemOmitSale[] = [];
 
     productWithSalePrice.forEach((product) => {
       sale.saleItems?.forEach((saleItem) => {
@@ -101,10 +108,10 @@ const SaleFormAdd = ({
           productWithQuantity.push({
             product,
             quantity: saleItem.quantity,
-          })
+          });
         }
-      })
-    })
+      });
+    });
 
     let totalSale = productWithQuantity
       ?.map((productWithQ) => {
@@ -116,53 +123,58 @@ const SaleFormAdd = ({
             return (
               Number(productWithQ.product.retailsalePrice) *
               Number(productWithQ.quantity)
-            )
+            );
           }
           return (
             Number(productWithQ.product.wholesalePrice) *
             Number(productWithQ.quantity)
-          )
+          );
         }
       })
       .reduce((acc, currentValue) => {
         if (acc !== undefined && currentValue !== undefined) {
-          return acc + currentValue
+          return acc + currentValue;
         }
-      }, 0)
+      }, 0);
 
     // aplico descuento
-    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+    let discount =
+      sale?.discount !== undefined && !isNaN(sale?.discount)
+        ? sale?.discount / 100
+        : 0;
 
-    let totalSaleWithDiscount = totalSale !== undefined ? totalSale - (totalSale * discount) : 0
+    let totalSaleWithDiscount =
+      totalSale !== undefined ? totalSale - totalSale * discount : 0;
 
-    return totalSaleWithDiscount
-  }
+    return totalSaleWithDiscount;
+  };
 
   const getSubtotal = (index: number) => {
+    let subtotal: number = 0;
 
-    let subtotal: number = 0
-
-    products?.filter(product => {
+    products?.filter((product) => {
       if (product._id === sale.saleItems?.at(index)?.product) {
-
-        let quantity = Number(sale?.saleItems?.at(index)?.quantity)
+        let quantity = Number(sale?.saleItems?.at(index)?.quantity);
 
         if (sale !== undefined && sale?.isRetail) {
-          subtotal = Number(product?.retailsalePrice) * quantity
+          subtotal = Number(product?.retailsalePrice) * quantity;
         } else {
-          subtotal = Number(product?.wholesalePrice) * quantity
+          subtotal = Number(product?.wholesalePrice) * quantity;
         }
       }
-    })
+    });
 
     // aplico descuento
-    let discount = sale?.discount !== undefined && !isNaN(sale?.discount) ? (sale?.discount / 100) : 0
+    let discount =
+      sale?.discount !== undefined && !isNaN(sale?.discount)
+        ? sale?.discount / 100
+        : 0;
 
-    let subTotalWithDiscount = subtotal !== undefined ? subtotal - (subtotal * discount) : 0
+    let subTotalWithDiscount =
+      subtotal !== undefined ? subtotal - subtotal * discount : 0;
 
-    return subTotalWithDiscount
-  }
-
+    return subTotalWithDiscount;
+  };
 
   return (
     <>
@@ -207,7 +219,7 @@ const SaleFormAdd = ({
                       <MyInput
                         formState={formState}
                         register={register}
-                        field={'discount'}
+                        field={"discount"}
                         type={"number"}
                         placeholder={"Descuento"}
                         label={"Descuento"}
@@ -305,9 +317,7 @@ const SaleFormAdd = ({
                                       style: "currency",
                                       minimumFractionDigits: 2,
                                       currency: "ARS",
-                                    }).format(
-                                      getSubtotal(index)
-                                    )}
+                                    }).format(getSubtotal(index))}
                                   </Text>
                                 </SimpleGrid>
                               </GridItem>
@@ -331,7 +341,7 @@ const SaleFormAdd = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    )
+                    );
                   })}
                   <Button
                     key={"addRows"}
@@ -343,7 +353,6 @@ const SaleFormAdd = ({
                   >
                     Agregar item
                   </Button>
-
                   <Stack
                     mt={6}
                     spacing={3}
@@ -373,7 +382,7 @@ const SaleFormAdd = ({
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default SaleFormAdd
+export default SaleFormAdd;
