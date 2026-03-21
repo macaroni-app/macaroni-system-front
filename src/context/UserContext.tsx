@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from "react"
+import { createContext, useEffect, useState, ReactNode } from "react"
 import { IAuth } from "./types"
 
 interface Props {
@@ -12,6 +12,12 @@ export const UserContextProvider = ({ children }: Props) => {
   const [persist, setPersist] = useState<boolean>(
     JSON.parse(localStorage.getItem("persist") as string) || true
   )
+
+  useEffect(() => {
+    if (auth.accessToken) {
+      sessionStorage.setItem("hadAuthenticatedSession", "true")
+    }
+  }, [auth.accessToken])
 
   return (
     <UserContext.Provider

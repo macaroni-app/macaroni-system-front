@@ -6,12 +6,14 @@ import Home from "./components/common/Home";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import PersistLogin from "./components/auth/PersistLogin";
 import PublicRoute from "./components/auth/PublicRoute";
+import AuthSessionHandler from "./components/auth/AuthSessionHandler";
 
 import ProfileBase from "./components/common/permissions";
 
 function App(): JSX.Element {
   return (
     <div>
+      <AuthSessionHandler />
       <Routes>
         <Route element={<PersistLogin />}>
           {/* public routes */}

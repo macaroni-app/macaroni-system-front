@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import useRefreshToken from "./useRefreshToken"
 import { useAuthContext } from "./useAuthContext"
 import { IUserContext } from "../context/types"
+import { emitAuthSessionExpired } from "../utils/authSession"
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken()
@@ -11,7 +12,7 @@ const useAxiosPrivate = () => {
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
-        if (!config.headers["Authorization"]) {
+        if (!config.headers["Authorization"] && auth?.accessToken) {
           config.headers["Authorization"] = `Bearer ${auth?.accessToken}`
         }
         return config
@@ -24,11 +25,21 @@ const useAxiosPrivate = () => {
       async (error) => {
         const prevRequest = error?.config
         if (error?.response?.status === 403 && !prevRequest?.sent) {
-          prevRequest.sent = true
-          const newAccessToken = await refresh()
-          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`
-          return axiosPrivate(prevRequest)
+          try {
+            prevRequest.sent = true
+            const newAccessToken = await refresh()
+            prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`
+            return axiosPrivate(prevRequest)
+          } catch (refreshError) {
+            emitAuthSessionExpired({ reason: "expired" })
+            return Promise.reject(refreshError)
+          }
         }
+
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          emitAuthSessionExpired({ reason: "unauthorized" })
+        }
+
         return Promise.reject(error)
       }
     )
