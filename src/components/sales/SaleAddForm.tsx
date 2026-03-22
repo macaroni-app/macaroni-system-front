@@ -24,6 +24,7 @@ import {
   Checkbox,
   FormLabel,
   Input,
+  CardHeader,
 } from "@chakra-ui/react";
 
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -359,6 +360,65 @@ const SaleFormAdd = ({
                     direction={{ base: "column", md: "row" }}
                     justifyContent={"end"}
                   >
+                    <Grid mb={4}>
+                      <GridItem>
+                        <FormControl>
+                          <Divider orientation="horizontal" />
+                        </FormControl>
+                      </GridItem>
+                    </Grid>
+                    <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
+                      <GridItem colSpan={{ base: 12, md: 6 }}></GridItem>
+                      <GridItem colSpan={{ base: 12, md: 6 }}>
+                        <Card size="sm" display={{ base: "block", md: "none" }}>
+                          <CardHeader>
+                            <Heading textAlign={"center"} size="md">
+                              Total:
+                            </Heading>
+                          </CardHeader>
+                          <CardBody
+                            color="fg.muted"
+                            fontSize={"xl"}
+                            fontWeight={"bold"}
+                            textAlign={"center"}
+                            padding={0}
+                          >
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              minimumFractionDigits: 2,
+                              currency: "ARS",
+                            }).format(getTotalSale() || 0)}
+                          </CardBody>
+                        </Card>
+                        <Card size="sm" display={{ base: "none", md: "block" }}>
+                          <Stack
+                            direction={"row"}
+                            justifyContent={"end"}
+                            alignItems={"center"}
+                            paddingX={4}
+                          >
+                            <CardHeader>
+                              <Heading textAlign={"center"} size="md">
+                                Total:
+                              </Heading>
+                            </CardHeader>
+                            <CardBody
+                              color="fg.muted"
+                              fontSize={"xl"}
+                              fontWeight={"bold"}
+                              textAlign={"center"}
+                              padding={0}
+                            >
+                              {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                minimumFractionDigits: 2,
+                                currency: "ARS",
+                              }).format(getTotalSale() || 0)}
+                            </CardBody>
+                          </Stack>
+                        </Card>
+                      </GridItem>
+                    </Grid>
                     <Button
                       isLoading={isLoading}
                       type="submit"
