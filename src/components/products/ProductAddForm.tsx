@@ -1,15 +1,15 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // types
 import {
   IProductItemOmitProduct,
   IProductFullRelated,
   IProductLessRelated,
-} from "./types"
+} from "./types";
 
-import { productSchema } from "./productSchema"
+import { productSchema } from "./productSchema";
 
 import {
   Grid,
@@ -27,26 +27,26 @@ import {
   Divider,
   Input,
   FormLabel,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import { DeleteIcon } from "@chakra-ui/icons"
+import { DeleteIcon } from "@chakra-ui/icons";
 
 // components
-import Loading from "../common/Loading"
-import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
-import { ICategory } from "../categories/types"
-import { IProductTypeType } from "../productTypes/types"
-import { IAssetFullCategory } from "../assets/types"
+import Loading from "../common/Loading";
+import MyInput from "../ui/inputs/MyInput";
+import MySelect from "../ui/inputs/MySelect";
+import { ICategory } from "../categories/types";
+import { IProductTypeType } from "../productTypes/types";
+import { IAssetFullCategory } from "../assets/types";
 
 interface Props {
-  onSubmit: SubmitHandler<IProductLessRelated>
-  onCancelOperation: () => void
-  productToUpdate?: IProductFullRelated
-  categories?: ICategory[]
-  productTypes?: IProductTypeType[]
-  assets?: IAssetFullCategory[]
-  isLoading: boolean
+  onSubmit: SubmitHandler<IProductLessRelated>;
+  onCancelOperation: () => void;
+  productToUpdate?: IProductFullRelated;
+  categories?: ICategory[];
+  productTypes?: IProductTypeType[];
+  assets?: IAssetFullCategory[];
+  isLoading: boolean;
 }
 
 const ProductFormAdd = ({
@@ -71,34 +71,38 @@ const ProductFormAdd = ({
         name: productToUpdate?.name || "",
         wholesalePrice: productToUpdate?.wholesalePrice || undefined,
         retailsalePrice: productToUpdate?.retailsalePrice || undefined,
+        category:
+          productToUpdate?.category?._id ||
+          categories?.filter((category) => category.name === "Comida").at(0)
+            ?._id,
         productItems: [{ asset: "", quantity: 1 }],
       },
-    })
+    });
 
   // suscripción para los fields
-  const product = watch()
+  const product = watch();
 
   const { fields, remove, append } = useFieldArray({
     name: "productItems",
     control,
-  })
+  });
 
   const getCostTotal = () => {
     let assetIds = product?.productItems?.map(
-      (productItem) => productItem.asset
-    )
+      (productItem) => productItem.asset,
+    );
 
-    let assetWithCostPrice: IAssetFullCategory[] = []
+    let assetWithCostPrice: IAssetFullCategory[] = [];
 
     assetIds?.forEach((assetId) =>
       assets?.forEach((asset) => {
         if (asset._id === assetId) {
-          assetWithCostPrice.push(asset)
+          assetWithCostPrice.push(asset);
         }
-      })
-    )
+      }),
+    );
 
-    let assetWithQuantity: IProductItemOmitProduct[] = []
+    let assetWithQuantity: IProductItemOmitProduct[] = [];
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {
@@ -106,10 +110,10 @@ const ProductFormAdd = ({
           assetWithQuantity.push({
             asset,
             quantity: productItem.quantity,
-          })
+          });
         }
-      })
-    })
+      });
+    });
 
     let totalCost = assetWithQuantity
       ?.map((assetWithQ) => {
@@ -117,48 +121,48 @@ const ProductFormAdd = ({
           assetWithQ.asset?.costPrice !== undefined &&
           assetWithQ.quantity !== undefined
         ) {
-          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity)
+          return assetWithQ.asset.costPrice * Number(assetWithQ.quantity);
         }
       })
       .reduce((acc, currentValue) => {
         if (acc !== undefined && currentValue !== undefined) {
-          return acc + currentValue
+          return acc + currentValue;
         }
-      }, 0)
+      }, 0);
 
-    return totalCost
-  }
+    return totalCost;
+  };
 
   const getCostSubtotal = (index: number) => {
     if (assets !== undefined && product !== undefined && index !== undefined) {
       const assetLine =
         assets?.filter((asset) => {
           if (asset?._id === product?.productItems?.at(index)?.asset) {
-            return asset?.costPrice
+            return asset?.costPrice;
           }
-        })[0]?.costPrice || 0
+        })[0]?.costPrice || 0;
 
-      const quantityLine = product.productItems?.at(index)?.quantity || 0
-      return assetLine * Number(quantityLine)
+      const quantityLine = product.productItems?.at(index)?.quantity || 0;
+      return assetLine * Number(quantityLine);
     }
-  }
+  };
 
   const getRevenuePorcentage = () => {
-    const costTotal = getCostTotal()
+    const costTotal = getCostTotal();
 
     const revenuePorcentage = Number(
       (
         ((Number(product?.wholesalePrice) - Number(costTotal)) /
           Number(costTotal)) *
         100
-      ).toFixed(2)
-    )
+      ).toFixed(2),
+    );
 
     if (revenuePorcentage > 0 && revenuePorcentage !== Infinity) {
-      return revenuePorcentage
+      return revenuePorcentage;
     }
-    return 0
-  }
+    return 0;
+  };
 
   return (
     <>
@@ -349,7 +353,7 @@ const ProductFormAdd = ({
                           </CardBody>
                         </Card>
                       </Flex>
-                    )
+                    );
                   })}
                   <Button
                     key={"addRows"}
@@ -391,7 +395,7 @@ const ProductFormAdd = ({
         </Grid>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ProductFormAdd
+export default ProductFormAdd;
