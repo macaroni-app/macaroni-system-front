@@ -251,7 +251,7 @@ const OrderRequestForm = () => {
         queryPaymentMethods.isLoading
       }
       products={products}
-      clients={clients}
+      clients={clients?.filter((client) => client.isActive)}
       paymentMethods={paymentMethods}
     />
   )

@@ -75,10 +75,7 @@ const OrderRequestAddForm = ({
       isRetail: orderRequestToUpdate?.isRetail ?? false,
       total: orderRequestToUpdate?.total,
       discount: Number(orderRequestToUpdate?.discount ?? 0),
-      client:
-        orderRequestToUpdate?.client?._id ??
-        clients?.find((client) => client.name === "Consumidor Final")?._id ??
-        "",
+      client: orderRequestToUpdate?.client?._id ?? "",
       items:
         orderRequestToUpdate?.items?.map((item) => ({
           id: item._id,
@@ -89,7 +86,7 @@ const OrderRequestAddForm = ({
       initialPaymentMethod: "",
       initialPaymentNote: "",
     })
-  }, [clients, orderRequestToUpdate, reset])
+  }, [orderRequestToUpdate, reset])
 
   const orderRequest = watch()
 
