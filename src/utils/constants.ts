@@ -6,3 +6,6 @@ export const RECORD_UPDATED = "Registro actualizado.";
 export const ASSET_DELETED = "Se eliminó el insumo correctamente"
 export const PRODUCT_DELETED = "Se eliminó el producto correctamente"
 export const SALE_CANCELLED = "Se anuló la venta correctamente"
+export const ORDER_REQUEST_CANCELLED = "Se anuló el pedido correctamente"
+export const ORDER_REQUEST_CONFIRMED = "Se confirmó el pedido correctamente"
+export const ORDER_REQUEST_CONVERTED = "El pedido se convirtió en venta correctamente"

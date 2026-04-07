@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import {
+  Badge,
   Grid,
   GridItem,
   Card,
@@ -90,6 +91,9 @@ const Inventory = ({ inventory }: Props) => {
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const quantityAvailable = Number(inventory.quantityAvailable ?? 0)
+  const quantityReserved = Number(inventory.quantityReserved ?? 0)
+  const quantitySellable = quantityAvailable - quantityReserved
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -98,13 +102,30 @@ const Inventory = ({ inventory }: Props) => {
           <Grid templateColumns="repeat(6, 1fr)" gap={2} alignItems="center">
             <GridItem colSpan={5}>
               <Flex direction="column" gap={2}>
-                <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
-                  {inventory?.asset?.name}
+                <Flex alignItems="center" gap={2} wrap="wrap">
+                  <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
+                    {inventory?.asset?.name}
+                  </Text>
+                  {quantityReserved > 0 && (
+                    <Badge colorScheme="orange">Con reserva</Badge>
+                  )}
+                </Flex>
+                <Text fontSize="xs" align="start">
+                  Stock fisico:{" "}
+                  <Text fontWeight={"bold"} as={"span"}>
+                    {quantityAvailable}
+                  </Text>
                 </Text>
                 <Text fontSize="xs" align="start">
-                  Cantidad disponible:{" "}
-                  <Text fontWeight={"bold"} as={"span"}>
-                    {inventory.quantityAvailable}
+                  Reservado:{" "}
+                  <Text fontWeight={"bold"} as={"span"} color={quantityReserved > 0 ? "orange.500" : undefined}>
+                    {quantityReserved}
+                  </Text>
+                </Text>
+                <Text fontSize="xs" align="start">
+                  Vendible ahora:{" "}
+                  <Text fontWeight={"bold"} as={"span"} color={quantitySellable > 0 ? "green.600" : "red.500"}>
+                    {quantitySellable}
                   </Text>
                 </Text>
               </Flex>

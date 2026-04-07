@@ -3,6 +3,7 @@ import { IGenericObject } from "../common/types"
 
 export interface IInventoryFather extends IGenericObject{
   quantityAvailable?: number
+  quantityReserved?: number
 }
 
 export interface IInventoryFullRelated extends IInventoryFather{

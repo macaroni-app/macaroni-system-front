@@ -13,6 +13,11 @@ export interface Error {
   stack?: string
   response?: {
     status?: number
+    data?: {
+      message?: string
+    } | Array<{
+      message?: string
+    }>
   }
 }
 
@@ -24,9 +29,15 @@ export const useError = () => {
       emitAuthSessionExpired({ reason: "unauthorized" })
       return
     }
-    if (error?.response?.status === 400) {
+
+    if (error?.response?.status === 400 || error?.response?.status === 404 || error?.response?.status === 409) {
+      const errorData = error?.response?.data
+      const responseMessage = Array.isArray(errorData)
+        ? errorData[0]?.message
+        : errorData?.message
+
       showMessage(
-        SOMETHING_WENT_WRONG_MESSAGE,
+        responseMessage ?? SOMETHING_WENT_WRONG_MESSAGE,
         AlertStatus.Error,
         AlertColorScheme.Red
       )

@@ -37,6 +37,7 @@ const MySelect = (props: Props) => {
     label,
     data,
     control,
+    isDisabled,
     isRequired,
     noOptionsMessage,
     objectName
@@ -70,6 +71,7 @@ const MySelect = (props: Props) => {
             defaultValue={value}
             value={options?.filter((option: Option) => option.value === value)}
             name={name}
+            isDisabled={isDisabled}
             isClearable={true}
             required={isRequired}
             noOptionsMessage={() => noOptionsMessage}

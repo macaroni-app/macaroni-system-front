@@ -1,6 +1,8 @@
 export interface IFilters {
   filters: {
     id?: string
+    orderCode?: string
+    clientName?: string
   }
 }
 

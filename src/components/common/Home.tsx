@@ -22,6 +22,9 @@ import Header from "./Header"
 import Sales from "../sales/Sales"
 import SaleForm from "../sales/SaleForm"
 import SaleDetails from "../sales/SaleDetails"
+import OrderRequests from "../orderRequests/OrderRequests"
+import OrderRequestForm from "../orderRequests/OrderRequestForm"
+import OrderRequestDetails from "../orderRequests/OrderRequestDetails"
 import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
 import ProductTypes from "../productTypes/ProductTypes"
@@ -122,6 +125,40 @@ const Home = () => {
           element={<ProtectedRoute allowedRoles={ProfileBase.sales.view} />}
         >
           <Route path="/sales/:saleId/details" element={<SaleDetails />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.orderRequests.view} />}
+        >
+          <Route
+            path="/orderRequests"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <OrderRequests />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.orderRequests.create} />}
+        >
+          <Route path="/orderRequests/add" element={<OrderRequestForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.orderRequests.edit} />}
+        >
+          <Route path="/orderRequests/:orderRequestId/edit" element={<OrderRequestForm />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={ProfileBase.orderRequests.view} />}
+        >
+          <Route path="/orderRequests/:orderRequestId/details" element={<OrderRequestDetails />} />
         </Route>
 
         {/* PRODUCTS */}

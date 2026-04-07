@@ -54,6 +54,14 @@ const HeaderMenu = (): JSX.Element => {
         {checkRole(ProfileBase.sales.view) && (
           <MenuItem onClick={() => navigate("/sales")}>Ventas</MenuItem>
         )}
+        {checkRole(ProfileBase.orderRequests.create) && (
+          <MenuItem onClick={() => navigate("/orderRequests/add")}>
+            Nuevo pedido
+          </MenuItem>
+        )}
+        {checkRole(ProfileBase.orderRequests.view) && (
+          <MenuItem onClick={() => navigate("/orderRequests")}>Pedidos</MenuItem>
+        )}
         {checkRole(ProfileBase.products.view) && (
           <MenuItem onClick={() => navigate("/products")}>Productos</MenuItem>
         )}
