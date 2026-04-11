@@ -1,17 +1,11 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import {
-  Chart as ChartJS,
-  LinearScale,
-  CategoryScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Legend,
-  Tooltip,
-  Title,
-} from "chart.js"
-import { Line } from "react-chartjs-2"
+  AreaSeries,
+  ColorType,
+  createChart,
+  type AreaData,
+} from "lightweight-charts"
 import {
   Text,
   Card,
@@ -22,6 +16,8 @@ import {
   Button,
   CardHeader,
   Heading,
+  Box,
+  Link,
 } from "@chakra-ui/react"
 
 // custom hooks
@@ -35,16 +31,85 @@ import { ISaleFullRelated } from "../sales/types"
 
 import { groupSalesByMonth, MonthData } from "../../utils/reports"
 
-ChartJS.register(
-  LinearScale,
-  CategoryScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Legend,
-  Tooltip,
-  Title
-)
+interface ProfitAreaChartProps {
+  profitRecords: MonthData[]
+}
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    minimumFractionDigits: 2,
+    currency: "USD",
+  }).format(amount)
+}
+
+const getMonthTime = (profitRecord: MonthData) => {
+  return `${profitRecord.year}-${String(profitRecord.month).padStart(2, "0")}-01`
+}
+
+const ProfitAreaChart = ({ profitRecords }: ProfitAreaChartProps) => {
+  const chartContainerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!chartContainerRef.current) return
+
+    const chart = createChart(chartContainerRef.current, {
+      height: 320,
+      layout: {
+        background: { type: ColorType.Solid, color: "transparent" },
+        textColor: "#4A5568",
+        attributionLogo: false,
+      },
+      grid: {
+        vertLines: { color: "#EDF2F7" },
+        horzLines: { color: "#EDF2F7" },
+      },
+      rightPriceScale: {
+        borderVisible: false,
+      },
+      timeScale: {
+        borderVisible: false,
+        timeVisible: false,
+        secondsVisible: false,
+      },
+      localization: {
+        priceFormatter: (price: number) => formatCurrency(price),
+      },
+    })
+
+    const areaSeries = chart.addSeries(AreaSeries, {
+      lineColor: "#805AD5",
+      topColor: "rgba(128, 90, 213, 0.35)",
+      bottomColor: "rgba(128, 90, 213, 0.02)",
+      lineWidth: 3,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    })
+
+    const chartData: AreaData[] = profitRecords.map((profitRecord) => ({
+      time: getMonthTime(profitRecord),
+      value: Number(profitRecord.total.toFixed(2)),
+    }))
+
+    areaSeries.setData(chartData)
+    chart.timeScale().fitContent()
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      chart.applyOptions({
+        width: Math.floor(entry.contentRect.width),
+      })
+    })
+
+    resizeObserver.observe(chartContainerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+      chart.remove()
+    }
+  }, [profitRecords])
+
+  return <Box ref={chartContainerRef} minH="320px" w="100%" />
+}
 
 
 const LineChart = () => {
@@ -65,27 +130,6 @@ const LineChart = () => {
   })
 
 
-  const options = {
-    responsive: true,
-    type: "Line",
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  }
-
-  const data = {
-    labels: profitRecords?.map(profitRecord => profitRecord.monthName),
-    datasets: [
-      {
-        data: profitRecords?.map(profitRecord => profitRecord.total)
-          .map((current) => current),
-        backgroundColor: ["#805AD5"],
-      },
-    ],
-  }
-
   const profitRecordList = profitRecords?.map((profitRecord) => {
     return (
       <Card key={`${profitRecord.month}-${profitRecord.year}`} variant="outline" mb={3}>
@@ -93,11 +137,7 @@ const LineChart = () => {
           <Flex direction="row" justifyContent={"space-between"}>
             <Text>{profitRecord.monthName} del {profitRecord.year}</Text>
             <Text as={"span"} fontWeight={"bold"}>
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                minimumFractionDigits: 2,
-                currency: "USD",
-              }).format(profitRecord.total)}
+              {formatCurrency(profitRecord.total)}
             </Text>
           </Flex>
         </CardBody>
@@ -130,11 +170,26 @@ const LineChart = () => {
             </Heading>
           </CardHeader>
           <CardBody>
-            <Line options={options} data={data} />
+            <ProfitAreaChart profitRecords={profitRecords} />
+            <Text mt={2} fontSize="xs" color="gray.500" textAlign="right">
+              Gráfico por{" "}
+              <Link
+                href="https://www.tradingview.com/"
+                isExternal
+                color="purple.500"
+              >
+                TradingView
+              </Link>
+            </Text>
           </CardBody>
           <Divider />
           <CardFooter justifyContent={"center"}>
-            <Flex gap={2}>
+            <Flex
+              gap={2}
+              flexWrap="wrap"
+              justifyContent="center"
+              w="100%"
+            >
               <Button
                 onClick={() => setNumberOfMonth(24)}
                 colorScheme="purple"
