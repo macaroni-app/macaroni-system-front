@@ -62,7 +62,7 @@ import BusinessForm from "../businesses/BusinessForm"
 
 const Home = () => {
   return (
-    <>
+    <Box maxW="100vw" overflowX="hidden">
       {import.meta.env.VITE_VERCEL_ENV === "development" && (
         <Box
           bgGradient="linear(to-r, blue.200, blue.500, blue.200)"
@@ -75,6 +75,7 @@ const Home = () => {
         </Box>
       )}
       <Header />
+      <Box pb={{ base: "96px", md: 0 }}>
       <Routes>
         {/* HOME */}
         <Route
@@ -642,7 +643,8 @@ const Home = () => {
         {/* UNAUTHORIZED */}
         <Route path="/notFound" element={<PageNotFound />} />
       </Routes>
-    </>
+      </Box>
+    </Box>
   )
 }
 

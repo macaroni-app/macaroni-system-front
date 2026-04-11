@@ -4,13 +4,17 @@ import HeaderMenu from "./HeaderMenu"
 
 const Header = (): JSX.Element => {
   return (
-    <Box>
+    <Box
+      borderBottom={"1px"}
+      borderBottomColor={"#E2E8F0"}
+      padding={2}
+      pb={{ base: 2, md: 3 }}
+    >
       <Flex
         flex={{ base: 1 }}
         justifyContent={"space-between"}
-        borderBottom={"1px"}
-        borderBottomColor={"#E2E8F0"}
-        padding={2}
+        alignItems={"center"}
+        mb={{ base: 0, md: 2 }}
       >
         <Flex gap={1} placeItems={"center"}>
           <Text
@@ -20,11 +24,9 @@ const Header = (): JSX.Element => {
             MACARONI
           </Text>
         </Flex>
-
-        <Flex ml={10} placeItems={"center"}>
-          <HeaderMenu />
-        </Flex>
       </Flex>
+
+      <HeaderMenu />
     </Box>
   )
 }
