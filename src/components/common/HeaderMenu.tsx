@@ -147,8 +147,15 @@ const HeaderMenu = (): JSX.Element => {
   const allowedItems = navigationItems.filter((item) =>
     checkRole(item.permission)
   )
-  const desktopPrimaryItems = allowedItems.slice(0, 5)
-  const desktopSecondaryItems = allowedItems.slice(5)
+  const hiddenDesktopPaths = ["/sales/add", "/orderRequests/add"]
+  const desktopItems = allowedItems.filter(
+    (item) => !hiddenDesktopPaths.includes(item.path)
+  )
+  const mobileDrawerItems = allowedItems.filter(
+    (item) => !hiddenDesktopPaths.includes(item.path)
+  )
+  const desktopPrimaryItems = desktopItems.slice(0, 5)
+  const desktopSecondaryItems = desktopItems.slice(5)
   const activeItemPath = [...allowedItems]
     .sort((current, next) => next.path.length - current.path.length)
     .find((item) => {
@@ -385,7 +392,7 @@ const HeaderMenu = (): JSX.Element => {
             <DrawerBody>
               <VStack alignItems="stretch" spacing={4}>
                 <SimpleGrid columns={2} spacing={2}>
-                  {allowedItems.map(renderDrawerButton)}
+                  {mobileDrawerItems.map(renderDrawerButton)}
                 </SimpleGrid>
 
                 <Divider />
