@@ -31,6 +31,11 @@ const QuickInventoryReport = () => {
             <Td>{inventory.asset?.name}</Td>
             <Td></Td>
             <Td isNumeric>{inventory.quantityAvailable}</Td>
+            <Td isNumeric>{inventory.quantityReserved}</Td>
+            <Td isNumeric>
+              {Number(inventory.quantityAvailable) -
+                Number(inventory?.quantityReserved)}
+            </Td>
           </Tr>
         );
       }
@@ -41,7 +46,7 @@ const QuickInventoryReport = () => {
       <GridItem colSpan={{ base: 12 }}>
         <Card variant="outline">
           <CardHeader textAlign={"center"}>
-            <Heading size={"lg"}>Stock disponibles</Heading>
+            <Heading size={"lg"}>Inventarios disponibles</Heading>
           </CardHeader>
           <CardBody>
             <TableContainer>
@@ -51,7 +56,9 @@ const QuickInventoryReport = () => {
                   <Tr>
                     <Th>Insumo</Th>
                     <Th></Th>
-                    <Th isNumeric>Stock</Th>
+                    <Th isNumeric>Fisico</Th>
+                    <Th isNumeric>Reservado</Th>
+                    <Th isNumeric>Disponible</Th>
                   </Tr>
                 </Thead>
                 <Tbody>{listInventories}</Tbody>
