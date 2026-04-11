@@ -54,6 +54,8 @@ const MySelect = (props: Props) => {
     }
     return { label: model.name, value: model._id }
   })
+  const menuPortalTarget =
+    typeof document !== "undefined" ? document.body : undefined
 
   return (
     <FormControl
@@ -76,6 +78,11 @@ const MySelect = (props: Props) => {
             required={isRequired}
             noOptionsMessage={() => noOptionsMessage}
             options={options}
+            menuPortalTarget={menuPortalTarget}
+            menuPosition="fixed"
+            styles={{
+              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+            }}
             onBlur={onBlur}
             onChange={(selectedOption) => {
               onChange(selectedOption ? selectedOption.value : "")
