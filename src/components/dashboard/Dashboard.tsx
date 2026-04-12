@@ -13,6 +13,11 @@ import SimpleBoardSkeleton from "./SimpleBoardSkeleton";
 import InventoryTransactionReport from "./InventoryTransactionReport";
 import LineChart from "./LineChart";
 import BarChart from "./BarChart";
+import SalesCostsProfitChart from "./SalesCostsProfitChart";
+import SellableReservedStockChart from "./SellableReservedStockChart";
+import PendingOrderPaymentsChart from "./PendingOrderPaymentsChart";
+import TopSoldProductsChart from "./TopSoldProductsChart";
+import InventoryMovementsByReasonChart from "./InventoryMovementsByReasonChart";
 
 // types
 import { ISaleFullRelated } from "../sales/types";
@@ -178,6 +183,9 @@ const Dashboard = () => {
       )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <>
+          <GridItem colSpan={{ base: 12 }}>
+            <SellableReservedStockChart />
+          </GridItem>
           <GridItem colSpan={{ base: 12, md: 6 }}>
             {queryInventories.isLoading && (
               <SimpleBoardSkeleton numberRows={7} />
@@ -190,10 +198,22 @@ const Dashboard = () => {
             )}
             {!queryInventories.isLoading && <BarChart />}
           </GridItem>
+          <GridItem colSpan={{ base: 12 }}>
+            <InventoryMovementsByReasonChart />
+          </GridItem>
         </>
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
         <>
+          <GridItem colSpan={{ base: 12 }}>
+            <SalesCostsProfitChart />
+          </GridItem>
+          <GridItem colSpan={{ base: 12 }}>
+            <PendingOrderPaymentsChart />
+          </GridItem>
+          <GridItem colSpan={{ base: 12 }}>
+            <TopSoldProductsChart />
+          </GridItem>
           <GridItem colSpan={{ base: 12 }}>
             <LineChart />
           </GridItem>
