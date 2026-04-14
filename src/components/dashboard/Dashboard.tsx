@@ -40,6 +40,13 @@ const Dashboard = () => {
   const totalBillings = Number.parseFloat(
     billings?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2),
   );
+  const billedAmounts = sales
+    ?.filter((sale) => sale.status === "PAID" && sale.isBilled === true)
+    ?.map((sale) => sale?.total) as number[];
+
+  const totalBilled = Number.parseFloat(
+    billedAmounts?.reduce((acc, currentValue) => acc + currentValue, 0).toFixed(2),
+  );
 
   const totalCosts = Number(
     sales
@@ -90,15 +97,34 @@ const Dashboard = () => {
           <GridItem colSpan={{ base: 12, md: 6 }}>
             <Grid templateColumns="repeat(12, 1fr)" gap={3}>
               <GridItem colSpan={{ base: 12 }}>
-                {querySales.isLoading && <SimpleBoardSkeleton numberRows={3} />}
-                {!querySales.isLoading && (
-                  <SimpleBoard
-                    title="Facturación"
-                    amount={totalBillings}
-                    size={billings?.length}
-                    fontColor="black"
-                  />
-                )}
+                <Grid templateColumns="repeat(12, 1fr)" gap={3}>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {querySales.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!querySales.isLoading && (
+                      <SimpleBoard
+                        title="Facturación"
+                        amount={totalBillings}
+                        size={billings?.length}
+                        fontColor="black"
+                      />
+                    )}
+                  </GridItem>
+                  <GridItem colSpan={{ base: 12, md: 6 }}>
+                    {querySales.isLoading && (
+                      <SimpleBoardSkeleton numberRows={3} />
+                    )}
+                    {!querySales.isLoading && (
+                      <SimpleBoard
+                        title="Total facturado"
+                        amount={totalBilled}
+                        size={billedAmounts?.length}
+                        fontColor="black"
+                      />
+                    )}
+                  </GridItem>
+                </Grid>
               </GridItem>
               <GridItem colSpan={{ base: 12 }}>
                 <Grid templateColumns="repeat(12, 1fr)" gap={3}>
