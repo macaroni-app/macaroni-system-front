@@ -9,6 +9,7 @@ interface IFilters {
   clientName?: string
   startDate?: string
   endDate?: string
+  activeOnly?: boolean
 }
 
 const orderRequestService = {
@@ -19,6 +20,8 @@ const orderRequestService = {
       finalUrl = `${ORDER_REQUEST_URL}?orderCode=${encodeURIComponent(filters.orderCode)}`
     } else if (filters.clientName) {
       finalUrl = `${ORDER_REQUEST_URL}?clientName=${encodeURIComponent(filters.clientName)}`
+    } else if (filters.activeOnly) {
+      finalUrl = `${ORDER_REQUEST_URL}?activeOnly=true`
     } else if (!filters.id && filters.startDate && filters.endDate) {
       finalUrl = `${ORDER_REQUEST_URL}?startDate=${filters.startDate}&endDate=${filters.endDate}`
     } else if (filters.id) {

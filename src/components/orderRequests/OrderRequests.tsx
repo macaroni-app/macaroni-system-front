@@ -31,12 +31,14 @@ const OrderRequests = () => {
     startDate: today,
     endDate: today,
   });
+  const [isDateFilterApplied, setIsDateFilterApplied] = useState(false);
 
   const queryOrderRequests = useOrderRequests({
     orderCode: appliedOrderCode || undefined,
     clientName: appliedClientName || undefined,
-    startDate: appliedOrderCode || appliedClientName ? undefined : rangeDate.startDate,
-    endDate: appliedOrderCode || appliedClientName ? undefined : rangeDate.endDate,
+    activeOnly: !appliedOrderCode && !appliedClientName && !isDateFilterApplied,
+    startDate: appliedOrderCode || appliedClientName || !isDateFilterApplied ? undefined : rangeDate.startDate,
+    endDate: appliedOrderCode || appliedClientName || !isDateFilterApplied ? undefined : rangeDate.endDate,
   });
 
   const orderRequests = queryOrderRequests.data as IOrderRequestFullRelated[];
@@ -56,6 +58,7 @@ const OrderRequests = () => {
         startDate: currentRangeDate.startDate,
         endDate: currentRangeDate.endDate,
       });
+      setIsDateFilterApplied(true);
     }
   };
 
@@ -74,6 +77,7 @@ const OrderRequests = () => {
     setAppliedOrderCode("");
     setSearchClientName("");
     setAppliedClientName("");
+    setIsDateFilterApplied(false);
   };
 
   const orderRequestList = orderRequests?.map((orderRequest) => {
@@ -166,6 +170,20 @@ const OrderRequests = () => {
             </CardBody>
           </Card>
           <RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />
+          {isDateFilterApplied && (
+            <Button
+              variant="outline"
+              width="100%"
+              mt={3}
+              onClick={() => {
+                setIsDateFilterApplied(false);
+                setAppliedOrderCode("");
+                setAppliedClientName("");
+              }}
+            >
+              Ver pedidos activos
+            </Button>
+          )}
         </GridItem>
         <GridItem colSpan={{ base: 12, lg: 9 }}>
           {!queryOrderRequests.isLoading &&
@@ -177,6 +195,8 @@ const OrderRequests = () => {
                     ? "No se encontraron pedidos con ese código."
                     : appliedClientName
                       ? "No se encontraron pedidos borrador o confirmados para ese cliente."
+                    : isDateFilterApplied
+                      ? "No se encontraron pedidos para ese rango de fechas."
                     : "No se encontraron resultados."
                 }
               />
