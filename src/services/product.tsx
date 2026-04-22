@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios"
-import { IProductLessRelated } from "../components/products/types"
+import { IProductBulkPriceUpdate, IProductLessRelated } from "../components/products/types"
 
 const PRODUCT_URL = "/api/v1/products"
 
@@ -51,6 +51,19 @@ const productService = {
     const { data } = await axiosPrivate.put(
       `${PRODUCT_URL}/${id}`,
       productToUpdate,
+      {
+        withCredentials: true,
+      }
+    )
+    return data
+  },
+  updateManyPrices: async (
+    products: IProductBulkPriceUpdate[],
+    axiosPrivate: AxiosInstance
+  ) => {
+    const { data } = await axiosPrivate.put(
+      `${PRODUCT_URL}/bulkUpdatePrices`,
+      { products },
       {
         withCredentials: true,
       }

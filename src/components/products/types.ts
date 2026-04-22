@@ -21,6 +21,12 @@ export interface IProductLessRelated extends IProductFather {
   category?: string
 }
 
+export interface IProductBulkPriceUpdate {
+  id: string
+  wholesalePrice: number
+  retailsalePrice: number
+}
+
 export interface IProductItemFather extends IGenericObject {
   quantity?: Number
 }

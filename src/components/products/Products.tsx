@@ -11,6 +11,7 @@ import {
   // FormLabel,
   Input,
   GridItem,
+  Button,
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -36,6 +37,7 @@ import { IProductFullRelated, IProductItemFullRelated } from "./types"
 import NewRecordPanel from "../common/NewRecordPanel"
 
 import ProfileBase from "../common/permissions"
+import { useCheckRole } from "../../hooks/useCheckRole"
 
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
@@ -43,6 +45,7 @@ const Products = () => {
   // );
 
   const [searchValue, setSearchValue] = useState<string>("")
+  const { checkRole } = useCheckRole()
 
   const queryProducts = useProducts({})
   const queryProductItems = useProductItems({})
@@ -59,6 +62,10 @@ const Products = () => {
 
   const handleAddProduct = () => {
     navigate("add")
+  }
+
+  const handleBulkPriceUpdate = () => {
+    navigate("bulk-price-update")
   }
 
   const handleSetSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
@@ -120,6 +127,24 @@ const Products = () => {
             buttonLabel="Nuevo producto"
             roles={ProfileBase.products.create}
           />
+          {checkRole(ProfileBase.products.edit) && (
+            <Card variant="outline" mt={5} mb={3}>
+              <CardBody>
+                <Flex
+                  alignItems={{ base: "stretch", md: "center" }}
+                  direction={{ base: "column", md: "row" }}
+                  gap={3}
+                >
+                  <Text flex={1}>
+                    Actualizá precios por menor y por mayor de varios productos a la vez.
+                  </Text>
+                  <Button colorScheme="purple" onClick={handleBulkPriceUpdate}>
+                    Actualizar precios
+                  </Button>
+                </Flex>
+              </CardBody>
+            </Card>
+          )}
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
               <Flex>

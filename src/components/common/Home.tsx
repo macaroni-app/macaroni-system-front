@@ -32,6 +32,7 @@ import ProductTypeForm from "../productTypes/ProductTypeForm"
 import ProductDetails from "../products/ProductDetails"
 import Products from "../products/Products"
 import ProductForm from "../products/ProductForm"
+import ProductBulkPriceUpdate from "../products/ProductBulkPriceUpdate"
 import Inventories from "../inventories/Inventories"
 import InventoryForm from "../inventories/InventoryForm"
 import InventoryTransactions from "../inventoryTransactions/InventoryTransactions"
@@ -200,6 +201,21 @@ const Home = () => {
         <Route
           element={<ProtectedRoute allowedRoles={ProfileBase.products.edit} />}
         >
+          <Route
+            path="/products/bulk-price-update"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 10 }}
+                  colStart={{ base: 2, md: 2, lg: 2 }}
+                  mb={10}
+                >
+                  <ProductBulkPriceUpdate />
+                </GridItem>
+              </Grid>
+            }
+          />
           <Route path="/products/:productId/edit" element={<ProductForm />} />
         </Route>
 
