@@ -3,7 +3,8 @@ import { IClient } from "../clients/types"
 import { IGenericObject } from "../common/types"
 import { IInventoryFullRelated } from "../inventories/types"
 import { IPaymentMethod } from "../paymentMethods/types"
-import { IProductFullRelated } from "../products/types"
+import { IAssetVariant } from "../assetVariants/types"
+import { IProductFullRelated, IVariantSelection } from "../products/types"
 import { ISaleFullRelated } from "../sales/types"
 
 export enum OrderRequestStatus {
@@ -33,6 +34,7 @@ export interface IOrderRequestPayment extends IGenericObject {
 export interface IReservedOrderInventoryItem {
   inventory?: string | IInventoryFullRelated
   asset?: string
+  assetVariant?: string | IAssetVariant
   quantity?: number
 }
 
@@ -73,6 +75,7 @@ export interface IOrderRequestItemFather extends IGenericObject {
   quantity?: number
   unitPrice?: number
   subtotal?: number
+  variantSelections?: IVariantSelection[]
 }
 
 export interface IOrderRequestItemFullRelated extends IOrderRequestItemFather {
@@ -101,8 +104,8 @@ export interface IConvertOrderRequestModalValues {
   paymentMethod: string
 }
 
-export type IOrderRequestItemPreview = Pick<IOrderRequestItemLessRelated, "product" | "quantity" | "id">
-export type IOrderRequestFormItem = Pick<IOrderRequestItemLessRelated, "product" | "quantity" | "id">
+export type IOrderRequestItemPreview = Pick<IOrderRequestItemLessRelated, "product" | "quantity" | "id" | "variantSelections">
+export type IOrderRequestFormItem = Pick<IOrderRequestItemLessRelated, "product" | "quantity" | "id" | "variantSelections">
 export type IOrderRequestWithActions = IOrderRequestFullRelated & {
   items?: IOrderRequestItemFullRelated[]
 }

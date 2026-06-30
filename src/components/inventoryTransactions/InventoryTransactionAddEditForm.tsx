@@ -26,8 +26,9 @@ import {
   TransactionReason,
   TransactionType,
 } from "./types";
-import { IAssetFullCategory } from "../assets/types";
 import { inventoryTransactionSchema } from "./inventoryTransactionSchema";
+import { IInventoryFullRelated } from "../inventories/types";
+import { InventoryOption } from "./InventoryTransactionForm";
 
 interface Props {
   onSubmit: SubmitHandler<IInventoryTransactionLessRelated>;
@@ -35,7 +36,8 @@ interface Props {
   inventoryTransactionToUpdate?: IInventoryTransactionFullRelated;
   isEditing: boolean;
   isLoading: boolean;
-  assets: IAssetFullCategory[];
+  inventoryOptions: InventoryOption[];
+  inventories: IInventoryFullRelated[];
 }
 
 const InventoryTransactionAddEditForm = (props: Props) => {
@@ -45,14 +47,30 @@ const InventoryTransactionAddEditForm = (props: Props) => {
     inventoryTransactionToUpdate,
     isEditing,
     isLoading,
-    assets,
+    inventoryOptions,
+    inventories,
   } = props;
+
+  const selectedInventoryId = inventories?.find((inventory) => {
+    const inventoryAssetVariantId = inventory.assetVariant?._id;
+    const currentAssetVariantId = inventoryTransactionToUpdate?.assetVariant?._id;
+
+    if (currentAssetVariantId && inventoryAssetVariantId === currentAssetVariantId) {
+      return true;
+    }
+
+    if (!currentAssetVariantId) {
+      return inventory.asset?._id === inventoryTransactionToUpdate?.asset?._id;
+    }
+
+    return false;
+  })?._id;
 
   const { register, formState, handleSubmit, control } =
     useForm<IInventoryTransactionLessRelated>({
       resolver: zodResolver(inventoryTransactionSchema),
       values: {
-        asset: inventoryTransactionToUpdate?.asset?._id,
+        asset: selectedInventoryId,
         affectedAmount:
           inventoryTransactionToUpdate?.affectedAmount || undefined,
         transactionType:
@@ -85,8 +103,8 @@ const InventoryTransactionAddEditForm = (props: Props) => {
   };
 
   const getNoOptionMessage = () => {
-    if (assets?.length === 0) {
-      return "Todos los insumos ya tienen inventario";
+    if (inventoryOptions?.length === 0) {
+      return "No hay inventarios cargados";
     }
     return "No hay datos";
   };
@@ -111,10 +129,10 @@ const InventoryTransactionAddEditForm = (props: Props) => {
                         formState={formState}
                         register={register}
                         field={"asset"}
-                        placeholder={"Buscar insumo ..."}
-                        label={"Insumo"}
+                        placeholder={"Buscar inventario ..."}
+                        label={"Inventario"}
                         control={control}
-                        data={assets}
+                        data={inventoryOptions as never}
                         isRequired={true}
                         noOptionsMessage={getNoOptionMessage()}
                       />

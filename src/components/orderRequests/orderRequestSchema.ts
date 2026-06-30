@@ -7,6 +7,14 @@ export const ORDER_REQUEST_STATUS = [
   "CONVERTED",
 ] as const
 
+const variantSelectionSchema = z.object({
+  productItem: z.string().min(24, "Seleccione una opción").max(24),
+  assetVariant: z.string().min(24, "Seleccione una opción").max(24),
+  quantity: z
+    .number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo" })
+    .positive("La cantidad debe ser mayor a 0"),
+})
+
 const orderRequestItems = z.object({
   product: z
     .string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo" })
@@ -15,6 +23,7 @@ const orderRequestItems = z.object({
   quantity: z
     .number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo" })
     .positive("La cantidad debe ser mayor a 0"),
+  variantSelections: z.array(variantSelectionSchema).optional(),
   id: z.string().optional(),
 })
 

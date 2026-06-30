@@ -8,7 +8,6 @@ import {
   TransactionReason,
   TransactionType,
 } from "./types";
-import { IAssetFullCategory } from "../assets/types";
 import { inventoryTransactionBulkSchema } from "./inventoryTransactionSchema";
 
 import {
@@ -45,20 +44,21 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import Loading from "../common/Loading";
 import MyInput from "../ui/inputs/MyInput";
 import MySelect from "../ui/inputs/MySelect";
+import { InventoryOption } from "./InventoryTransactionForm";
 
 interface Props {
   onSubmit: SubmitHandler<IInventoryTransactionLessRelatedBulk>;
   onCancelOperation: () => void;
   isEditing: boolean;
   isLoading: boolean;
-  assets: IAssetFullCategory[];
+  inventoryOptions: InventoryOption[];
 }
 
 const InventoryTransactionAddBulkForm = ({
   onSubmit,
   onCancelOperation,
   isLoading,
-  assets,
+  inventoryOptions,
 }: Props) => {
   const { register, formState, handleSubmit, control, watch } =
     useForm<IInventoryTransactionLessRelatedBulk>({
@@ -77,7 +77,6 @@ const InventoryTransactionAddBulkForm = ({
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // suscripción para los fields
   const inventoryTransactions = watch();
 
   const { fields, remove, append } = useFieldArray({
@@ -106,8 +105,8 @@ const InventoryTransactionAddBulkForm = ({
   };
 
   const getNoOptionMessage = () => {
-    if (assets?.length === 0) {
-      return "Todos los insumos ya tienen inventario";
+    if (inventoryOptions?.length === 0) {
+      return "No hay inventarios cargados";
     }
     return "No hay datos";
   };
@@ -144,10 +143,10 @@ const InventoryTransactionAddBulkForm = ({
                                     field={`inventoryTransactions.${index}.asset`}
                                     formState={formState}
                                     register={register}
-                                    placeholder={"Buscar insumo ..."}
-                                    label={"Insumo"}
+                                    placeholder={"Buscar inventario ..."}
+                                    label={"Inventario"}
                                     control={control}
-                                    data={assets}
+                                    data={inventoryOptions as never}
                                     isRequired={true}
                                     noOptionsMessage={getNoOptionMessage()}
                                   />
@@ -235,7 +234,7 @@ const InventoryTransactionAddBulkForm = ({
                             <Table variant="simple">
                               <Thead>
                                 <Tr>
-                                  <Th>Insumo</Th>
+                                  <Th>Inventario</Th>
                                   <Th>Tipo</Th>
                                   <Th>Motivo</Th>
                                   <Th isNumeric>Cantidad</Th>
@@ -248,9 +247,9 @@ const InventoryTransactionAddBulkForm = ({
                                       <Tr key={inventoryTransaction.asset}>
                                         <Td>
                                           {
-                                            assets?.find(
-                                              (asset) =>
-                                                asset._id ===
+                                            inventoryOptions?.find(
+                                              (inventoryOption) =>
+                                                inventoryOption._id ===
                                                 inventoryTransaction.asset,
                                             )?.name
                                           }

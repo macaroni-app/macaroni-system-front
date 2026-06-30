@@ -4,13 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 // types
 import { IInventoryTransactionLessRelatedBulk, TransactionType } from "./types";
-import { IAssetFullCategory } from "../assets/types";
 
 // components
 import InventoryTransactionAddBulkForm from "./InventoryTransactionAddBulk";
 
 // custom hooks
-import { useAssets } from "../../hooks/useAssets";
 import { useInventories } from "../../hooks/useInventories";
 import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
 import { useMessage } from "../../hooks/useMessage";
@@ -20,6 +18,9 @@ import { Error, useError } from "../../hooks/useError";
 import { RECORD_CREATED } from "../../utils/constants";
 import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
+import { getInventoryDisplayName } from "../../utils/variants";
+import { IInventoryFullRelated } from "../inventories/types";
+import { InventoryOption } from "./InventoryTransactionForm";
 
 const InventoryTransactionBulkForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,10 +30,18 @@ const InventoryTransactionBulkForm = () => {
   const { showMessage } = useMessage();
 
   const queryInventories = useInventories({});
-  const inventoriesByAsset = queryInventories.inventoriesByAssetId;
+  const inventories = queryInventories.inventories as IInventoryFullRelated[];
 
-  const queryAssets = useAssets({});
-  const assets = queryAssets?.data as IAssetFullCategory[];
+  const inventoryOptions: InventoryOption[] = (inventories ?? [])
+    .filter((inventory) => inventory.asset?.isActive)
+    .map((inventory) => ({
+      _id: String(inventory._id),
+      name: getInventoryDisplayName({
+        asset: inventory.asset,
+        assetVariant: inventory.assetVariant,
+      }),
+    }));
+
   const { adjustManyInventory } = useAdjustManyInventory();
 
   const { addNewManyInventoryTransaction } = useNewManyInventoryTransaction();
@@ -44,22 +53,26 @@ const InventoryTransactionBulkForm = () => {
   ) => {
     setIsLoading(true);
     try {
-      // Todo: actualizar el inventario de cada insumo.
-
       let adjustments: Array<{
         id?: string;
         asset?: string;
+        assetVariant?: string;
         quantityDelta: number;
       }> = [];
 
       inventoryTransactions.inventoryTransactions.forEach(
         (inventoryTransaction) => {
-          const inv = inventoriesByAsset?.get(
-            String(inventoryTransaction.asset),
+          const selectedInventory = inventories?.find(
+            (inventory) => inventory._id === inventoryTransaction.asset,
           );
-          if (!inv) return;
+          if (!selectedInventory) return;
 
-          inventoryTransaction.oldQuantityAvailable = inv.quantityAvailable;
+          const baseAssetId = selectedInventory.asset?._id;
+          const assetVariantId = selectedInventory.assetVariant?._id;
+
+          inventoryTransaction.asset = baseAssetId;
+          inventoryTransaction.assetVariant = assetVariantId;
+          inventoryTransaction.oldQuantityAvailable = selectedInventory.quantityAvailable;
 
           let quantityDelta = 0;
           switch (inventoryTransaction.transactionType) {
@@ -74,12 +87,15 @@ const InventoryTransactionBulkForm = () => {
           }
 
           inventoryTransaction.currentQuantityAvailable =
-            (inv.quantityAvailable ?? 0) + quantityDelta;
-          inventoryTransaction.unitCost = inv.asset?.costPrice;
+            (selectedInventory.quantityAvailable ?? 0) + quantityDelta;
+          inventoryTransaction.unitCost =
+            selectedInventory.assetVariant?.costPrice ??
+            selectedInventory.asset?.costPrice;
 
           adjustments.push({
-            id: inv._id,
-            asset: inv.asset?._id,
+            id: selectedInventory._id,
+            asset: baseAssetId,
+            assetVariant: assetVariantId,
             quantityDelta,
           });
         },
@@ -119,8 +135,6 @@ const InventoryTransactionBulkForm = () => {
       );
 
       if (response.isUpdated && response.status === 200) {
-        // Todo: registrar las transacciones del inventario de cada insumo.
-
         const response = await addNewManyInventoryTransaction(
           inventoryTransactions.inventoryTransactions,
         );
@@ -154,7 +168,7 @@ const InventoryTransactionBulkForm = () => {
       onCancelOperation={onCancelOperation}
       isEditing={false}
       isLoading={isLoading}
-      assets={assets}
+      inventoryOptions={inventoryOptions}
     />
   );
 };

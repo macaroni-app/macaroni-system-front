@@ -43,11 +43,17 @@ export const useInventories = (props: Props) => {
   // Generar un Map de inventarios por assetId para acceso O(1)
   let inventoriesByAssetId: Map<string, IInventoryFullRelated> | undefined =
     undefined;
+  let inventoriesByAssetVariantId:
+    | Map<string, IInventoryFullRelated>
+    | undefined = undefined;
   if (query.data) {
     inventoriesByAssetId = new Map();
+    inventoriesByAssetVariantId = new Map();
     query.data.forEach((inv) => {
       const assetId = inv.asset?._id;
       if (assetId) inventoriesByAssetId!.set(assetId, inv);
+      const assetVariantId = inv.assetVariant?._id;
+      if (assetVariantId) inventoriesByAssetVariantId!.set(assetVariantId, inv);
     });
   }
 
@@ -55,5 +61,6 @@ export const useInventories = (props: Props) => {
     ...query,
     inventories: query.data,
     inventoriesByAssetId,
+    inventoriesByAssetVariantId,
   };
 };

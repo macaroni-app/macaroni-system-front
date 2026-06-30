@@ -12,15 +12,18 @@ import { useNewManyOrderRequestItem } from "../../hooks/useNewManyOrderRequestIt
 import { useNewOrderRequest } from "../../hooks/useNewOrderRequest"
 import { useOrderRequest } from "../../hooks/useOrderRequest"
 import { useProducts } from "../../hooks/useProducts"
+import { useProductItems } from "../../hooks/useProductItems"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { RECORD_CREATED, RECORD_UPDATED, SOMETHING_WENT_WRONG_MESSAGE } from "../../utils/constants"
 import { IBusiness } from "../businesses/types"
 import { IClient } from "../clients/types"
-import { IProductFullRelated } from "../products/types"
+import { IProductFullRelated, IProductItemFullRelated } from "../products/types"
 import OrderRequestAddForm from "./OrderRequestAddForm"
 import { buildInitialPaymentPayload, buildOrderRequestItemPayloads, getApiErrorMessage } from "./helpers"
 import { IOrderRequestFullRelated, IOrderRequestItemLessRelated, IOrderRequestLessRelated } from "./types"
 import { usePaymentMethods } from "../../hooks/usePaymentMethods"
+import { useAssetVariants } from "../../hooks/useAssetVariants"
+import { IAssetVariant } from "../assetVariants/types"
 
 type OrderRequestResponse = {
   data?: IOrderRequestFullRelated
@@ -38,9 +41,11 @@ const OrderRequestForm = () => {
 
   const queryOrderRequest = useOrderRequest(orderRequestId)
   const queryProducts = useProducts({})
+  const queryProductItems = useProductItems({})
   const queryClients = useClients({})
   const queryBusinesses = useBusinesses({})
   const queryPaymentMethods = usePaymentMethods({})
+  const queryAssetVariants = useAssetVariants({})
 
   const { addNewOrderRequest } = useNewOrderRequest()
   const { addOrderRequestPayment } = useAddOrderRequestPayment()
@@ -51,9 +56,11 @@ const OrderRequestForm = () => {
 
   const orderRequest = queryOrderRequest.data as IOrderRequestFullRelated | undefined
   const products = queryProducts.data as IProductFullRelated[]
+  const productItems = queryProductItems.data as IProductItemFullRelated[]
   const clients = queryClients.data as IClient[]
   const businesses = queryBusinesses.data as IBusiness[]
   const paymentMethods = queryPaymentMethods.data ?? []
+  const assetVariants = queryAssetVariants.data as IAssetVariant[]
   const orderRequestHasPayments = (orderRequest?.payments?.length ?? 0) > 0
 
   const currentBusiness = orderRequest?.business?._id
@@ -246,11 +253,15 @@ const OrderRequestForm = () => {
         isLoading ||
         queryOrderRequest.isLoading ||
         queryProducts.isLoading ||
+        queryProductItems.isLoading ||
         queryClients.isLoading ||
         queryBusinesses.isLoading ||
-        queryPaymentMethods.isLoading
+        queryPaymentMethods.isLoading ||
+        queryAssetVariants.isLoading
       }
       products={products}
+      productItems={productItems}
+      assetVariants={assetVariants}
       clients={clients?.filter((client) => client.isActive)}
       paymentMethods={paymentMethods}
     />

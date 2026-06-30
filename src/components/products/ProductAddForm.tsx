@@ -1,12 +1,15 @@
 // libs
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { SubmitHandler, useFieldArray, useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Select from "react-select";
 
 // types
 import {
   IProductItemOmitProduct,
   IProductFullRelated,
   IProductLessRelated,
+  ProductItemSelectionType,
 } from "./types";
 
 import { productSchema } from "./productSchema";
@@ -38,6 +41,7 @@ import MySelect from "../ui/inputs/MySelect";
 import { ICategory } from "../categories/types";
 import { IProductTypeType } from "../productTypes/types";
 import { IAssetFullCategory } from "../assets/types";
+import { IVariantAttributeValue } from "../variantAttributeValues/types";
 
 interface Props {
   onSubmit: SubmitHandler<IProductLessRelated>;
@@ -46,6 +50,7 @@ interface Props {
   categories?: ICategory[];
   productTypes?: IProductTypeType[];
   assets?: IAssetFullCategory[];
+  variantAttributeValues?: IVariantAttributeValue[];
   isLoading: boolean;
 }
 
@@ -57,27 +62,42 @@ const ProductFormAdd = ({
   categories,
   productTypes,
   assets,
+  variantAttributeValues,
 }: Props) => {
-  const { register, formState, handleSubmit, control, watch } =
+  const menuPortalTarget =
+    typeof document !== "undefined" ? document.body : undefined;
+
+  const { register, formState, handleSubmit, control, watch, setValue } =
     useForm<IProductLessRelated>({
       resolver: zodResolver(productSchema),
       defaultValues: {
         name: "",
         wholesalePrice: undefined,
         retailsalePrice: undefined,
-        productItems: [{ asset: "", quantity: 1 }],
-      },
-      values: {
-        name: productToUpdate?.name || "",
-        wholesalePrice: productToUpdate?.wholesalePrice || undefined,
-        retailsalePrice: productToUpdate?.retailsalePrice || undefined,
-        category:
-          productToUpdate?.category?._id ||
-          categories?.filter((category) => category.name === "Comida").at(0)
-            ?._id,
-        productItems: [{ asset: "", quantity: 1 }],
+        productItems: [
+          {
+            asset: "",
+            baseAsset: "",
+            selectionType: ProductItemSelectionType.FIXED,
+            quantity: 1,
+            allowedVariantValues: [],
+          },
+        ],
       },
     });
+
+  useEffect(() => {
+    const defaultCategoryId = categories?.find(
+      (category) => category.name === "Comida",
+    )?._id;
+
+    if (!productToUpdate?._id && defaultCategoryId && !watch("category")) {
+      setValue("category", defaultCategoryId, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    }
+  }, [categories, productToUpdate?._id, setValue, watch]);
 
   // suscripción para los fields
   const product = watch();
@@ -87,9 +107,22 @@ const ProductFormAdd = ({
     control,
   });
 
+  const getAssetIdForCost = (index: number) => {
+    const currentProductItem = product?.productItems?.at(index);
+    if (!currentProductItem) return undefined;
+
+    return currentProductItem.selectionType ===
+      ProductItemSelectionType.VARIANT_SELECTION
+      ? currentProductItem.baseAsset
+      : currentProductItem.asset;
+  };
+
   const getCostTotal = () => {
     let assetIds = product?.productItems?.map(
-      (productItem) => productItem.asset,
+      (productItem) =>
+        productItem.selectionType === ProductItemSelectionType.VARIANT_SELECTION
+          ? productItem.baseAsset
+          : productItem.asset,
     );
 
     let assetWithCostPrice: IAssetFullCategory[] = [];
@@ -106,7 +139,12 @@ const ProductFormAdd = ({
 
     assetWithCostPrice.forEach((asset) => {
       product.productItems?.forEach((productItem) => {
-        if (asset._id === productItem.asset) {
+        const currentAssetId =
+          productItem.selectionType === ProductItemSelectionType.VARIANT_SELECTION
+            ? productItem.baseAsset
+            : productItem.asset;
+
+        if (asset._id === currentAssetId) {
           assetWithQuantity.push({
             asset,
             quantity: productItem.quantity,
@@ -137,7 +175,7 @@ const ProductFormAdd = ({
     if (assets !== undefined && product !== undefined && index !== undefined) {
       const assetLine =
         assets?.filter((asset) => {
-          if (asset?._id === product?.productItems?.at(index)?.asset) {
+          if (asset?._id === getAssetIdForCost(index)) {
             return asset?.costPrice;
           }
         })[0]?.costPrice || 0;
@@ -305,16 +343,53 @@ const ProductFormAdd = ({
                                   alignItems={"center"}
                                 >
                                   <MySelect
-                                    field={`productItems.${index}.asset`}
+                                    field={`productItems.${index}.selectionType`}
                                     register={register}
                                     control={control}
                                     formState={formState}
-                                    label="Insumo"
-                                    placeholder="Buscar insumo"
-                                    data={assets}
+                                    label="Tipo de componente"
+                                    placeholder="Seleccionar tipo"
+                                    data={[
+                                      {
+                                        _id: ProductItemSelectionType.FIXED,
+                                        name: "Insumo fijo",
+                                      },
+                                      {
+                                        _id:
+                                          ProductItemSelectionType.VARIANT_SELECTION,
+                                        name: "Elegir variante al vender",
+                                      },
+                                    ] as never}
                                     isDisabled={false}
                                     isRequired={true}
                                   />
+                                  {(product.productItems?.at(index)?.selectionType ??
+                                    ProductItemSelectionType.FIXED) ===
+                                  ProductItemSelectionType.VARIANT_SELECTION ? (
+                                    <MySelect
+                                      field={`productItems.${index}.baseAsset`}
+                                      register={register}
+                                      control={control}
+                                      formState={formState}
+                                      label="Insumo base"
+                                      placeholder="Buscar insumo base"
+                                      data={assets}
+                                      isDisabled={false}
+                                      isRequired={true}
+                                    />
+                                  ) : (
+                                    <MySelect
+                                      field={`productItems.${index}.asset`}
+                                      register={register}
+                                      control={control}
+                                      formState={formState}
+                                      label="Insumo"
+                                      placeholder="Buscar insumo"
+                                      data={assets}
+                                      isDisabled={false}
+                                      isRequired={true}
+                                    />
+                                  )}
                                   <MyInput
                                     formState={formState}
                                     register={register}
@@ -323,6 +398,56 @@ const ProductFormAdd = ({
                                     placeholder={"Cantidad"}
                                     label={"Cantidad"}
                                   />
+                                  {(product.productItems?.at(index)?.selectionType ??
+                                    ProductItemSelectionType.FIXED) ===
+                                    ProductItemSelectionType.VARIANT_SELECTION && (
+                                    <FormControl>
+                                      <FormLabel>Atributos permitidos</FormLabel>
+                                      <Text fontSize="sm" color="gray.600">
+                                        Si no elegís valores, se podrán usar todas
+                                        las variantes del insumo base.
+                                      </Text>
+                                      <Controller
+                                        control={control}
+                                        name={`productItems.${index}.allowedVariantValues`}
+                                        render={({ field }) => (
+                                          <Select
+                                            isMulti
+                                            placeholder="Seleccionar variantes permitidas"
+                                            options={variantAttributeValues?.map((value) => ({
+                                              value: String(value._id),
+                                              label: value.name,
+                                            }))}
+                                            value={(variantAttributeValues ?? [])
+                                              .filter((value) =>
+                                                (field.value ?? []).includes(
+                                                  String(value._id),
+                                                ),
+                                              )
+                                              .map((value) => ({
+                                                value: String(value._id),
+                                                label: value.name,
+                                              }))}
+                                            menuPortalTarget={menuPortalTarget}
+                                            menuPosition="fixed"
+                                            styles={{
+                                              menuPortal: (base) => ({
+                                                ...base,
+                                                zIndex: 9999,
+                                              }),
+                                            }}
+                                            onChange={(selectedOptions) => {
+                                              field.onChange(
+                                                selectedOptions.map(
+                                                  (option) => option.value,
+                                                ),
+                                              );
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </FormControl>
+                                  )}
                                   <Text>
                                     Subtotal de costo:{" "}
                                     {new Intl.NumberFormat("en-US", {
@@ -361,7 +486,15 @@ const ProductFormAdd = ({
                     size={"sm"}
                     colorScheme="blue"
                     alignSelf={"start"}
-                    onClick={() => append({ asset: "", quantity: 1 })}
+                    onClick={() =>
+                      append({
+                        asset: "",
+                        baseAsset: "",
+                        selectionType: ProductItemSelectionType.FIXED,
+                        quantity: 1,
+                        allowedVariantValues: [],
+                      })
+                    }
                   >
                     Agregar item
                   </Button>

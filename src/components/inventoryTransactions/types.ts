@@ -1,4 +1,5 @@
 import { IAssetFullCategory } from "../assets/types"
+import { IAssetVariant } from "../assetVariants/types"
 import { IGenericObject } from "../common/types"
 
 
@@ -29,10 +30,12 @@ export interface IInventoryTransactionFather extends IGenericObject{
 
 export interface IInventoryTransactionFullRelated extends IInventoryTransactionFather{
   asset?: IAssetFullCategory
+  assetVariant?: IAssetVariant
 }
 
 export interface IInventoryTransactionLessRelated extends IInventoryTransactionFather{
   asset?: string
+  assetVariant?: string
 }
 
 export interface IInventoryTransactionFullRelatedBulk extends IInventoryTransactionFather{

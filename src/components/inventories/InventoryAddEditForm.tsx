@@ -22,6 +22,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 // types
 import { IInventoryFullRelated, IInventoryLessRelated } from "./types"
 import { IAssetFullCategory } from "../assets/types"
+import { IAssetVariant } from "../assetVariants/types"
 import { inventorySchema } from "./inventorySchema"
 
 interface Props {
@@ -31,6 +32,7 @@ interface Props {
   isEditing: boolean
   isLoading: boolean
   assets: IAssetFullCategory[]
+  assetVariants?: IAssetVariant[]
 }
 
 const InventoryAddEditForm = (props: Props) => {
@@ -41,16 +43,20 @@ const InventoryAddEditForm = (props: Props) => {
     isEditing,
     isLoading,
     assets,
+    assetVariants,
   } = props
 
-  const { register, formState, handleSubmit, control } =
+  const { register, formState, handleSubmit, control, watch } =
     useForm<IInventoryLessRelated>({
       resolver: zodResolver(inventorySchema),
       values: {
         asset: inventoryToUpdate?.asset?._id,
+        assetVariant: inventoryToUpdate?.assetVariant?._id,
         quantityAvailable: inventoryToUpdate?.quantityAvailable || undefined,
       },
     })
+
+  const currentAsset = watch("asset")
 
   const getNoOptionMessage = () => {
     if (assets?.length === 0) {
@@ -83,6 +89,27 @@ const InventoryAddEditForm = (props: Props) => {
                         data={assets}
                         isRequired={true}
                         noOptionsMessage={getNoOptionMessage()}
+                      />
+                    </GridItem>
+                  </Grid>
+                  <Grid mb={4}>
+                    <GridItem>
+                      <MySelect
+                        formState={formState}
+                        register={register}
+                        field={"assetVariant"}
+                        placeholder={"Buscar variante ..."}
+                        label={"Variante (opcional)"}
+                        control={control}
+                        data={assetVariants?.filter((assetVariant) => {
+                          const baseAssetId =
+                            typeof assetVariant.baseAsset === "string"
+                              ? assetVariant.baseAsset
+                              : assetVariant.baseAsset?._id
+
+                          return !currentAsset || baseAssetId === currentAsset
+                        }) as never}
+                        noOptionsMessage={"No hay variantes para este insumo"}
                       />
                     </GridItem>
                   </Grid>

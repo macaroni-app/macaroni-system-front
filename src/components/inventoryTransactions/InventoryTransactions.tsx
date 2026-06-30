@@ -1,17 +1,21 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
-  Grid,
+  Badge,
+  Button,
   Card,
   CardBody,
+  Collapse,
   Flex,
+  Grid,
+  GridItem,
+  Skeleton,
   Spacer,
   Stack,
-  Skeleton,
   Text,
-  GridItem
+  useDisclosure,
 } from "@chakra-ui/react"
-
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 
 // components
 import InventoryTransaction from "./InventoryTransaction"
@@ -26,7 +30,6 @@ import { useTodayDate } from "../../hooks/useTodayDate"
 import { useCheckRole } from "../../hooks/useCheckRole"
 // import { useError } from "../../hooks/useError"
 
-
 import ProfileBase from "../common/permissions"
 
 const InventoryTransactions = (): JSX.Element => {
@@ -34,11 +37,12 @@ const InventoryTransactions = (): JSX.Element => {
   const [rangeDate, setRangeDate] = useState({
     startDate: today,
     endDate: today,
-  });
+  })
+  const { isOpen, onToggle } = useDisclosure()
 
   const queryInventoryTransactions = useInventoryTransactions({
     startDate: rangeDate.startDate,
-    endDate: rangeDate.endDate
+    endDate: rangeDate.endDate,
   })
 
   const inventoryTransactions =
@@ -54,15 +58,15 @@ const InventoryTransactions = (): JSX.Element => {
   //   throwError(queryCategories?.error)
   // }
 
-  const onSubmit = (rangeDate: RangeDate) => {
+  const onSubmit = (nextRangeDate: RangeDate) => {
     if (
-      rangeDate.startDate !== undefined &&
-      rangeDate.endDate !== undefined
+      nextRangeDate.startDate !== undefined &&
+      nextRangeDate.endDate !== undefined
     ) {
       setRangeDate({
-        startDate: rangeDate.startDate,
-        endDate: rangeDate.endDate,
-      });
+        startDate: nextRangeDate.startDate,
+        endDate: nextRangeDate.endDate,
+      })
     }
   }
 
@@ -73,7 +77,6 @@ const InventoryTransactions = (): JSX.Element => {
   const handleAddBulkInventoryTransaction = () => {
     navigate("/inventoryTransactions/bulk-add")
   }
-
 
   const inventoryTransactionList = inventoryTransactions?.map(
     (inventoryTransaction) => {
@@ -88,12 +91,21 @@ const InventoryTransactions = (): JSX.Element => {
           />
         )
       }
-    }
+
+      return undefined
+    },
   )
 
   const numberColumn = checkRole(ProfileBase.inventoryTransactions.viewActions)
-    ? 8
-    : 7
+    ? 6
+    : 5
+  const desktopTemplateColumns = checkRole(
+    ProfileBase.inventoryTransactions.viewActions,
+  )
+    ? "minmax(0, 3.6fr) minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.45fr)"
+    : "minmax(0, 3.6fr) minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 1fr) minmax(0, 1fr)"
+  const hasActiveDateFilter =
+    rangeDate.startDate !== today || rangeDate.endDate !== today
 
   if (queryInventoryTransactions?.isLoading) {
     return (
@@ -185,94 +197,117 @@ const InventoryTransactions = (): JSX.Element => {
           />
         )}
 
-      <Grid gap={3} templateColumns="repeat(12, 1fr)">
-        <GridItem colSpan={{ base: 12, lg: 3 }}>
-          {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
-        </GridItem>
-
-        <GridItem colSpan={{ base: 12, lg: 9 }}>
-          {!queryInventoryTransactions?.isError &&
-            queryInventoryTransactions?.data?.length !== undefined &&
-            queryInventoryTransactions?.data?.length > 0 &&
-            !queryInventoryTransactions?.isLoading && (
-              <Grid gap={2} templateColumns="repeat(12, 1fr)">
-                <GridItem
-                  display={{ base: "none", md: "block" }}
-                  colSpan={{ base: 12, md: 12, lg: 12 }}
-                  colStart={{ base: 1, md: 1, lg: 1 }}
+      <Stack spacing={3}>
+        <Card variant="outline">
+          <CardBody>
+            <Flex
+              direction={{ base: "column", md: "row" }}
+              align={{ base: "stretch", md: "center" }}
+              justify="space-between"
+              gap={3}
+            >
+              <Flex align="center" gap={3} wrap="wrap">
+                <Button
+                  onClick={onToggle}
+                  leftIcon={hasActiveDateFilter ? <CheckIcon /> : undefined}
+                  rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  colorScheme={isOpen || hasActiveDateFilter ? "purple" : "gray"}
+                  variant={isOpen || hasActiveDateFilter ? "solid" : "outline"}
+                  size={{ base: "sm", md: "md" }}
+                  width={{ base: "fit-content", md: "auto" }}
                 >
-                  <Card variant="outline">
-                    <CardBody>
-                      <Grid
-                        templateColumns={`repeat(${numberColumn}, 1fr)`}
-                        gap={2}
-                        alignItems={"center"}
-                      >
-                        <GridItem>
-                          <Flex direction="column" gap={2}>
-                            <Text fontWeight="bold">Insumo</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Tipo</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Cantidad</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Stock Antes</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Stock Actual</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Usuario</Text>
-                          </Flex>
-                        </GridItem>
-                        <GridItem>
-                          <Flex direction="column" gap={2} placeItems={"center"}>
-                            <Text fontWeight="bold">Fecha</Text>
-                          </Flex>
-                        </GridItem>
-                        {checkRole(
-                          ProfileBase.inventoryTransactions.viewActions
-                        ) && (
-                            <GridItem>
-                              <Flex direction="column" gap={2} placeItems={"end"}>
-                                <Text fontWeight="bold">Acciones</Text>
-                              </Flex>
-                            </GridItem>
-                          )}
-                      </Grid>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-                <GridItem
-                  colSpan={{ base: 12, md: 12, lg: 12 }}
-                  colStart={{ base: 1, md: 1, lg: 1 }}
-                >
-                  {inventoryTransactionList}
+                  {isOpen ? "Ocultar filtros" : "Mostrar filtros"}
+                </Button>
+                {hasActiveDateFilter && (
+                  <Badge colorScheme="purple" variant="subtle" px={2} py={1}>
+                    Filtros activos
+                  </Badge>
+                )}
+              </Flex>
+              <Text fontSize="sm" color="gray.500" display={{ base: "none", md: "block" }}>
+                Filtrá por rango de fechas solo cuando lo necesites.
+              </Text>
+            </Flex>
+            <Collapse in={isOpen} animateOpacity>
+              <Grid templateColumns="repeat(12, 1fr)" gap={3} mt={4}>
+                <GridItem colSpan={{ base: 12, md: 5, lg: 4 }}>
+                  <RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />
                 </GridItem>
               </Grid>
-            )}
-          {!queryInventoryTransactions?.isError &&
-            queryInventoryTransactions?.data?.length === 0 &&
-            !queryInventoryTransactions?.isLoading && (
-              <WithoutResults
-                text={"No se encontraron registros."}
-              />
-            )}
-        </GridItem>
-      </Grid>
+            </Collapse>
+          </CardBody>
+        </Card>
+
+        {!queryInventoryTransactions?.isError &&
+          queryInventoryTransactions?.data?.length !== undefined &&
+          queryInventoryTransactions?.data?.length > 0 &&
+          !queryInventoryTransactions?.isLoading && (
+            <Grid gap={2} templateColumns="repeat(12, 1fr)">
+              <GridItem
+                display={{ base: "none", md: "block" }}
+                colSpan={12}
+              >
+                <Card variant="outline">
+                  <CardBody>
+                    <Grid
+                      templateColumns={{
+                        base: `repeat(${numberColumn}, 1fr)`,
+                        md: desktopTemplateColumns,
+                      }}
+                      gap={2}
+                      alignItems={"center"}
+                    >
+                      <GridItem minW={0}>
+                        <Flex direction="column" gap={2}>
+                          <Text fontWeight="bold">Insumo</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem minW={0}>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Tipo</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem minW={0}>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Cantidad</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem minW={0}>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Stock Antes</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem minW={0}>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Stock Actual</Text>
+                        </Flex>
+                      </GridItem>
+                      {checkRole(ProfileBase.inventoryTransactions.viewActions) && (
+                        <GridItem minW={0}>
+                          <Flex direction="column" gap={2} placeItems={"center"}>
+                            <Text fontWeight="bold" textAlign="center">
+                              Acciones
+                            </Text>
+                          </Flex>
+                        </GridItem>
+                      )}
+                    </Grid>
+                  </CardBody>
+                </Card>
+              </GridItem>
+              <GridItem colSpan={12}>
+                {inventoryTransactionList}
+              </GridItem>
+            </Grid>
+          )}
+
+        {!queryInventoryTransactions?.isError &&
+          queryInventoryTransactions?.data?.length !== undefined &&
+          queryInventoryTransactions?.data?.length === 0 &&
+          !queryInventoryTransactions?.isLoading && (
+            <WithoutResults text="No se encontraron transacciones." />
+          )}
+      </Stack>
     </>
   )
 }

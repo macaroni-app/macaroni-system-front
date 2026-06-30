@@ -57,6 +57,7 @@ const Sales = () => {
   const queryInventories = useInventories({});
 
   const inventoriesByAsset = queryInventories.inventoriesByAssetId;
+  const inventoriesByAssetVariant = queryInventories.inventoriesByAssetVariantId;
 
   const productItems = queryProductItems.data as IProductItemFullRelated[];
   const inventories = queryInventories.inventories as IInventoryFullRelated[];
@@ -113,6 +114,7 @@ const Sales = () => {
           productItems={productItems}
           inventories={inventories}
           inventoriesByAsset={inventoriesByAsset}
+          inventoriesByAssetVariant={inventoriesByAssetVariant}
           rangeDate={rangeDate}
         />
       );

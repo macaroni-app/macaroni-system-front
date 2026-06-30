@@ -1,4 +1,5 @@
 import { AxiosError } from "axios"
+import { IAssetVariant } from "../assetVariants/types"
 import { IInventoryFullRelated } from "../inventories/types"
 import { IProductFullRelated } from "../products/types"
 import {
@@ -6,6 +7,7 @@ import {
   IOrderRequestFormItem,
   IOrderRequestItemLessRelated,
   IOrderRequestPayment,
+  IReservedOrderInventoryItem,
   OrderRequestPaymentStatus,
   OrderRequestStatus,
 } from "./types"
@@ -166,18 +168,76 @@ export const buildOrderRequestItemPayloads = (
       quantity: Number(item.quantity ?? 0),
       unitPrice,
       subtotal: calculateOrderRequestSubtotal(item, products, isRetail, discount),
+      variantSelections: (item.variantSelections ?? []).map((variantSelection) => ({
+        id: variantSelection.id,
+        productItem:
+          typeof variantSelection.productItem === "string"
+            ? variantSelection.productItem
+            : variantSelection.productItem?._id,
+        assetVariant:
+          typeof variantSelection.assetVariant === "string"
+            ? variantSelection.assetVariant
+            : variantSelection.assetVariant?._id,
+        quantity: Number(variantSelection.quantity ?? 0),
+      })),
     }
   })
 }
 
 export const getInventoryNameByReservedItem = (
-  inventoryId: string | undefined,
-  assetId: string | undefined,
+  reservedItem: IReservedOrderInventoryItem,
   inventories: IInventoryFullRelated[] | undefined,
+  assetVariants?: IAssetVariant[] | undefined,
 ) => {
+  const inventoryId =
+    typeof reservedItem.inventory === "string"
+      ? reservedItem.inventory
+      : reservedItem.inventory?._id
+  const assetId = reservedItem.asset
+  const assetVariantId =
+    typeof reservedItem.assetVariant === "string"
+      ? reservedItem.assetVariant
+      : reservedItem.assetVariant?._id
+
   const inventory = inventories?.find((currentInventory) => {
-    return currentInventory._id === inventoryId || currentInventory.asset?._id === assetId
+    const currentAssetVariantId =
+      typeof currentInventory.assetVariant === "string"
+        ? currentInventory.assetVariant
+        : currentInventory.assetVariant?._id
+
+    if (inventoryId && currentInventory._id === inventoryId) {
+      return true
+    }
+
+    if (assetVariantId && currentAssetVariantId === assetVariantId) {
+      return true
+    }
+
+    if (assetVariantId) {
+      return false
+    }
+
+    return currentInventory.asset?._id === assetId
   })
+
+  const assetVariantFromCatalog = assetVariantId
+    ? assetVariants?.find((currentAssetVariant) => currentAssetVariant._id === assetVariantId)
+    : undefined
+
+  const assetVariant =
+    (typeof reservedItem.assetVariant === "string"
+      ? undefined
+      : reservedItem.assetVariant) ??
+    assetVariantFromCatalog ??
+    (inventory?.assetVariant as IAssetVariant | undefined)
+
+  if (assetVariant?.name) {
+    return assetVariant.name
+  }
+
+  if (assetVariantId) {
+    return assetVariantId
+  }
 
   return inventory?.asset?.name ?? assetId ?? inventoryId ?? "-"
 }

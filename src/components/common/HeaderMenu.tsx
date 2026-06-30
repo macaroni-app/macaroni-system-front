@@ -81,6 +81,21 @@ const navigationItems: NavigationItem[] = [
     permission: ProfileBase.assets.view,
   },
   {
+    label: "Atributos de variante",
+    path: "/variantAttributes",
+    permission: ProfileBase.variantAttributes.view,
+  },
+  {
+    label: "Valores de variante",
+    path: "/variantAttributeValues",
+    permission: ProfileBase.variantAttributeValues.view,
+  },
+  {
+    label: "Variantes de insumo",
+    path: "/assetVariants",
+    permission: ProfileBase.assetVariants.view,
+  },
+  {
     label: "Inventarios",
     path: "/inventories",
     permission: ProfileBase.inventories.view,

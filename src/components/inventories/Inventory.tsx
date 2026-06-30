@@ -40,6 +40,10 @@ import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useCheckRole } from "../../hooks/useCheckRole"
 import ProfileBase from "../common/permissions"
+import {
+  getInventoryDisplayName,
+  getInventoryVariantLabel,
+} from "../../utils/variants"
 
 interface Props {
   inventory: IInventoryFullRelated
@@ -94,6 +98,13 @@ const Inventory = ({ inventory }: Props) => {
   const quantityAvailable = Number(inventory.quantityAvailable ?? 0)
   const quantityReserved = Number(inventory.quantityReserved ?? 0)
   const quantitySellable = quantityAvailable - quantityReserved
+  const inventoryDisplayName = getInventoryDisplayName({
+    asset: inventory.asset,
+    assetVariant: inventory.assetVariant,
+  })
+  const variantLabel = getInventoryVariantLabel(inventory.assetVariant)
+  const baseAssetName =
+    typeof inventory.asset === "string" ? inventory.asset : inventory.asset?.name
 
   return (
     <GridItem colSpan={5} mb={3}>
@@ -104,10 +115,22 @@ const Inventory = ({ inventory }: Props) => {
               <Flex direction="column" gap={2}>
                 <Flex alignItems="center" gap={2} wrap="wrap">
                   <Text noOfLines={1} fontSize="xl" align="start" mr={4}>
-                    {inventory?.asset?.name}
+                    {inventoryDisplayName}
                   </Text>
                   {quantityReserved > 0 && (
                     <Badge colorScheme="orange">Con reserva</Badge>
+                  )}
+                </Flex>
+                <Flex alignItems="center" gap={2} wrap="wrap">
+                  {baseAssetName && (
+                    <Badge colorScheme="gray" variant="subtle">
+                      Base: {baseAssetName}
+                    </Badge>
+                  )}
+                  {variantLabel && (
+                    <Badge colorScheme="purple" variant="subtle">
+                      Variante: {variantLabel}
+                    </Badge>
                   )}
                 </Flex>
                 <Text fontSize="xs" align="start">
@@ -210,7 +233,7 @@ const Inventory = ({ inventory }: Props) => {
           <ModalBody>
             <p>
               ¿Estás seguro de eliminar el insumo{" "}
-              <Text as={"b"}>{inventory?.asset?.name}</Text>?
+              <Text as={"b"}>{inventoryDisplayName}</Text>?
             </p>
           </ModalBody>
           <ModalFooter>

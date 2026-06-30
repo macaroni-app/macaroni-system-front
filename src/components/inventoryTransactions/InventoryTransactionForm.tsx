@@ -4,14 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // types
 import { IInventoryTransactionLessRelated, TransactionType } from "./types";
-import { IAssetFullCategory } from "../assets/types";
 
 // components
 import InventoryTransactionAddEditForm from "./InventoryTransactionAddEditForm";
 
 // custom hooks
 import { useInventoryTransactions } from "../../hooks/useInventoryTransactions";
-import { useAssets } from "../../hooks/useAssets";
 import { useNewInventoryTransaction } from "../../hooks/useNewInventoryTransaction";
 import { useEditInventoryTransaction } from "../../hooks/useEditInventoryTransaction";
 import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
@@ -21,8 +19,14 @@ import { useError } from "../../hooks/useError";
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants";
 import { AlertColorScheme, AlertStatus } from "../../utils/enums";
-// IInventoryFullRelated not needed directly here; using inventoriesByAsset map from hook
 import { useInventories } from "../../hooks/useInventories";
+import { getInventoryDisplayName } from "../../utils/variants";
+import { IInventoryFullRelated } from "../inventories/types";
+
+export type InventoryOption = {
+  _id: string;
+  name: string;
+};
 
 const InventoryTransactionForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,10 +42,17 @@ const InventoryTransactionForm = () => {
   const { adjustManyInventory } = useAdjustManyInventory();
 
   const queryInventories = useInventories({});
-  const inventoriesByAsset = queryInventories.inventoriesByAssetId;
+  const inventories = queryInventories.inventories as IInventoryFullRelated[];
 
-  const queryAssets = useAssets({});
-  const assets = queryAssets?.data as IAssetFullCategory[];
+  const inventoryOptions: InventoryOption[] = (inventories ?? [])
+    .filter((inventory) => inventory.asset?.isActive)
+    .map((inventory) => ({
+      _id: String(inventory._id),
+      name: getInventoryDisplayName({
+        asset: inventory.asset,
+        assetVariant: inventory.assetVariant,
+      }),
+    }));
 
   const queryInventoryTransactions = useInventoryTransactions({
     id: inventoryTransactionId,
@@ -49,19 +60,6 @@ const InventoryTransactionForm = () => {
   const inventoryTransactionToUpdate = queryInventoryTransactions?.data
     ? { ...queryInventoryTransactions?.data[0] }
     : {};
-
-  // const assetOnInventory = queryInventoryTransactions.data?.map(
-  //   (inventory) => inventory.asset?._id
-  // )
-  // const assetsFiltered: IAssetFullCategory[] = []
-
-  // para filtrar los assets que ya tiene inventario
-  // solo se puede crear inventarios que no tengan aun inventario
-  // assets?.forEach((asset) => {
-  //   if (!assetOnInventory?.includes(asset?._id)) {
-  //     assetsFiltered.push(asset)
-  //   }
-  // })
 
   const { addNewInventoryTransaction } = useNewInventoryTransaction();
   const { editInventoryTransaction } = useEditInventoryTransaction();
@@ -73,20 +71,31 @@ const InventoryTransactionForm = () => {
     try {
       let response;
 
+      const selectedInventory = inventories?.find(
+        (inventory) => inventory._id === inventoryTransaction.asset,
+      );
+
+      if (!selectedInventory) {
+        throw new Error("No se encontró el inventario seleccionado.");
+      }
+
+      const baseAssetId = selectedInventory.asset?._id;
+      const assetVariantId = selectedInventory.assetVariant?._id;
+      const unitCost =
+        selectedInventory.assetVariant?.costPrice ??
+        selectedInventory.asset?.costPrice;
+
+      const normalizedInventoryTransaction: IInventoryTransactionLessRelated = {
+        ...inventoryTransaction,
+        asset: baseAssetId,
+        assetVariant: assetVariantId,
+      };
+
       if (!inventoryTransactionId) {
-        const inv = inventoriesByAsset?.get(
-          inventoryTransaction.asset ? inventoryTransaction.asset : "",
-        );
-        if (!inv) throw new Error("Inventory not found for asset");
-
-        const assetRelated = assets.find(
-          (asset) => asset._id === inventoryTransaction.asset,
-        );
-
         const inventoryTransacionToSave: IInventoryTransactionLessRelated = {
-          ...inventoryTransaction,
-          oldQuantityAvailable: inv.quantityAvailable,
-          unitCost: assetRelated?.costPrice,
+          ...normalizedInventoryTransaction,
+          oldQuantityAvailable: selectedInventory.quantityAvailable,
+          unitCost,
         };
 
         const quantityDelta =
@@ -95,7 +104,12 @@ const InventoryTransactionForm = () => {
             : -Number(inventoryTransaction.affectedAmount);
 
         const adjustments = [
-          { id: inv._id, asset: inv.asset?._id, quantityDelta },
+          {
+            id: selectedInventory._id,
+            asset: baseAssetId,
+            assetVariant: assetVariantId,
+            quantityDelta,
+          },
         ];
 
         const editInventoryResponse = await adjustManyInventory(adjustments);
@@ -106,11 +120,12 @@ const InventoryTransactionForm = () => {
           response = await addNewInventoryTransaction({
             ...inventoryTransacionToSave,
             oldQuantityAvailable:
-              updatedInventory?.oldQuantityAvailable ?? inv.quantityAvailable,
+              updatedInventory?.oldQuantityAvailable ??
+              selectedInventory.quantityAvailable,
             currentQuantityAvailable:
               updatedInventory?.currentQuantityAvailable ??
               updatedInventory?.quantityAvailable ??
-              (inv.quantityAvailable ?? 0) + quantityDelta,
+              (selectedInventory.quantityAvailable ?? 0) + quantityDelta,
           });
 
           if (response.isStored) {
@@ -124,7 +139,7 @@ const InventoryTransactionForm = () => {
       } else {
         response = await editInventoryTransaction({
           inventoryTransactionId,
-          inventoryTransactionToUpdate: { ...inventoryTransaction },
+          inventoryTransactionToUpdate: { ...normalizedInventoryTransaction },
         });
         if (response.isUpdated) {
           showMessage(
@@ -158,7 +173,8 @@ const InventoryTransactionForm = () => {
       }
       isEditing={inventoryTransactionId ? true : false}
       isLoading={isLoading}
-      assets={assets}
+      inventoryOptions={inventoryOptions}
+      inventories={inventories}
     />
   );
 };

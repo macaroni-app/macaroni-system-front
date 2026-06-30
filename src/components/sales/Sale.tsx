@@ -78,6 +78,7 @@ interface Props {
   productItems: IProductItemFullRelated[];
   rangeDate: RangeDate;
   inventoriesByAsset?: Map<string, IInventoryFullRelated>;
+  inventoriesByAssetVariant?: Map<string, IInventoryFullRelated>;
 }
 
 const Sale = ({
@@ -86,6 +87,7 @@ const Sale = ({
   productItems,
   rangeDate,
   inventoriesByAsset,
+  inventoriesByAssetVariant,
 }: Props) => {
   const navigate = useNavigate();
 
@@ -222,145 +224,207 @@ const Sale = ({
     }
 
     setIsLoading(true);
+    try {
+      const assetQuantityByAssetId = new Map<string, number>();
+      const assetQuantityByAssetVariantId = new Map<
+        string,
+        { quantity: number; assetId?: string }
+      >();
 
-    // Todo: actualizar el inventario de cada insumo.
-    let assetQuantityByAssetId = new Map<string, number>();
+      productItems.forEach((productItem) => {
+        saleItemsFiltered?.forEach((saleItem) => {
+          if (saleItem.product?._id !== productItem.product?._id) return;
 
-    productItems.forEach((productItem) => {
-      saleItemsFiltered?.forEach((saleItem) => {
-        if (saleItem.product?._id === productItem.product?._id) {
-          if (assetQuantityByAssetId.has(productItem?.asset?._id as string)) {
-            let prevQuantity = assetQuantityByAssetId.get(
-              productItem?.asset?._id as string,
-            );
-            assetQuantityByAssetId.set(
-              productItem.asset?._id as string,
-              Number(prevQuantity) +
-                Number(productItem.quantity) * Number(saleItem.quantity),
-            );
-          } else {
-            assetQuantityByAssetId.set(
-              productItem.asset?._id as string,
-              (Number(productItem.quantity) *
-                Number(saleItem.quantity)) as number,
-            );
+          if (productItem.selectionType === "VARIANT_SELECTION") {
+            const relevantSelections = (
+              saleItem.variantSelections ?? []
+            ).filter((variantSelection) => {
+              const currentProductItemId =
+                typeof variantSelection.productItem === "string"
+                  ? variantSelection.productItem
+                  : variantSelection.productItem?._id;
+
+              return currentProductItemId === productItem._id;
+            });
+
+            relevantSelections.forEach((variantSelection) => {
+              const assetVariantId =
+                typeof variantSelection.assetVariant === "string"
+                  ? variantSelection.assetVariant
+                  : variantSelection.assetVariant?._id;
+              const assetId =
+                typeof productItem.baseAsset === "string"
+                  ? productItem.baseAsset
+                  : productItem.baseAsset?._id;
+
+              if (!assetVariantId) return;
+
+              const previousValue =
+                assetQuantityByAssetVariantId.get(assetVariantId);
+
+              assetQuantityByAssetVariantId.set(assetVariantId, {
+                quantity:
+                  Number(previousValue?.quantity ?? 0) +
+                  Number(variantSelection.quantity ?? 0),
+                assetId: previousValue?.assetId ?? assetId,
+              });
+            });
+
+            return;
           }
+
+          const assetId = productItem.asset?._id;
+          if (!assetId) return;
+
+          assetQuantityByAssetId.set(
+            assetId,
+            Number(assetQuantityByAssetId.get(assetId) ?? 0) +
+              Number(productItem.quantity ?? 0) *
+                Number(saleItem.quantity ?? 0),
+          );
+        });
+      });
+
+      const inventoryAdjustments: Array<{
+        id?: string;
+        asset?: string;
+        assetVariant?: string;
+        quantityDelta: number;
+      }> = [];
+      const oldInventories: IInventoryFullRelated[] = inventories;
+
+      assetQuantityByAssetId.forEach((value, key) => {
+        const inv = inventoriesByAsset?.get(String(key));
+        if (!inv) return;
+
+        inventoryAdjustments.push({
+          id: inv._id,
+          asset: inv.asset?._id,
+          quantityDelta: Number(value),
+        });
+      });
+
+      assetQuantityByAssetVariantId.forEach((value, key) => {
+        const inv = inventoriesByAssetVariant?.get(String(key));
+        if (!inv) return;
+
+        inventoryAdjustments.push({
+          id: inv._id,
+          asset: value.assetId ?? inv.asset?._id,
+          assetVariant: inv.assetVariant?._id,
+          quantityDelta: Number(value.quantity),
+        });
+      });
+
+      const adjustInventoryResponse =
+        inventoryAdjustments.length > 0
+          ? await adjustManyInventory(inventoryAdjustments)
+          : undefined;
+
+      const updatedInventories = adjustInventoryResponse?.data?.updated ?? [];
+      const updatedInventoryById = new Map<string, any>();
+
+      updatedInventories.forEach((inventoryUpdated: any) => {
+        if (inventoryUpdated.id) {
+          updatedInventoryById.set(
+            String(inventoryUpdated.id),
+            inventoryUpdated,
+          );
         }
       });
-    });
-    let inventoryAdjustments: Array<{
-      id?: string;
-      asset?: string;
-      quantityDelta: number;
-    }> = [];
-    let oldInventories: IInventoryFullRelated[] = inventories;
 
-    assetQuantityByAssetId.forEach((value, key) => {
-      const inv = inventoriesByAsset?.get(String(key));
-      if (!inv) return;
-      // delta positivo porque estamos reponiendo stock al anular la venta
-      inventoryAdjustments.push({
-        id: inv._id,
-        asset: inv.asset?._id,
-        quantityDelta: Number(value),
+      const inventoryTransactions: IInventoryTransactionLessRelated[] = [];
+
+      assetQuantityByAssetId.forEach((value, key) => {
+        inventoryTransactions.push({
+          asset: key,
+          affectedAmount: value,
+          transactionType: TransactionType.UP,
+          transactionReason: TransactionReason.ADJUSTMENT,
+        });
       });
-    });
 
-    const adjustInventoryResponse =
-      inventoryAdjustments.length > 0
-        ? await adjustManyInventory(inventoryAdjustments)
-        : undefined;
+      assetQuantityByAssetVariantId.forEach((value, key) => {
+        inventoryTransactions.push({
+          asset: value.assetId,
+          assetVariant: key,
+          affectedAmount: value.quantity,
+          transactionType: TransactionType.UP,
+          transactionReason: TransactionReason.ADJUSTMENT,
+        });
+      });
 
-    const updatedInventories = adjustInventoryResponse?.data?.updated ?? [];
+      inventoryTransactions.forEach((inventoryTransaction) => {
+        inventoryAdjustments.forEach((adj) => {
+          if (
+            inventoryTransaction.asset === adj.asset &&
+            inventoryTransaction.assetVariant === adj.assetVariant
+          ) {
+            const oldInv = inventoriesByAsset?.get(String(adj.asset));
+            const oldVariantInv = adj.assetVariant
+              ? inventoriesByAssetVariant?.get(String(adj.assetVariant))
+              : undefined;
+            const updatedInv = adj.id
+              ? updatedInventoryById.get(String(adj.id))
+              : undefined;
 
-    const updatedInventoryById = new Map<string, any>();
+            inventoryTransaction.oldQuantityAvailable =
+              updatedInv?.oldQuantityAvailable ??
+              oldVariantInv?.quantityAvailable ??
+              oldInv?.quantityAvailable;
+            inventoryTransaction.currentQuantityAvailable =
+              updatedInv?.currentQuantityAvailable ??
+              updatedInv?.quantityAvailable ??
+              (oldVariantInv?.quantityAvailable ??
+                oldInv?.quantityAvailable ??
+                0) + adj.quantityDelta;
+            inventoryTransaction.unitCost =
+              oldVariantInv?.assetVariant?.costPrice ??
+              oldInv?.asset?.costPrice;
+          }
+        });
+      });
 
-    updatedInventories.forEach((inventoryUpdated: any) => {
-      if (inventoryUpdated.id) {
-        updatedInventoryById.set(String(inventoryUpdated.id), inventoryUpdated);
+      if (inventoryTransactions.length > 0) {
+        await addNewManyInventoryTransaction(inventoryTransactions);
       }
-    });
 
-    // Todo: registrar las transacciones del inventario de cada insumo.
-
-    let inventoryTransactions: IInventoryTransactionLessRelated[] = [];
-
-    assetQuantityByAssetId.forEach((value, key) => {
-      inventoryTransactions.push({
-        asset: key,
-        affectedAmount: value,
-        transactionType: TransactionType.UP,
-        transactionReason: TransactionReason.ADJUSTMENT,
+      const response = await editSale({
+        saleId: sale._id !== undefined ? sale?._id : "",
+        saleToUpdate: {
+          status: SaleStatus.CANCELLED,
+          client: sale.client?._id,
+          paymentMethod: sale.paymentMethod?._id,
+          costTotal: sale.costTotal,
+          total: sale.total,
+          isRetail: sale.isRetail,
+        },
       });
-    });
 
-    // guardar los valores viejos y nuevos
-    inventoryTransactions.forEach((inventoryTransaction) => {
-      oldInventories.forEach((oldInventory) => {
-        if (inventoryTransaction.asset === oldInventory.asset?._id) {
-          inventoryTransaction.unitCost = oldInventory.asset?.costPrice;
-        }
-      });
-      inventoryAdjustments.forEach((adj) => {
-        if (inventoryTransaction.asset === adj.asset) {
-          const oldInv = inventoriesByAsset?.get(String(adj.asset));
-          const updatedInv = adj.id
-            ? updatedInventoryById.get(String(adj.id))
-            : undefined;
+      if (response.isUpdated && response.status === 200) {
+        showMessage(
+          SALE_CANCELLED,
+          AlertStatus.Success,
+          AlertColorScheme.Purple,
+        );
+        cancelModal.onClose();
+        return;
+      }
 
-          inventoryTransaction.oldQuantityAvailable =
-            updatedInv?.oldQuantityAvailable ?? oldInv?.quantityAvailable;
-          inventoryTransaction.currentQuantityAvailable =
-            updatedInv?.currentQuantityAvailable ??
-            updatedInv?.quantityAvailable ??
-            (oldInv?.quantityAvailable ?? 0) + adj.quantityDelta;
-          inventoryTransaction.unitCost = oldInv?.asset?.costPrice;
-        }
-      });
-    });
-
-    await addNewManyInventoryTransaction(inventoryTransactions);
-
-    // delete sale
-    // const response = await deleteSale({ saleId: sale._id })
-    const response = await editSale({
-      saleId: sale._id !== undefined ? sale?._id : "",
-      saleToUpdate: {
-        status: SaleStatus.CANCELLED,
-        client: sale.client?._id,
-        paymentMethod: sale.paymentMethod?._id,
-        costTotal: sale.costTotal,
-        total: sale.total,
-        isRetail: sale.isRetail,
-      },
-    });
-
-    // const saleItemsToDelete: ISaleItemPreview[] = []
-    // saleItems.forEach((saleItem) => {
-    //   if (saleItem.sale?._id === sale._id) {
-    //     saleItemsToDelete.push({
-    //       product: saleItem.product?._id,
-    //       id: saleItem._id,
-    //       quantity: saleItem.quantity,
-    //     })
-    //   }
-    // })
-
-    if (response.isUpdated && response.status === 200) {
-      showMessage(SALE_CANCELLED, AlertStatus.Success, AlertColorScheme.Purple);
-      cancelModal.onClose();
-      // delete productItems
-      // const response = await deleteManySaleItem(
-      //   saleItemsToDelete as ISaleItemPreview[]
-      // )
-
-      // if (
-      //   response.isDeleted &&
-      //   response.status === 200 &&
-      //   response.data.deletedCount > 0
-      // ) {
-      //   showMessage(SALE_DELETED, AlertStatus.Success, AlertColorScheme.Purple)
-      // }
+      showMessage(
+        "No se pudo anular la venta.",
+        AlertStatus.Error,
+        AlertColorScheme.Red,
+      );
+    } catch (error) {
+      console.error(error);
+      showMessage(
+        "No se pudo anular la venta. Revisá el stock o intentá nuevamente.",
+        AlertStatus.Error,
+        AlertColorScheme.Red,
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 

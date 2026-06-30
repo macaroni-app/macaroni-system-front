@@ -41,11 +41,13 @@ import { useInventories } from "../../hooks/useInventories"
 import { useMessage } from "../../hooks/useMessage"
 import { useOrderRequest } from "../../hooks/useOrderRequest"
 import { usePaymentMethods } from "../../hooks/usePaymentMethods"
+import { useAssetVariants } from "../../hooks/useAssetVariants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { ORDER_REQUEST_CANCELLED, ORDER_REQUEST_CONFIRMED, ORDER_REQUEST_CONVERTED, SOMETHING_WENT_WRONG_MESSAGE } from "../../utils/constants"
 import { getApiErrorMessage, getInventoryNameByReservedItem, getOrderRequestPaymentStatusColorScheme, getOrderRequestPaymentStatusLabel, getOrderRequestStatusColorScheme, getOrderRequestStatusLabel, getPaymentMethodLabel } from "./helpers"
 import { IOrderRequestFullRelated, OrderRequestPaymentStatus, OrderRequestStatus } from "./types"
 import { generateOrderRequestSummaryPdf } from "./generateOrderRequestSummaryPdf"
+import { formatVariantSelections } from "../../utils/variants"
 
 const OrderRequestDetails = () => {
   const { orderRequestId } = useParams()
@@ -67,10 +69,12 @@ const OrderRequestDetails = () => {
   const queryOrderRequest = useOrderRequest(orderRequestId)
   const queryInventories = useInventories({})
   const queryPaymentMethods = usePaymentMethods({})
+  const queryAssetVariants = useAssetVariants({})
 
   const orderRequest = queryOrderRequest.data as IOrderRequestFullRelated | undefined
   const paymentMethods = queryPaymentMethods.data ?? []
   const inventories = queryInventories.inventories
+  const assetVariants = queryAssetVariants.data
 
   const handleGoBack = () => {
     navigate("/orderRequests")
@@ -433,6 +437,7 @@ const OrderRequestDetails = () => {
                       <Tr>
                         <Th>Producto</Th>
                         <Th>Cantidad</Th>
+                        <Th>Variantes</Th>
                         <Th isNumeric>Subtotal</Th>
                       </Tr>
                     </Thead>
@@ -441,6 +446,7 @@ const OrderRequestDetails = () => {
                         <Tr key={item._id}>
                           <Td>{item.product?.name}</Td>
                           <Td>{Number(item.quantity ?? 0)}</Td>
+                          <Td>{formatVariantSelections(item.variantSelections) || "-"}</Td>
                           <Td isNumeric>
                             {new Intl.NumberFormat("en-US", {
                               style: "currency",
@@ -506,15 +512,13 @@ const OrderRequestDetails = () => {
                             </Tr>
                           </Thead>
                           <Tbody>
-                            {orderRequest.reservedItems.map((reservedItem, index) => (
-                              <Tr key={`${reservedItem.asset}-${index}`}>
+                                {orderRequest.reservedItems.map((reservedItem, index) => (
+                              <Tr key={`${reservedItem.asset}-${reservedItem.assetVariant}-${index}`}>
                                 <Td>
                                   {getInventoryNameByReservedItem(
-                                    typeof reservedItem.inventory === "string"
-                                      ? reservedItem.inventory
-                                      : undefined,
-                                    reservedItem.asset,
+                                    reservedItem,
                                     inventories,
+                                    assetVariants,
                                   )}
                                 </Td>
                                 <Td isNumeric>{Number(reservedItem.quantity ?? 0)}</Td>

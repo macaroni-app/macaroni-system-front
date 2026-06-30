@@ -17,17 +17,19 @@ import useAxiosPrivate from "./useAxiosPrivate"
 
 interface Props {
   id?: string
+  isActive?: boolean
+  all?: boolean
 }
 
 export const useProducts = (props: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { id } = props || ""
+  const { id, isActive, all } = props || {}
 
   const query: UseQueryResult<IProductFullRelated[], Error> = useQuery({
     queryKey: [
       "products",
       {
-        filters: { id },
+        filters: { id, isActive, all },
       },
     ],
     queryFn: async ({ queryKey }: QueryFunctionContext) => {

@@ -11,6 +11,7 @@ interface IInventoryDeltaUpdate {
   id?: string;
   _id?: string;
   asset?: string;
+  assetVariant?: string;
   quantityDelta: number;
 }
 
@@ -102,6 +103,7 @@ const inventoryService = {
         return {
           id,
           asset: inventory.asset,
+          assetVariant: inventory.assetVariant,
           quantityDelta,
         };
       })
@@ -117,7 +119,7 @@ const inventoryService = {
     return data;
   },
   adjustMany: async (
-    adjustments: Array<{ id?: string; asset?: string; quantityDelta: number }>,
+    adjustments: Array<{ id?: string; asset?: string; assetVariant?: string; quantityDelta: number }>,
     axiosPrivate: AxiosInstance,
   ) => {
     const inventories = adjustments
@@ -126,6 +128,7 @@ const inventoryService = {
         return {
           id: adjustment.id,
           asset: adjustment.asset,
+          assetVariant: adjustment.assetVariant,
           quantityDelta: Number(adjustment.quantityDelta),
         };
       })

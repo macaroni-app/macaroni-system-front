@@ -40,6 +40,7 @@ import { generateInvoicePDF } from "./generatePdfInvoice"
 // custom hooks
 import { useSales } from "../../hooks/useSales"
 import { useSaleItems } from "../../hooks/useSaleItems"
+import { formatVariantSelections } from "../../utils/variants"
 
 const SaleDetails = () => {
   const { saleId } = useParams()
@@ -74,6 +75,7 @@ const SaleDetails = () => {
           {saleItem?.quantity !== undefined &&
             Number.parseFloat(saleItem?.quantity.toString())}
         </Td>
+        <Td>{formatVariantSelections(saleItem.variantSelections) || "-"}</Td>
         <Td isNumeric>
           {new Intl.NumberFormat("en-US", {
             style: "currency",
@@ -154,9 +156,9 @@ const SaleDetails = () => {
         clientIvaCondition: String(clientIvaCondition),
         clientDocType: Number(invoice.documentType),
         items: saleItems != undefined ? saleItems?.map(saleItem => {
-          return {
-            code: '',
-            description: String(saleItem.product?.name),
+            return {
+              code: '',
+            description: `${String(saleItem.product?.name)}${formatVariantSelections(saleItem.variantSelections) ? ` (${formatVariantSelections(saleItem.variantSelections)})` : ""}`,
             quantity: Number(saleItem.quantity),
             unitPrice: sale.isRetail ? Number(saleItem.product?.retailsalePrice) : Number(saleItem.product?.wholesalePrice),
             subtotal: Number(saleItem.subtotal)
@@ -422,8 +424,9 @@ const SaleDetails = () => {
                       <Tr>
                         <Th>Producto</Th>
                         <Th>Tipo</Th>
-                        <Th>Cantidad</Th>
-                        <Th isNumeric>Subtotal</Th>
+                            <Th>Cantidad</Th>
+                            <Th>Variantes</Th>
+                            <Th isNumeric>Subtotal</Th>
                       </Tr>
                     </Thead>
                     <Tbody>{saleDetailsList}</Tbody>

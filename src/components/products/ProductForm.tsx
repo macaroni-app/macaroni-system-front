@@ -10,10 +10,12 @@ import {
   IProductFullRelated,
   IProductLessRelated,
   IProductItemLessRelated,
+  ProductItemSelectionType,
 } from "./types"
 import { ICategory } from "../categories/types"
 import { IProductTypeType } from "../productTypes/types"
 import { IAssetFullCategory } from "../assets/types"
+import { IVariantAttributeValue } from "../variantAttributeValues/types"
 
 // components
 import ProductAddForm from "./ProductAddForm"
@@ -27,10 +29,13 @@ import { useCategories } from "../../hooks/useCategories"
 import { useProductTypes } from "../../hooks/useProductTypes"
 import { useAssets } from "../../hooks/useAssets"
 import { useProductItems } from "../../hooks/useProductItems"
+import { useVariantAttributeValues } from "../../hooks/useVariantAttributeValues"
 import { useNewManyProductItem } from "../../hooks/useNewManyProductItem"
 import { useEditManyProductItem } from "../../hooks/useEditManyProductItem"
+import { useDeleteProduct } from "../../hooks/useDeleteProduct"
 import { useMessage } from "../../hooks/useMessage"
-import { useError, Error } from "../../hooks/useError"
+import { useError } from "../../hooks/useError"
+import type { Error } from "../../hooks/useError"
 
 import { RECORD_CREATED, RECORD_UPDATED } from "../../utils/constants"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
@@ -57,11 +62,13 @@ const ProductForm = () => {
   const queryProducts = useProducts({})
   const queryAssets = useAssets({})
   const queryProductItems = useProductItems({})
+  const queryVariantAttributeValues = useVariantAttributeValues({})
 
   const { addNewProduct } = useNewProduct()
   const { addNewManyProductItem } = useNewManyProductItem()
   const { editProduct } = useEditProduct()
   const { editManyProductItem } = useEditManyProductItem()
+  const { deleteProduct } = useDeleteProduct()
 
   const queryCategories = useCategories({})
   const queryProductTypes = useProductTypes({})
@@ -70,6 +77,53 @@ const ProductForm = () => {
   const productTypes = queryProductTypes?.data as IProductTypeType[]
   const assets = queryAssets?.data as IAssetFullCategory[]
   const productItems = queryProductItems.data as IProductItemLessRelated[]
+  const variantAttributeValues =
+    queryVariantAttributeValues.data as IVariantAttributeValue[]
+
+  const getAssetIdForCost = (productItem: IProductItemLessRelated) =>
+    productItem.selectionType === ProductItemSelectionType.VARIANT_SELECTION
+      ? productItem.baseAsset
+      : productItem.asset
+
+  const normalizeProductItems = (
+    productItemsToNormalize: IProductItemLessRelated[] | undefined
+  ): IProductItemLessRelated[] =>
+    (productItemsToNormalize ?? []).map((productItem) => {
+      const selectionType =
+        productItem.selectionType ?? ProductItemSelectionType.FIXED
+      const normalizedAllowedVariantValues = (
+        productItem.allowedVariantValues ?? []
+      ).filter(
+        (value): value is string =>
+          typeof value === "string" && value.trim().length > 0
+      )
+
+      if (selectionType === ProductItemSelectionType.VARIANT_SELECTION) {
+        return {
+          ...productItem,
+          selectionType,
+          asset: undefined,
+          baseAsset:
+            typeof productItem.baseAsset === "string" &&
+            productItem.baseAsset.trim().length > 0
+              ? productItem.baseAsset
+              : undefined,
+          allowedVariantValues: normalizedAllowedVariantValues,
+        }
+      }
+
+      return {
+        ...productItem,
+        selectionType,
+        asset:
+          typeof productItem.asset === "string" &&
+          productItem.asset.trim().length > 0
+            ? productItem.asset
+            : undefined,
+        baseAsset: undefined,
+        allowedVariantValues: [],
+      }
+    })
 
   const onSubmit: SubmitHandler<IProductLessRelated> = async (
     product: IProductLessRelated
@@ -83,8 +137,9 @@ const ProductForm = () => {
       }
 
       if (!productId) {
-        let assetIds = product?.productItems?.map(
-          (productItem) => productItem.asset
+        const normalizedProductItems = normalizeProductItems(product.productItems)
+        let assetIds = normalizedProductItems?.map(
+          (productItem) => getAssetIdForCost(productItem)
         )
 
         let assetWithCostPrice: IAssetFullCategory[] = []
@@ -100,8 +155,8 @@ const ProductForm = () => {
         let assetWithQuantity: IProductItemOmitProduct[] = []
 
         assetWithCostPrice.forEach((asset) => {
-          product.productItems?.forEach((productItem) => {
-            if (asset._id === productItem.asset) {
+          normalizedProductItems?.forEach((productItem) => {
+            if (asset._id === getAssetIdForCost(productItem)) {
               assetWithQuantity.push({
                 asset,
                 quantity: productItem.quantity,
@@ -125,17 +180,37 @@ const ProductForm = () => {
             }
           }, 0)
 
-        response = await addNewProduct({ ...product, costPrice: totalCost })
+        response = await addNewProduct({
+          ...product,
+          costPrice: totalCost,
+          productItems: normalizedProductItems,
+        })
 
-        let producItemWithProduct = product?.productItems?.map(
+        let producItemWithProduct = normalizedProductItems?.map(
           (productItem) => {
-            return { ...productItem, product: response?.data?._id }
+            return {
+              ...productItem,
+              selectionType:
+                productItem.selectionType ?? ProductItemSelectionType.FIXED,
+              product: response?.data?._id,
+            }
           }
         )
 
-        await addNewManyProductItem(
-          producItemWithProduct as IProductItemLessRelated[]
-        )
+        try {
+          await addNewManyProductItem(
+            producItemWithProduct as IProductItemLessRelated[]
+          )
+        } catch (productItemsError) {
+          if (response?.data?._id) {
+            try {
+              await deleteProduct({ productId: String(response.data._id) })
+            } catch (_cleanupError) {
+              // Keep the original error as the one shown to the user.
+            }
+          }
+          throw productItemsError
+        }
 
         if (response.isStored) {
           showMessage(
@@ -145,8 +220,9 @@ const ProductForm = () => {
           )
         }
       } else {
-        let assetIds = product?.productItems?.map(
-          (productItem) => productItem.asset
+        const normalizedProductItems = normalizeProductItems(product.productItems)
+        let assetIds = normalizedProductItems?.map(
+          (productItem) => getAssetIdForCost(productItem)
         )
 
         let assetWithCostPrice: IAssetFullCategory[] = []
@@ -162,8 +238,8 @@ const ProductForm = () => {
         let assetWithQuantity: IProductItemOmitProduct[] = []
 
         assetWithCostPrice.forEach((asset) => {
-          product.productItems?.forEach((productItem) => {
-            if (asset._id === productItem.asset) {
+          normalizedProductItems?.forEach((productItem) => {
+            if (asset._id === getAssetIdForCost(productItem)) {
               assetWithQuantity.push({
                 asset,
                 quantity: productItem.quantity,
@@ -189,25 +265,33 @@ const ProductForm = () => {
 
         response = await editProduct({
           productId,
-          productToUpdate: { ...product, costPrice: totalCost },
+          productToUpdate: {
+            ...product,
+            costPrice: totalCost,
+            productItems: normalizedProductItems,
+          },
         })
 
         let newProductItemWithProduct: IProductItemLessRelated[] = []
         let productItemsWithProductToUpdate: IProductItemLessRelated[] = []
 
-        product?.productItems?.forEach((productItem) => {
+        normalizedProductItems?.forEach((productItem) => {
           if (productItem.hasOwnProperty("id")) {
             productItemsWithProductToUpdate.push({
               ...productItem,
+              selectionType:
+                productItem.selectionType ?? ProductItemSelectionType.FIXED,
               product: productId,
             })
           }
         })
 
-        product?.productItems?.forEach((productItem) => {
+        normalizedProductItems?.forEach((productItem) => {
           if (!productItem.hasOwnProperty("id")) {
             newProductItemWithProduct.push({
               ...productItem,
+              selectionType:
+                productItem.selectionType ?? ProductItemSelectionType.FIXED,
               product: productId,
             })
           }
@@ -262,6 +346,7 @@ const ProductForm = () => {
           categories={categories}
           productTypes={productTypes}
           assets={assets?.filter((asset) => asset.isActive)}
+          variantAttributeValues={variantAttributeValues}
           productItems={productItems as IProductFullRelated[]}
         />
       )}
@@ -273,6 +358,7 @@ const ProductForm = () => {
           categories={categories}
           productTypes={productTypes}
           assets={assets?.filter((asset) => asset.isActive)}
+          variantAttributeValues={variantAttributeValues}
         />
       )}
     </>

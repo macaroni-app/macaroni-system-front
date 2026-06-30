@@ -12,6 +12,7 @@ import {
   Input,
   GridItem,
   Button,
+  ButtonGroup,
 } from "@chakra-ui/react"
 
 import { useNavigate } from "react-router-dom"
@@ -39,15 +40,22 @@ import NewRecordPanel from "../common/NewRecordPanel"
 import ProfileBase from "../common/permissions"
 import { useCheckRole } from "../../hooks/useCheckRole"
 
+type ProductStatusFilter = "active" | "inactive" | "all"
+
 const Products = () => {
   // const [showFilters, setShowFilters] = useState(
   //   JSON.parse(window.localStorage.getItem("showFilters"))?.showFilters
   // );
 
   const [searchValue, setSearchValue] = useState<string>("")
+  const [statusFilter, setStatusFilter] = useState<ProductStatusFilter>("active")
   const { checkRole } = useCheckRole()
 
-  const queryProducts = useProducts({})
+  const queryProducts = useProducts(
+    statusFilter === "all"
+      ? { all: true }
+      : { isActive: statusFilter === "active" },
+  )
   const queryProductItems = useProductItems({})
   // const {
   //   query: querySaleDetails,
@@ -147,18 +155,48 @@ const Products = () => {
           )}
           <Card variant="outline" mt={5} mb={3}>
             <CardBody>
-              <Flex>
-                <FormControl>
-                  <Input
-                    name="searchValue"
-                    type="text"
-                    value={searchValue}
-                    onChange={(e) => handleSetSearchValue(e)}
-                    placeholder="Buscar producto ..."
-                    required
-                  />
-                </FormControl>
-              </Flex>
+              <Stack spacing={4}>
+                <ButtonGroup
+                  isAttached={false}
+                  flexWrap="wrap"
+                  gap={2}
+                  size="sm"
+                >
+                  <Button
+                    colorScheme={statusFilter === "active" ? "purple" : "gray"}
+                    variant={statusFilter === "active" ? "solid" : "outline"}
+                    onClick={() => setStatusFilter("active")}
+                  >
+                    Activos
+                  </Button>
+                  <Button
+                    colorScheme={statusFilter === "inactive" ? "purple" : "gray"}
+                    variant={statusFilter === "inactive" ? "solid" : "outline"}
+                    onClick={() => setStatusFilter("inactive")}
+                  >
+                    Inactivos
+                  </Button>
+                  <Button
+                    colorScheme={statusFilter === "all" ? "purple" : "gray"}
+                    variant={statusFilter === "all" ? "solid" : "outline"}
+                    onClick={() => setStatusFilter("all")}
+                  >
+                    Todos
+                  </Button>
+                </ButtonGroup>
+                <Flex>
+                  <FormControl>
+                    <Input
+                      name="searchValue"
+                      type="text"
+                      value={searchValue}
+                      onChange={(e) => handleSetSearchValue(e)}
+                      placeholder="Buscar producto ..."
+                      required
+                    />
+                  </FormControl>
+                </Flex>
+              </Stack>
             </CardBody>
           </Card>
         </>

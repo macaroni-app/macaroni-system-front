@@ -27,6 +27,8 @@ import OrderRequestForm from "../orderRequests/OrderRequestForm"
 import OrderRequestDetails from "../orderRequests/OrderRequestDetails"
 import Assets from "../assets/Assets"
 import AssetForm from "../assets/AssetForm"
+import AssetVariants from "../assetVariants/AssetVariants"
+import AssetVariantForm from "../assetVariants/AssetVariantForm"
 import ProductTypes from "../productTypes/ProductTypes"
 import ProductTypeForm from "../productTypes/ProductTypeForm"
 import ProductDetails from "../products/ProductDetails"
@@ -39,6 +41,10 @@ import InventoryTransactions from "../inventoryTransactions/InventoryTransaction
 import InventoryTransactionForm from "../inventoryTransactions/InventoryTransactionForm"
 import Categories from "../categories/Categories"
 import CategoryForm from "../categories/CategoryForm"
+import VariantAttributes from "../variantAttributes/VariantAttributes"
+import VariantAttributeForm from "../variantAttributes/VariantAttributeForm"
+import VariantAttributeValues from "../variantAttributeValues/VariantAttributeValues"
+import VariantAttributeValueForm from "../variantAttributeValues/VariantAttributeValueForm"
 import Clients from "../clients/Clients"
 import ClientDetails from "../clients/ClientDetails"
 import ClientForm from "../clients/ClientForm"
@@ -248,6 +254,117 @@ const Home = () => {
           element={<ProtectedRoute allowedRoles={ProfileBase.assets.edit} />}
         >
           <Route path="/assets/:assetId/edit" element={<AssetForm />} />
+        </Route>
+
+        {/* VARIANT ATTRIBUTES */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributes.view} />
+          }
+        >
+          <Route
+            path="/variantAttributes"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <VariantAttributes />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributes.create} />
+          }
+        >
+          <Route path="/variantAttributes/add" element={<VariantAttributeForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributes.edit} />
+          }
+        >
+          <Route path="/variantAttributes/:variantAttributeId/edit" element={<VariantAttributeForm />} />
+        </Route>
+
+        {/* VARIANT ATTRIBUTE VALUES */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributeValues.view} />
+          }
+        >
+          <Route
+            path="/variantAttributeValues"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <VariantAttributeValues />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributeValues.create} />
+          }
+        >
+          <Route path="/variantAttributeValues/add" element={<VariantAttributeValueForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.variantAttributeValues.edit} />
+          }
+        >
+          <Route path="/variantAttributeValues/:variantAttributeValueId/edit" element={<VariantAttributeValueForm />} />
+        </Route>
+
+        {/* ASSET VARIANTS */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.assetVariants.view} />
+          }
+        >
+          <Route
+            path="/assetVariants"
+            element={
+              <Grid templateColumns="repeat(12, 1fr)" mb={10}>
+                <GridItem
+                  as="main"
+                  colSpan={{ base: 10, md: 10, lg: 8 }}
+                  colStart={{ base: 2, md: 2, lg: 3 }}
+                  mb={10}
+                >
+                  <AssetVariants />
+                </GridItem>
+              </Grid>
+            }
+          />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.assetVariants.create} />
+          }
+        >
+          <Route path="/assetVariants/add" element={<AssetVariantForm />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={ProfileBase.assetVariants.edit} />
+          }
+        >
+          <Route path="/assetVariants/:assetVariantId/edit" element={<AssetVariantForm />} />
         </Route>
 
         {/* CATEGORIES */}

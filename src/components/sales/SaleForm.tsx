@@ -12,7 +12,11 @@ import {
   SaleStatus,
   ISaleItemOmitSale,
 } from "./types";
-import { IProductFullRelated } from "../products/types";
+import {
+  IProductFullRelated,
+  IProductItemFullRelated,
+  ProductItemSelectionType,
+} from "../products/types";
 import { IClient } from "../clients/types";
 import { IPaymentMethod } from "../paymentMethods/types";
 
@@ -28,12 +32,13 @@ import { usePaymentMethods } from "../../hooks/usePaymentMethods";
 // import { useEditManyInventory } from "../../hooks/useEditManyInventory";
 import { useAdjustManyInventory } from "../../hooks/useAdjustManyInventory";
 import { useMessage } from "../../hooks/useMessage";
-import { useError, Error } from "../../hooks/useError";
+import { useError } from "../../hooks/useError";
+import type { Error } from "../../hooks/useError";
+import { useAssetVariants } from "../../hooks/useAssetVariants";
 
 import { RECORD_CREATED } from "../../utils/constants";
 import { AlertColorScheme, AlertStatus } from "../../utils/enums";
 import { useProductItems } from "../../hooks/useProductItems";
-import { IProductItemFullRelated } from "../products/types";
 import { useInventories } from "../../hooks/useInventories";
 import { IInventoryFullRelated } from "../inventories/types";
 import { useNewManyInventoryTransaction } from "../../hooks/useNewManyInventoryTransaction";
@@ -46,6 +51,8 @@ import { useNewSale } from "../../hooks/useNewSale";
 import { useNewManySaleItem } from "../../hooks/useNewManySaleItem";
 import { useBusinesses } from "../../hooks/useBusinesses";
 import { IBusiness } from "../businesses/types";
+import { IAssetVariant } from "../assetVariants/types";
+import { getVariantSelectionExpectedQuantity } from "../../utils/variants";
 
 type ISaleResponse = {
   data?: ISaleFullRelated;
@@ -72,6 +79,7 @@ const SaleForm = () => {
   const queryPaymentMethod = usePaymentMethods({});
   const queryInventories = useInventories({});
   const queryBusinesses = useBusinesses({});
+  const queryAssetVariants = useAssetVariants({});
 
   // const { addNewProduct } = useNewProduct();
   // const { addNewManyProductItem } = useNewManyProductItem();
@@ -89,7 +97,9 @@ const SaleForm = () => {
   // saleItems fetched via query but not used directly here
   const inventories = queryInventories.inventories as IInventoryFullRelated[];
   const inventoriesByAsset = queryInventories.inventoriesByAssetId;
+  const inventoriesByAssetVariant = queryInventories.inventoriesByAssetVariantId;
   const businesses = queryBusinesses.data as IBusiness[];
+  const assetVariants = queryAssetVariants.data as IAssetVariant[];
   const currentBusiness = businesses?.find(
     (business) => business?.cuit === "23393153504",
   );
@@ -152,11 +162,48 @@ const SaleForm = () => {
     return totalSaleWithDiscount;
   };
 
+  const normalizeVariantSelections = (
+    variantSelections: ISaleItemLessRelated["variantSelections"],
+  ) =>
+    (variantSelections ?? []).filter((variantSelection) => {
+      const productItemId =
+        typeof variantSelection.productItem === "string"
+          ? variantSelection.productItem
+          : variantSelection.productItem?._id;
+      const assetVariantId =
+        typeof variantSelection.assetVariant === "string"
+          ? variantSelection.assetVariant
+          : variantSelection.assetVariant?._id;
+
+      return (
+        typeof productItemId === "string" &&
+        productItemId.trim().length > 0 &&
+        typeof assetVariantId === "string" &&
+        assetVariantId.trim().length > 0 &&
+        Number(variantSelection.quantity ?? 0) > 0
+      );
+    });
+
+  const normalizeSaleItems = (
+    saleItems: ISaleItemLessRelated[] | undefined,
+  ): ISaleItemLessRelated[] =>
+    (saleItems ?? []).map((saleItem) => ({
+      ...saleItem,
+      variantSelections: normalizeVariantSelections(saleItem.variantSelections),
+    }));
+
   const onSubmit: SubmitHandler<ISaleLessRelated> = async (
     sale: ISaleLessRelated,
   ) => {
     setIsLoading(true);
     try {
+      const normalizedSale: ISaleLessRelated = {
+        ...sale,
+        saleItems: normalizeSaleItems(
+          sale.saleItems as ISaleItemLessRelated[] | undefined,
+        ),
+      };
+
       let response: ISaleResponse = {
         data: undefined,
         isStored: undefined,
@@ -166,18 +213,89 @@ const SaleForm = () => {
       if (!saleId) {
         // Todo: actualizar el inventario de cada insumo.
         const assetQuantityByAssetId = new Map<string, number>();
+        const assetQuantityByAssetVariantId = new Map<
+          string,
+          { quantity: number; assetId?: string }
+        >();
 
         productItems.forEach((productItem) => {
-          // ensure productItem has asset and product
-          const assetId = productItem?.asset?._id;
           const productId = productItem?.product?._id;
-          if (!assetId || !productId) return;
+          if (!productId) return;
 
-          sale.saleItems?.forEach((saleItem) => {
+          normalizedSale.saleItems?.forEach((saleItem) => {
             if (
               saleItem.product === productId &&
               saleItem.quantity !== undefined
             ) {
+              if (
+                (productItem.selectionType ?? ProductItemSelectionType.FIXED) ===
+                ProductItemSelectionType.VARIANT_SELECTION
+              ) {
+                const relevantSelections = (
+                  saleItem.variantSelections ?? []
+                ).filter((variantSelection) => {
+                  const currentProductItemId =
+                    typeof variantSelection.productItem === "string"
+                      ? variantSelection.productItem
+                      : variantSelection.productItem?._id;
+
+                  return currentProductItemId === productItem._id;
+                });
+
+                const expectedQuantity = getVariantSelectionExpectedQuantity(
+                  productItem,
+                  Number(saleItem.quantity ?? 0),
+                );
+                const currentQuantity = relevantSelections.reduce(
+                  (accumulator, variantSelection) =>
+                    accumulator + Number(variantSelection.quantity ?? 0),
+                  0,
+                );
+
+                if (
+                  relevantSelections.length === 0 ||
+                  currentQuantity !== expectedQuantity
+                ) {
+                  throw new Error(
+                    "Completá correctamente la selección de variantes del producto.",
+                  );
+                }
+
+                relevantSelections.forEach((variantSelection) => {
+                  const assetVariantId =
+                    typeof variantSelection.assetVariant === "string"
+                      ? variantSelection.assetVariant
+                      : variantSelection.assetVariant?._id;
+
+                  const currentAssetVariant = assetVariants?.find(
+                    (assetVariant) => assetVariant._id === assetVariantId,
+                  );
+                  const currentAssetId =
+                    typeof currentAssetVariant?.baseAsset === "string"
+                      ? currentAssetVariant.baseAsset
+                      : currentAssetVariant?.baseAsset?._id;
+
+                  if (!assetVariantId) {
+                    return;
+                  }
+
+                  const previousValue =
+                    assetQuantityByAssetVariantId.get(assetVariantId);
+
+                  assetQuantityByAssetVariantId.set(assetVariantId, {
+                    quantity:
+                      Number(previousValue?.quantity ?? 0) +
+                      Number(variantSelection.quantity ?? 0),
+                    assetId: currentAssetId,
+                  });
+                });
+
+                return;
+              }
+
+              const assetId = productItem?.asset?._id;
+              if (!assetId) return;
+
               const addAmount =
                 Number(productItem.quantity ?? 0) *
                 Number(saleItem.quantity ?? 0);
@@ -191,6 +309,7 @@ const SaleForm = () => {
         let inventoryAdjustments: Array<{
           id?: string;
           asset?: string;
+          assetVariant?: string;
           quantityDelta: number;
         }> = [];
 
@@ -199,6 +318,7 @@ const SaleForm = () => {
           inventories?.map((inv) => ({
             ...inv,
             asset: inv.asset ? { ...inv.asset } : undefined,
+            assetVariant: inv.assetVariant ? { ...inv.assetVariant } : undefined,
           })) ?? [];
 
         // usar el Map O(1) de inventoriesByAsset
@@ -215,6 +335,21 @@ const SaleForm = () => {
           inventoryAdjustments.push({
             id: inv._id,
             asset: inv.asset?._id,
+            quantityDelta,
+          });
+        });
+
+        assetQuantityByAssetVariantId.forEach((value, key) => {
+          if (!inventoriesByAssetVariant) return;
+          const inv = inventoriesByAssetVariant.get(key);
+          if (!inv) return;
+
+          const quantityDelta = -Number(value.quantity);
+
+          inventoryAdjustments.push({
+            id: inv._id,
+            asset: value.assetId ?? inv.asset?._id,
+            assetVariant: inv.assetVariant?._id,
             quantityDelta,
           });
         });
@@ -250,6 +385,16 @@ const SaleForm = () => {
           });
         });
 
+        assetQuantityByAssetVariantId.forEach((value, key) => {
+          inventoryTransactions.push({
+            asset: value.assetId,
+            assetVariant: key,
+            affectedAmount: value.quantity,
+            transactionType: TransactionType.DOWN,
+            transactionReason: TransactionReason.SELL,
+          });
+        });
+
         // guardar los valores viejos y nuevos
         inventoryTransactions.forEach((inventoryTransaction) => {
           oldInventories.forEach((oldInventory) => {
@@ -258,8 +403,14 @@ const SaleForm = () => {
             }
           });
           inventoryAdjustments.forEach((adj) => {
-            if (inventoryTransaction.asset === adj.asset) {
+            if (
+              inventoryTransaction.asset === adj.asset &&
+              inventoryTransaction.assetVariant === adj.assetVariant
+            ) {
               const oldInv = inventoriesByAsset?.get(String(adj.asset));
+              const oldVariantInv = adj.assetVariant
+                ? inventoriesByAssetVariant?.get(String(adj.assetVariant))
+                : undefined;
               const updatedInv = adj.id
                 ? updatedInventoryById.get(String(adj.id))
                 : undefined;
@@ -269,8 +420,12 @@ const SaleForm = () => {
               inventoryTransaction.currentQuantityAvailable =
                 updatedInv?.currentQuantityAvailable ??
                 updatedInv?.quantityAvailable ??
-                (oldInv?.quantityAvailable ?? 0) + adj.quantityDelta;
-              inventoryTransaction.unitCost = oldInv?.asset?.costPrice;
+                (oldVariantInv?.quantityAvailable ??
+                  oldInv?.quantityAvailable ??
+                  0) + adj.quantityDelta;
+              inventoryTransaction.unitCost =
+                oldVariantInv?.assetVariant?.costPrice ??
+                oldInv?.asset?.costPrice;
             }
           });
         });
@@ -280,7 +435,7 @@ const SaleForm = () => {
         // Todo: insertar la venta.
 
         const costTotal =
-          sale.saleItems
+          normalizedSale.saleItems
             ?.map((saleItem) => {
               if (saleItem.quantity === undefined) return 0;
               const prod = productsById.get(String(saleItem.product));
@@ -289,28 +444,29 @@ const SaleForm = () => {
             })
             .reduce((acc, cur) => acc + (cur ?? 0), 0) ?? 0;
 
-        sale.total = getTotalSale(sale);
-        sale.costTotal = costTotal;
-        sale.status = SaleStatus.PAID;
-        sale.business = currentBusiness?._id;
-        response = await addNewSale(sale);
+        normalizedSale.total = getTotalSale(normalizedSale);
+        normalizedSale.costTotal = costTotal;
+        normalizedSale.status = SaleStatus.PAID;
+        normalizedSale.business = currentBusiness?._id;
+        response = await addNewSale(normalizedSale);
 
         // Todo: insertar los items de la venta.
 
-        const saleItemWithSale = (sale?.saleItems ?? [])
+        const saleItemWithSale = (normalizedSale?.saleItems ?? [])
           .map((saleItem) => {
             const prod = productsById.get(String(saleItem.product));
             if (!prod) return null;
 
             const qty = Number(saleItem.quantity ?? 0);
-            const price = sale.isRetail
+            const price = normalizedSale.isRetail
               ? prod.retailsalePrice
               : prod.wholesalePrice;
             const subTotal = qty * Number(price ?? 0);
 
             const discount =
-              sale?.discount !== undefined && !isNaN(sale?.discount)
-                ? sale.discount / 100
+              normalizedSale?.discount !== undefined &&
+              !isNaN(normalizedSale?.discount)
+                ? normalizedSale.discount / 100
                 : 0;
 
             const subTotalWithDiscount = subTotal - subTotal * discount;
@@ -318,6 +474,19 @@ const SaleForm = () => {
             return {
               ...saleItem,
               sale: response?.data?._id,
+              variantSelections: (saleItem.variantSelections ?? []).map(
+                (variantSelection) => ({
+                  ...variantSelection,
+                  productItem:
+                    typeof variantSelection.productItem === "string"
+                      ? variantSelection.productItem
+                      : variantSelection.productItem?._id,
+                  assetVariant:
+                    typeof variantSelection.assetVariant === "string"
+                      ? variantSelection.assetVariant
+                      : variantSelection.assetVariant?._id,
+                }),
+              ),
               subtotal: subTotalWithDiscount,
             };
           })
@@ -451,6 +620,8 @@ const SaleForm = () => {
           onCancelOperation={onCancelOperation}
           isLoading={isLoading}
           products={products}
+          productItems={productItems}
+          assetVariants={assetVariants}
           clients={clients?.filter((client) => client.isActive)}
           paymentMethods={paymentMethods}
         />

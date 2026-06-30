@@ -22,6 +22,7 @@ import {
 import { useInventories } from "../../hooks/useInventories"
 import { IInventoryFullRelated } from "../inventories/types"
 import Loading from "../common/Loading"
+import { getInventoryDisplayName } from "../../utils/variants"
 
 ChartJS.register(
   LinearScale,
@@ -38,8 +39,6 @@ type StockChartRecord = {
   sellable: number
 }
 
-const maxVisibleItems = 10
-
 const getStockChartRecords = (
   inventories: IInventoryFullRelated[] = [],
 ): StockChartRecord[] => {
@@ -50,7 +49,10 @@ const getStockChartRecords = (
       const quantityReserved = Number(inventory.quantityReserved ?? 0)
 
       return {
-        label: inventory.asset?.name ?? "Sin nombre",
+        label: getInventoryDisplayName({
+          asset: inventory.asset,
+          assetVariant: inventory.assetVariant,
+        }),
         reserved: quantityReserved,
         sellable: Math.max(quantityAvailable - quantityReserved, 0),
       }
@@ -62,7 +64,6 @@ const getStockChartRecords = (
 
       return current.sellable - next.sellable
     })
-    .slice(0, maxVisibleItems)
 }
 
 const SellableReservedStockChart = () => {
@@ -148,8 +149,14 @@ const SellableReservedStockChart = () => {
         )}
       </CardHeader>
       <CardBody>
-        <Box h={`${Math.max(280, records.length * 48)}px`} w="100%">
+        <Box
+          maxH="720px"
+          overflowY="auto"
+          pr={records.length > 12 ? 2 : 0}
+        >
+          <Box h={`${Math.max(280, records.length * 48)}px`} w="100%">
           <Bar options={options} data={data} />
+          </Box>
         </Box>
       </CardBody>
       <Divider />

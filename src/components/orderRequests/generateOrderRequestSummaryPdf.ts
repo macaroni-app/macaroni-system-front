@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { IOrderRequestFullRelated } from "./types";
+import { formatVariantSelections } from "../../utils/variants";
 
 const TICKET_WIDTH_MM = 80;
 const TICKET_HEIGHT_MM = 180;
@@ -166,6 +167,18 @@ export const generateOrderRequestSummaryPdf = (
       align: "right",
     });
     currentY += 5;
+
+    const variantSelections = formatVariantSelections(item.variantSelections);
+    if (variantSelections) {
+      const wrappedVariants = doc.splitTextToSize(
+        variantSelections,
+        CONTENT_WIDTH_MM,
+      ) as string[];
+      ensureSpace(wrappedVariants.length * 4 + 2);
+      doc.setFontSize(7);
+      doc.text(wrappedVariants, PAGE_MARGIN_MM, currentY);
+      currentY += wrappedVariants.length * 4;
+    }
   });
 
   drawLine(doc, currentY);

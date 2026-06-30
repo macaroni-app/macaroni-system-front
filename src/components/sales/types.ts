@@ -2,7 +2,7 @@ import { IBusiness } from "../businesses/types"
 import { IClient } from "../clients/types"
 import { IGenericObject } from "../common/types"
 import { IPaymentMethod } from "../paymentMethods/types"
-import { IProductFullRelated } from "../products/types"
+import { IProductFullRelated, IVariantSelection } from "../products/types"
 
 export enum SaleStatus {
   PAID = 'PAID',
@@ -48,6 +48,7 @@ export interface ISaleLessRelated extends ISaleFather {
 export interface ISaleItemFather extends IGenericObject {
   quantity?: number
   subtotal?: number
+  variantSelections?: IVariantSelection[]
 }
 
 export interface ISaleItemFullRelated extends ISaleItemFather {
@@ -60,5 +61,5 @@ export interface ISaleItemLessRelated extends ISaleItemFather {
   product?: string
 }
 
-export type ISaleItemPreview = Pick<ISaleItemLessRelated, "product" | "quantity" | "id">
+export type ISaleItemPreview = Pick<ISaleItemLessRelated, "product" | "quantity" | "id" | "variantSelections">
 export type ISaleItemOmitSale = Pick<ISaleItemFullRelated, "product" | "quantity">

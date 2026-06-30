@@ -52,6 +52,30 @@ const ProfileBase = {
     view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
     viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR]
   },
+  variantAttributes: {
+    create: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    edit: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    delete: [ROLES.ADMIN],
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR],
+  },
+  variantAttributeValues: {
+    create: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    edit: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    delete: [ROLES.ADMIN],
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR],
+  },
+  assetVariants: {
+    create: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    edit: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    deactivate: [ROLES.ADMIN, ROLES.SUPERVISOR],
+    delete: [ROLES.ADMIN],
+    view: [ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.SELLER],
+    viewActions: [ROLES.ADMIN, ROLES.SUPERVISOR],
+  },
   inventories: {
     create: [ROLES.ADMIN, ROLES.SUPERVISOR],
     edit: [ROLES.ADMIN],

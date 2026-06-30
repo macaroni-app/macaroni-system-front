@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 // types
 import { IInventoryLessRelated } from "./types";
 import { IAssetFullCategory } from "../assets/types";
+import { IAssetVariant } from "../assetVariants/types";
 
 // components
 import InventoryAddEditForm from "./InventoryAddEditForm";
@@ -12,6 +13,7 @@ import InventoryAddEditForm from "./InventoryAddEditForm";
 // custom hooks
 import { useInventories } from "../../hooks/useInventories";
 import { useAssets } from "../../hooks/useAssets";
+import { useAssetVariants } from "../../hooks/useAssetVariants";
 import { useNewInventory } from "../../hooks/useNewInventory";
 import { useEditInventory } from "../../hooks/useEditInventory";
 import { useMessage } from "../../hooks/useMessage";
@@ -33,6 +35,8 @@ const InventoryForm = () => {
 
   const queryAssets = useAssets({});
   const assets = queryAssets?.data as IAssetFullCategory[];
+  const queryAssetVariants = useAssetVariants({});
+  const assetVariants = queryAssetVariants.data as IAssetVariant[];
 
   const queryInventories = useInventories({ id: inventoryId });
   const inventoryToUpdate = queryInventories?.inventories
@@ -104,6 +108,7 @@ const InventoryForm = () => {
       isEditing={inventoryId ? true : false}
       isLoading={isLoading}
       assets={assets}
+      assetVariants={assetVariants}
     />
   );
 };

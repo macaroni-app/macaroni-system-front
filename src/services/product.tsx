@@ -5,6 +5,8 @@ const PRODUCT_URL = "/api/v1/products"
 
 interface IFilters {
   id?: string
+  isActive?: boolean
+  all?: boolean
 }
 
 const productService = {
@@ -14,7 +16,17 @@ const productService = {
     if (filters.id) {
       finalUrl = `${PRODUCT_URL}?id=${filters.id}`
     } else {
-      finalUrl = PRODUCT_URL
+      const queryParams = new URLSearchParams()
+
+      if (filters.all) {
+        queryParams.set("all", "true")
+      } else if (filters.isActive !== undefined) {
+        queryParams.set("isActive", String(filters.isActive))
+      }
+
+      finalUrl = queryParams.toString().length > 0
+        ? `${PRODUCT_URL}?${queryParams.toString()}`
+        : PRODUCT_URL
     }
 
     const { data } = await axiosPrivate.get(finalUrl, {

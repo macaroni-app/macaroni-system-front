@@ -20,9 +20,11 @@ import {
 import { useEffect } from "react"
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
 import { IClient } from "../clients/types"
+import VariantSelectionsEditor from "../common/VariantSelectionsEditor"
 import Loading from "../common/Loading"
 import { IPaymentMethod } from "../paymentMethods/types"
-import { IProductFullRelated } from "../products/types"
+import { IProductFullRelated, IProductItemFullRelated } from "../products/types"
+import { IAssetVariant } from "../assetVariants/types"
 import MyInput from "../ui/inputs/MyInput"
 import MySelect from "../ui/inputs/MySelect"
 import { calculateOrderRequestSubtotal, calculateOrderRequestTotal } from "./helpers"
@@ -34,6 +36,8 @@ interface Props {
   onCancelOperation: () => void
   orderRequestToUpdate?: IOrderRequestFullRelated
   products?: IProductFullRelated[]
+  productItems?: IProductItemFullRelated[]
+  assetVariants?: IAssetVariant[]
   clients?: IClient[]
   paymentMethods?: IPaymentMethod[]
   isLoading: boolean
@@ -45,6 +49,8 @@ const OrderRequestAddForm = ({
   orderRequestToUpdate,
   isLoading,
   products,
+  productItems,
+  assetVariants,
   clients,
   paymentMethods,
 }: Props) => {
@@ -66,7 +72,7 @@ const OrderRequestAddForm = ({
         initialPaymentAmount: undefined,
         initialPaymentMethod: "",
         initialPaymentNote: "",
-        items: [{ product: "", quantity: 1 }],
+        items: [{ product: "", quantity: 1, variantSelections: [] }],
       },
     })
 
@@ -81,7 +87,21 @@ const OrderRequestAddForm = ({
           id: item._id,
           product: item.product?._id,
           quantity: Number(item.quantity ?? 1),
-        })) ?? [{ product: "", quantity: 1 }],
+          variantSelections: (item.variantSelections ?? []).map(
+            (variantSelection) => ({
+              id: variantSelection.id,
+              productItem:
+                typeof variantSelection.productItem === "string"
+                  ? variantSelection.productItem
+                  : variantSelection.productItem?._id,
+              assetVariant:
+                typeof variantSelection.assetVariant === "string"
+                  ? variantSelection.assetVariant
+                  : variantSelection.assetVariant?._id,
+              quantity: Number(variantSelection.quantity ?? 0),
+            }),
+          ),
+        })) ?? [{ product: "", quantity: 1, variantSelections: [] }],
       initialPaymentAmount: undefined,
       initialPaymentMethod: "",
       initialPaymentNote: "",
@@ -101,7 +121,21 @@ const OrderRequestAddForm = ({
         id: item._id,
         product: item.product?._id ?? "",
         quantity: Number(item.quantity ?? 1),
-      })) ?? [{ product: "", quantity: 1 }]
+        variantSelections: (item.variantSelections ?? []).map(
+          (variantSelection) => ({
+            id: variantSelection.id,
+            productItem:
+              typeof variantSelection.productItem === "string"
+                ? variantSelection.productItem
+                : variantSelection.productItem?._id,
+            assetVariant:
+              typeof variantSelection.assetVariant === "string"
+                ? variantSelection.assetVariant
+                : variantSelection.assetVariant?._id,
+            quantity: Number(variantSelection.quantity ?? 0),
+          }),
+        ),
+      })) ?? [{ product: "", quantity: 1, variantSelections: [] }]
 
     replace(items)
   }, [orderRequestToUpdate?.items, replace])
@@ -301,6 +335,20 @@ const OrderRequestAddForm = ({
                                     ),
                                   )}
                                 </Text>
+                                <VariantSelectionsEditor
+                                  name={`items.${index}.variantSelections`}
+                                  productId={orderRequest.items?.at(index)?.product}
+                                  lineQuantity={Number(
+                                    orderRequest.items?.at(index)?.quantity ?? 0,
+                                  )}
+                                  productItems={productItems}
+                                  assetVariants={assetVariants}
+                                  register={register}
+                                  control={control}
+                                  formState={formState}
+                                  watch={watch}
+                                  isReadOnly={isReadOnly}
+                                />
                               </SimpleGrid>
                             </GridItem>
                             <GridItem
@@ -329,7 +377,13 @@ const OrderRequestAddForm = ({
                       mb={4}
                       colorScheme="blue"
                       variant="outline"
-                      onClick={() => append({ product: "", quantity: 1 })}
+                      onClick={() =>
+                        append({
+                          product: "",
+                          quantity: 1,
+                          variantSelections: [],
+                        })
+                      }
                     >
                       Agregar producto
                     </Button>

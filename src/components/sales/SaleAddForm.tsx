@@ -1,4 +1,5 @@
 // libs
+import { useEffect } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -36,12 +37,17 @@ import MySelect from "../ui/inputs/MySelect";
 import { IProductFullRelated } from "../products/types";
 import { IClient } from "../clients/types";
 import { IPaymentMethod } from "../paymentMethods/types";
+import { IProductItemFullRelated } from "../products/types";
+import { IAssetVariant } from "../assetVariants/types";
+import VariantSelectionsEditor from "../common/VariantSelectionsEditor";
 
 interface Props {
   onSubmit: SubmitHandler<ISaleLessRelated>;
   onCancelOperation: () => void;
   saleToUpdate?: ISaleFullRelated;
   products?: IProductFullRelated[];
+  productItems?: IProductItemFullRelated[];
+  assetVariants?: IAssetVariant[];
   clients?: IClient[];
   paymentMethods?: IPaymentMethod[];
   isLoading: boolean;
@@ -53,22 +59,18 @@ const SaleFormAdd = ({
   saleToUpdate,
   isLoading,
   products,
+  productItems,
+  assetVariants,
   clients,
   paymentMethods,
 }: Props) => {
-  const { register, formState, handleSubmit, control, watch } =
+  const { register, formState, handleSubmit, control, watch, setValue } =
     useForm<ISaleLessRelated>({
       resolver: zodResolver(saleSchema),
       defaultValues: {
-        isRetail: false,
+        isRetail: saleToUpdate?.isRetail ?? true,
         total: undefined,
         discount: 0,
-        saleItems: [{ product: "", quantity: 1 }],
-      },
-      values: {
-        isRetail: saleToUpdate?.isRetail || true,
-        total: saleToUpdate?.total || undefined,
-        discount: saleToUpdate?.discount || undefined,
         client:
           saleToUpdate?.client?._id ||
           clients?.filter((client) => client.name === "Consumidor Final").at(0)
@@ -76,9 +78,39 @@ const SaleFormAdd = ({
         paymentMethod:
           saleToUpdate?.paymentMethod?._id ||
           paymentMethods?.filter((pm) => pm.name === "Contado").at(0)?._id,
-        saleItems: [{ product: "", quantity: 1 }],
+        saleItems: [{ product: "", quantity: 1, variantSelections: [] }],
       },
     });
+
+  useEffect(() => {
+    const defaultClientId = clients?.find(
+      (client) => client.name === "Consumidor Final",
+    )?._id;
+
+    if (!saleToUpdate?._id && defaultClientId && !watch("client")) {
+      setValue("client", defaultClientId, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    }
+  }, [clients, saleToUpdate?._id, setValue, watch]);
+
+  useEffect(() => {
+    const defaultPaymentMethodId = paymentMethods?.find(
+      (paymentMethod) => paymentMethod.name === "Contado",
+    )?._id;
+
+    if (
+      !saleToUpdate?._id &&
+      defaultPaymentMethodId &&
+      !watch("paymentMethod")
+    ) {
+      setValue("paymentMethod", defaultPaymentMethodId, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    }
+  }, [paymentMethods, saleToUpdate?._id, setValue, watch]);
 
   // suscripción para los fields
   const sale = watch();
@@ -312,15 +344,28 @@ const SaleFormAdd = ({
                                     placeholder={"Cantidad"}
                                     label={"Cantidad"}
                                   />
-                                  <Text>
-                                    Subtotal:{" "}
+                                <Text>
+                                  Subtotal:{" "}
                                     {new Intl.NumberFormat("en-US", {
                                       style: "currency",
                                       minimumFractionDigits: 2,
                                       currency: "ARS",
                                     }).format(getSubtotal(index))}
-                                  </Text>
-                                </SimpleGrid>
+                                </Text>
+                                <VariantSelectionsEditor
+                                  name={`saleItems.${index}.variantSelections`}
+                                  productId={sale.saleItems?.at(index)?.product}
+                                  lineQuantity={Number(
+                                    sale.saleItems?.at(index)?.quantity ?? 0,
+                                  )}
+                                  productItems={productItems}
+                                  assetVariants={assetVariants}
+                                  register={register}
+                                  control={control}
+                                  formState={formState}
+                                  watch={watch}
+                                />
+                              </SimpleGrid>
                               </GridItem>
                               <GridItem
                                 colSpan={1}
@@ -350,7 +395,9 @@ const SaleFormAdd = ({
                     size={"sm"}
                     colorScheme="blue"
                     alignSelf={"start"}
-                    onClick={() => append({ product: "", quantity: 1 })}
+                    onClick={() =>
+                      append({ product: "", quantity: 1, variantSelections: [] })
+                    }
                   >
                     Agregar item
                   </Button>

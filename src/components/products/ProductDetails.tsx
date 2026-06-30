@@ -56,15 +56,26 @@ const ProductDetails = () => {
     (productItem) => productItem?.product?._id === productId
   )
 
+  const getProductItemAsset = (productItem: {
+    selectionType?: string
+    asset?: { name?: string; costPrice?: number }
+    baseAsset?: { name?: string; costPrice?: number }
+  }) =>
+    productItem?.selectionType === "VARIANT_SELECTION"
+      ? productItem?.baseAsset
+      : productItem?.asset
+
   const productCostTotal = productItems
     ?.map((productItem) => {
+      const currentAsset = getProductItemAsset(productItem)
+
       if (
         productItem !== undefined &&
-        productItem?.asset?.costPrice !== undefined &&
+        currentAsset?.costPrice !== undefined &&
         productItem?.quantity !== undefined
       ) {
         return (
-          Number(productItem?.quantity) * Number(productItem?.asset?.costPrice)
+          Number(productItem?.quantity) * Number(currentAsset?.costPrice)
         )
       }
     })
@@ -81,9 +92,26 @@ const ProductDetails = () => {
   ).toFixed(2)
 
   const productDetailsList = productItems?.map((productItem) => {
+    const currentAsset = getProductItemAsset(productItem)
+    const allowedVariantValues = (productItem?.allowedVariantValues ?? []).map(
+      (value) => (typeof value === "string" ? value : value?.name)
+    ).filter(Boolean)
+
     return (
       <Tr key={productItem._id}>
-        <Td>{productItem?.asset?.name}</Td>
+        <Td>
+          <Text>{currentAsset?.name ?? "-"}</Text>
+          {productItem?.selectionType === "VARIANT_SELECTION" && (
+            <Flex mt={1} gap={2} wrap="wrap">
+              <Badge colorScheme="purple">Variante seleccionable</Badge>
+              {allowedVariantValues.length > 0 && (
+                <Badge colorScheme="gray">
+                  {allowedVariantValues.join(", ")}
+                </Badge>
+              )}
+            </Flex>
+          )}
+        </Td>
         <Td>
           {productItem?.quantity !== undefined &&
             Number.parseFloat(productItem?.quantity.toString())}
@@ -94,8 +122,8 @@ const ProductDetails = () => {
             minimumFractionDigits: 2,
             currency: "USD",
           }).format(
-            productItem?.asset?.costPrice !== undefined
-              ? Number.parseFloat(productItem?.asset.costPrice?.toFixed(2))
+            currentAsset?.costPrice !== undefined
+              ? Number.parseFloat(currentAsset.costPrice?.toFixed(2))
               : 0
           )}
         </Td>
