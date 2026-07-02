@@ -20,11 +20,26 @@ interface Props {
   placeholder: string
   label: string
   isDisabled?: boolean
+  inputId?: string
+  autoFocus?: boolean
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+  onFocus?: () => void
 }
 
 const MyInput = (props: Props) => {
-  const { register, formState, field, type, placeholder, label, isDisabled } =
-    props
+  const {
+    register,
+    formState,
+    field,
+    type,
+    placeholder,
+    label,
+    isDisabled,
+    inputId,
+    autoFocus,
+    onKeyDown,
+    onFocus,
+  } = props
 
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
@@ -36,16 +51,19 @@ const MyInput = (props: Props) => {
           !!formState.errors[field]?.message && !!formState.touchedFields[field]
         }
       >
-        <FormLabel htmlFor={field}>{label}:</FormLabel>
+        <FormLabel htmlFor={inputId ?? field}>{label}:</FormLabel>
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            id={field}
+            id={inputId ?? field}
             isDisabled={isDisabled}
             placeholder={placeholder}
             isInvalid={
               !!formState.errors[field] && !!formState.touchedFields[field]
             }
+            autoFocus={autoFocus}
+            onKeyDown={onKeyDown}
+            onFocus={onFocus}
             {...register(field)}
           />
           <InputRightElement width="2.5rem">
@@ -70,9 +88,9 @@ const MyInput = (props: Props) => {
         !!formState.errors[field]?.message && !!formState.touchedFields[field]
       }
     >
-      <FormLabel htmlFor={field}>{label}:</FormLabel>
+      <FormLabel htmlFor={inputId ?? field}>{label}:</FormLabel>
       <Input
-        id={field}
+        id={inputId ?? field}
         type={type}
         {...register(field, {
           valueAsNumber: type === "number" ? true : false,
@@ -82,6 +100,9 @@ const MyInput = (props: Props) => {
         isInvalid={
           !!formState.errors[field] && !!formState.touchedFields[field]
         }
+        autoFocus={autoFocus}
+        onKeyDown={onKeyDown}
+        onFocus={onFocus}
       />
       {!!formState.errors[field] && !!formState.touchedFields[field] && (
         <FormErrorMessage>

@@ -80,13 +80,26 @@ export const getVariantSelectionCurrentQuantity = (
 
 export const formatVariantSelections = (
   variantSelections?: IVariantSelection[],
+  assetVariants?: IAssetVariant[],
 ) =>
   (variantSelections ?? [])
     .map((variantSelection) => {
-      const variantName =
-        typeof variantSelection.assetVariant === "string"
-          ? variantSelection.assetVariant
-          : variantSelection.assetVariant?.name
+      const currentAssetVariant = variantSelection.assetVariant
+      const currentAssetVariantId =
+        typeof currentAssetVariant === "string"
+          ? currentAssetVariant
+          : currentAssetVariant?._id
+
+      const resolvedAssetVariant =
+        typeof currentAssetVariant === "string"
+          ? assetVariants?.find(
+              (assetVariant) => assetVariant._id === currentAssetVariantId,
+            )
+          : currentAssetVariant
+
+      const variantName = getAssetVariantName(
+        resolvedAssetVariant ?? currentAssetVariant,
+      )
 
       if (!variantName) {
         return null

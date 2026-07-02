@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -70,6 +70,28 @@ const Sales = () => {
     navigate("add");
   };
 
+  useEffect(() => {
+    if (!checkRole(ProfileBase.sales.create)) {
+      return;
+    }
+
+    const handleKeyboardShortcut = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+
+      if (event.key === "F2") {
+        event.preventDefault();
+        handleAddSale();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyboardShortcut);
+    return () => {
+      window.removeEventListener("keydown", handleKeyboardShortcut);
+    };
+  }, [checkRole]);
+
   const sales = querySales?.data as ISaleFullRelated[];
   // saleItems
   querySaleItems?.data as ISaleItemFullRelated[];
@@ -140,7 +162,7 @@ const Sales = () => {
           handleAddRecord={handleAddSale}
           noRecords={saleList?.length}
           title="ventas"
-          buttonLabel="Nueva venta"
+          buttonLabel="Nueva venta (F2)"
           roles={ProfileBase.sales.create}
         />
       )}

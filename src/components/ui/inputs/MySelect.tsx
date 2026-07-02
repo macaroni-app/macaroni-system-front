@@ -22,6 +22,11 @@ interface Props {
   data?: ICategory[]
   noOptionsMessage?: string
   objectName?: string
+  inputId?: string
+  autoFocus?: boolean
+  onKeyDown?: (event: React.KeyboardEvent) => void
+  onFocus?: () => void
+  onValueChange?: (value: string) => void
 }
 
 type Option = {
@@ -40,16 +45,19 @@ const MySelect = (props: Props) => {
     isDisabled,
     isRequired,
     noOptionsMessage,
-    objectName
+    objectName,
+    inputId,
+    autoFocus,
+    onKeyDown,
+    onFocus,
+    onValueChange,
   } = props
 
-
   const options: PropsValue<any> = data?.map((model) => {
-
-    if (objectName === 'documentType') {
+    if (objectName === "documentType") {
       return { label: model.name, value: model.id }
     }
-    if (objectName === 'condicionIVAReceptorId') {
+    if (objectName === "condicionIVAReceptorId") {
       return { label: model.name, value: model.id }
     }
     return { label: model.name, value: model._id }
@@ -63,12 +71,13 @@ const MySelect = (props: Props) => {
         !!formState.errors[field]?.message && !!formState.touchedFields[field]
       }
     >
-      <FormLabel htmlFor={field}>{label}:</FormLabel>
+      <FormLabel htmlFor={inputId ?? field}>{label}:</FormLabel>
       <Controller
         control={control}
         render={({ field: { onChange, value, name, ref, onBlur } }) => (
           <Select
             ref={ref}
+            inputId={inputId}
             placeholder={placeholder}
             defaultValue={value}
             value={options?.filter((option: Option) => option.value === value)}
@@ -80,12 +89,17 @@ const MySelect = (props: Props) => {
             options={options}
             menuPortalTarget={menuPortalTarget}
             menuPosition="fixed"
+            autoFocus={autoFocus}
             styles={{
               menuPortal: (base) => ({ ...base, zIndex: 9999 }),
             }}
             onBlur={onBlur}
+            onFocus={onFocus}
+            onKeyDown={onKeyDown}
             onChange={(selectedOption) => {
-              onChange(selectedOption ? selectedOption.value : "")
+              const nextValue = selectedOption ? selectedOption.value : ""
+              onChange(nextValue)
+              onValueChange?.(nextValue)
             }}
           />
         )}

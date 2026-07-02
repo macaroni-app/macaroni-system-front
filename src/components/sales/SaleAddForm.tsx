@@ -1,5 +1,5 @@
 // libs
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,21 +25,29 @@ import {
   Checkbox,
   FormLabel,
   Input,
-  CardHeader,
+  Box,
 } from "@chakra-ui/react";
 
-import { DeleteIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, ChevronUpIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 // components
 import Loading from "../common/Loading";
 import MyInput from "../ui/inputs/MyInput";
 import MySelect from "../ui/inputs/MySelect";
-import { IProductFullRelated } from "../products/types";
+import {
+  IProductFullRelated,
+  IProductItemFullRelated,
+  ProductItemSelectionType,
+} from "../products/types";
 import { IClient } from "../clients/types";
 import { IPaymentMethod } from "../paymentMethods/types";
-import { IProductItemFullRelated } from "../products/types";
 import { IAssetVariant } from "../assetVariants/types";
 import VariantSelectionsEditor from "../common/VariantSelectionsEditor";
+import {
+  formatVariantSelections,
+  getVariantSelectionCurrentQuantity,
+  getVariantSelectionExpectedQuantity,
+} from "../../utils/variants";
 
 interface Props {
   onSubmit: SubmitHandler<ISaleLessRelated>;
@@ -53,6 +61,12 @@ interface Props {
   isLoading: boolean;
 }
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  minimumFractionDigits: 2,
+  currency: "ARS",
+});
+
 const SaleFormAdd = ({
   onSubmit,
   onCancelOperation,
@@ -64,6 +78,8 @@ const SaleFormAdd = ({
   clients,
   paymentMethods,
 }: Props) => {
+  const [expandedIndex, setExpandedIndex] = useState(0);
+
   const { register, formState, handleSubmit, control, watch, setValue } =
     useForm<ISaleLessRelated>({
       resolver: zodResolver(saleSchema),
@@ -112,13 +128,136 @@ const SaleFormAdd = ({
     }
   }, [paymentMethods, saleToUpdate?._id, setValue, watch]);
 
-  // suscripción para los fields
   const sale = watch();
 
   const { fields, remove, append } = useFieldArray({
     name: "saleItems",
     control,
   });
+
+  const productItemRequirementsByProductId = useMemo(() => {
+    const requirements = new Map<string, IProductItemFullRelated[]>();
+
+    (productItems ?? []).forEach((productItem) => {
+      const currentProductId =
+        typeof productItem.product === "string"
+          ? productItem.product
+          : productItem.product?._id;
+
+      if (!currentProductId) {
+        return;
+      }
+
+      const currentItems = requirements.get(currentProductId) ?? [];
+      currentItems.push(productItem);
+      requirements.set(currentProductId, currentItems);
+    });
+
+    return requirements;
+  }, [productItems]);
+
+  useEffect(() => {
+    if (expandedIndex > Math.max(fields.length - 1, 0)) {
+      setExpandedIndex(Math.max(fields.length - 1, 0));
+    }
+  }, [expandedIndex, fields.length]);
+
+  const focusElement = (elementId: string) => {
+    requestAnimationFrame(() => {
+      const nextElement = document.getElementById(elementId) as
+        | HTMLInputElement
+        | null;
+      nextElement?.focus();
+    });
+  };
+
+  const getProductInputId = (index: number) => `sale-item-product-${index}`;
+  const getQuantityInputId = (index: number) => `sale-item-quantity-${index}`;
+  const getVariantInputPrefix = (index: number) => `sale-item-${index}`;
+
+  const getVariantRequirements = (productId?: string) => {
+    if (!productId) {
+      return [];
+    }
+
+    return (productItemRequirementsByProductId.get(productId) ?? []).filter(
+      (productItem) =>
+        (productItem.selectionType ?? ProductItemSelectionType.FIXED) ===
+        ProductItemSelectionType.VARIANT_SELECTION,
+    );
+  };
+
+  const hasVariantRequirements = (index: number) =>
+    getVariantRequirements(sale.saleItems?.at(index)?.product).length > 0;
+
+  const isVariantSelectionComplete = (index: number) => {
+    const currentSaleItem = sale.saleItems?.at(index);
+    const currentProductId = currentSaleItem?.product;
+    const currentVariantSelections = currentSaleItem?.variantSelections;
+    const currentLineQuantity = Number(currentSaleItem?.quantity ?? 0);
+    const variantRequirements = getVariantRequirements(currentProductId);
+
+    if (variantRequirements.length === 0) {
+      return true;
+    }
+
+    return variantRequirements.every((productItem) => {
+      const productItemId = productItem._id;
+      const expectedQuantity = getVariantSelectionExpectedQuantity(
+        productItem,
+        currentLineQuantity,
+      );
+      const currentQuantity = getVariantSelectionCurrentQuantity(
+        currentVariantSelections,
+        productItemId,
+      );
+
+      return currentQuantity === expectedQuantity && expectedQuantity > 0;
+    });
+  };
+
+  const focusFirstVariantField = (index: number) => {
+    const currentVariantSelections = sale.saleItems?.at(index)?.variantSelections ?? [];
+    const firstExistingIndex = currentVariantSelections.findIndex(
+      (variantSelection) => !!variantSelection?.productItem,
+    );
+
+    if (firstExistingIndex >= 0) {
+      focusElement(
+        `${getVariantInputPrefix(index)}-variant-${firstExistingIndex}`,
+      );
+      return;
+    }
+
+    setTimeout(() => {
+      focusElement(`${getVariantInputPrefix(index)}-variant-0`);
+    }, 0);
+  };
+
+  const moveToNextItem = (index: number) => {
+    const nextIndex = index + 1;
+
+    if (nextIndex < fields.length) {
+      setExpandedIndex(nextIndex);
+      focusElement(getProductInputId(nextIndex));
+      return;
+    }
+
+    append({ product: "", quantity: 1, variantSelections: [] });
+    setExpandedIndex(fields.length);
+    setTimeout(() => {
+      focusElement(getProductInputId(fields.length));
+    }, 0);
+  };
+
+  const closeCurrentItem = (index: number) => {
+    if (hasVariantRequirements(index) && !isVariantSelectionComplete(index)) {
+      focusFirstVariantField(index);
+      return;
+    }
+
+    moveToNextItem(index);
+  };
 
   const getTotalSale = () => {
     let productIds = sale?.saleItems?.map((saleItem) => saleItem.product);
@@ -170,7 +309,6 @@ const SaleFormAdd = ({
         }
       }, 0);
 
-    // aplico descuento
     let discount =
       sale?.discount !== undefined && !isNaN(sale?.discount)
         ? sale?.discount / 100
@@ -197,7 +335,6 @@ const SaleFormAdd = ({
       }
     });
 
-    // aplico descuento
     let discount =
       sale?.discount !== undefined && !isNaN(sale?.discount)
         ? sale?.discount / 100
@@ -208,6 +345,53 @@ const SaleFormAdd = ({
 
     return subTotalWithDiscount;
   };
+
+  const getProductName = (productId?: string) => {
+    if (!productId) {
+      return "Seleccioná un producto";
+    }
+
+    return (
+      products?.find((product) => product._id === productId)?.name ??
+      "Seleccioná un producto"
+    );
+  };
+
+  const getTotalUnits = () =>
+    (sale?.saleItems ?? []).reduce(
+      (accumulator, saleItem) => accumulator + Number(saleItem.quantity ?? 0),
+      0,
+    );
+
+  const handleRemoveItem = (index: number) => {
+    const nextIndex = index > 0 ? index - 1 : 0;
+
+    remove(index);
+    setExpandedIndex((currentExpandedIndex) => {
+      if (currentExpandedIndex === index) {
+        return Math.max(0, index - 1);
+      }
+
+      if (currentExpandedIndex > index) {
+        return currentExpandedIndex - 1;
+      }
+
+      return currentExpandedIndex;
+    });
+
+    setTimeout(() => {
+      focusElement(getQuantityInputId(nextIndex));
+    }, 0);
+  };
+
+  const handleAppendItem = () => {
+    append({ product: "", quantity: 1, variantSelections: [] });
+    setExpandedIndex(fields.length);
+    setTimeout(() => {
+      focusElement(getProductInputId(fields.length));
+    }, 0);
+  };
+
 
   return (
     <>
@@ -220,7 +404,52 @@ const SaleFormAdd = ({
                 <Heading mb={3} textAlign="center" size="lg">
                   Nueva venta:
                 </Heading>
-                <form noValidate onSubmit={handleSubmit(onSubmit)}>
+                <form
+                  noValidate
+                  onSubmit={handleSubmit(onSubmit)}
+                  onKeyDownCapture={(event) => {
+                    if ((event.key === "Delete" || event.key === "Backspace") && event.altKey) {
+                      if (expandedIndex >= 0 && fields.length > 1) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleRemoveItem(expandedIndex);
+                      }
+                      return;
+                    }
+
+                    if (event.key === "Enter" && event.ctrlKey) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      void handleSubmit(onSubmit)();
+                      return;
+                    }
+
+                    if (event.key === "F4") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleAppendItem();
+                      return;
+                    }
+
+                    if (event.key === "F8") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onCancelOperation();
+                      return;
+                    }
+
+                    if (event.key === "Escape" && expandedIndex >= 0) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setExpandedIndex(-1);
+                      return;
+                    }
+
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                    }
+                  }}
+                >
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
                     <GridItem colSpan={{ base: 12, md: 6 }}>
                       <MySelect
@@ -239,11 +468,7 @@ const SaleFormAdd = ({
                       <FormControl>
                         <FormLabel>Total:</FormLabel>
                         <Input
-                          value={new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            minimumFractionDigits: 2,
-                            currency: "ARS",
-                          }).format(getTotalSale() || 0)}
+                          value={currencyFormatter.format(getTotalSale() || 0)}
                           disabled={true}
                         />
                       </FormControl>
@@ -287,6 +512,36 @@ const SaleFormAdd = ({
                       </FormControl>
                     </GridItem>
                   </Grid>
+
+                  <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} mb={6}>
+                    <Card variant="outline" bg="gray.50">
+                      <CardBody py={3}>
+                        <Text fontSize="sm" color="gray.600">
+                          Items cargados
+                        </Text>
+                        <Heading size="md">{fields.length}</Heading>
+                      </CardBody>
+                    </Card>
+                    <Card variant="outline" bg="gray.50">
+                      <CardBody py={3}>
+                        <Text fontSize="sm" color="gray.600">
+                          Unidades totales
+                        </Text>
+                        <Heading size="md">{getTotalUnits()}</Heading>
+                      </CardBody>
+                    </Card>
+                    <Card variant="outline" bg="purple.50">
+                      <CardBody py={3}>
+                        <Text fontSize="sm" color="purple.700">
+                          Total actual
+                        </Text>
+                        <Heading size="md" color="purple.700">
+                          {currencyFormatter.format(getTotalSale() || 0)}
+                        </Heading>
+                      </CardBody>
+                    </Card>
+                  </SimpleGrid>
+
                   <Grid mb={4}>
                     <GridItem>
                       <FormControl>
@@ -297,7 +552,12 @@ const SaleFormAdd = ({
                   <Grid mb={4}>
                     <GridItem>
                       <FormControl>
-                        <Text fontSize={"large"}>Seleccione los productos</Text>
+                        <Text fontSize="large" fontWeight="semibold">
+                          Productos de la venta
+                        </Text>
+                        <Text fontSize="sm" color="gray.500">
+                          Atajos: F2 nueva venta, F4 agrega item, Alt+Delete elimina el item activo, Ctrl+Enter guarda, F8 cancela la venta y Esc cierra el item abierto.
+                        </Text>
                       </FormControl>
                     </GridItem>
                   </Grid>
@@ -309,98 +569,180 @@ const SaleFormAdd = ({
                     </GridItem>
                   </Grid>
 
-                  {fields.map((field, index) => {
-                    return (
-                      <Flex key={index} direction={"column"} gap={1}>
-                        <Card variant={"outline"} mb={2}>
-                          <CardBody p="0">
-                            <Grid
-                              templateColumns="repeat(6, 1fr)"
-                              key={field.id}
+                  <Stack spacing={3}>
+                    {fields.map((field, index) => {
+                      const isExpanded = expandedIndex === index;
+                      const currentProductId = sale.saleItems?.at(index)?.product;
+                      const quantity = Number(sale.saleItems?.at(index)?.quantity ?? 0);
+                      const subtotal = getSubtotal(index);
+                      const productName = getProductName(currentProductId);
+                      const variantSummary = formatVariantSelections(
+                        sale.saleItems?.at(index)?.variantSelections,
+                        assetVariants,
+                      );
+
+                      return (
+                        <Card key={field.id} variant="outline">
+                          <CardBody p={0}>
+                            <Flex
+                              px={4}
+                              py={4}
+                              direction={{ base: "column", md: "row" }}
+                              gap={3}
+                              justify="space-between"
+                              align={{ base: "stretch", md: "center" }}
                             >
-                              <GridItem colSpan={5}>
-                                <SimpleGrid
-                                  columns={{ md: 2 }}
-                                  spacing="2"
-                                  p="2"
-                                  alignItems={"center"}
-                                >
-                                  <MySelect
-                                    field={`saleItems.${index}.product`}
-                                    register={register}
-                                    control={control}
-                                    formState={formState}
-                                    label="Producto"
-                                    placeholder="Buscar producto"
-                                    data={products}
-                                    isDisabled={false}
-                                    isRequired={true}
-                                  />
-                                  <MyInput
-                                    formState={formState}
-                                    register={register}
-                                    field={`saleItems.${index}.quantity`}
-                                    type={"number"}
-                                    placeholder={"Cantidad"}
-                                    label={"Cantidad"}
-                                  />
-                                <Text>
-                                  Subtotal:{" "}
-                                    {new Intl.NumberFormat("en-US", {
-                                      style: "currency",
-                                      minimumFractionDigits: 2,
-                                      currency: "ARS",
-                                    }).format(getSubtotal(index))}
-                                </Text>
-                                <VariantSelectionsEditor
-                                  name={`saleItems.${index}.variantSelections`}
-                                  productId={sale.saleItems?.at(index)?.product}
-                                  lineQuantity={Number(
-                                    sale.saleItems?.at(index)?.quantity ?? 0,
-                                  )}
-                                  productItems={productItems}
-                                  assetVariants={assetVariants}
-                                  register={register}
-                                  control={control}
-                                  formState={formState}
-                                  watch={watch}
-                                />
-                              </SimpleGrid>
-                              </GridItem>
-                              <GridItem
-                                colSpan={1}
-                                alignSelf={"center"}
-                                justifySelf={"end"}
+                              <Box flex="1" minW={0}>
+                                <Flex mb={1} align="center" gap={2} wrap="wrap">
+                                  <Text fontSize="sm" fontWeight="bold" color="gray.500">
+                                    Item {index + 1}
+                                  </Text>
+                                  <Text fontWeight="semibold" noOfLines={1}>
+                                    {productName}
+                                  </Text>
+                                </Flex>
+                                <Flex wrap="wrap" gap={4} fontSize="sm" color="gray.600">
+                                  <Text>Cant.: {quantity || 0}</Text>
+                                  <Text>
+                                    Subtotal: {currencyFormatter.format(subtotal || 0)}
+                                  </Text>
+                                </Flex>
+                                {variantSummary && (
+                                  <Text mt={2} fontSize="sm" color="gray.500">
+                                    {variantSummary}
+                                  </Text>
+                                )}
+                              </Box>
+
+                              <Flex
+                                gap={2}
+                                justify={{ base: "space-between", md: "flex-end" }}
+                                align="center"
+                                width={{ base: "full", md: "auto" }}
                               >
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  colorScheme="purple"
+                                  variant={isExpanded ? "solid" : "outline"}
+                                  leftIcon={isExpanded ? <ChevronUpIcon /> : <EditIcon />}
+                                  onClick={() => {
+                                    const nextExpandedState =
+                                      expandedIndex === index ? -1 : index;
+                                    setExpandedIndex(nextExpandedState);
+                                    if (nextExpandedState === index) {
+                                      setTimeout(() => {
+                                        focusElement(getProductInputId(index));
+                                      }, 0);
+                                    }
+                                  }}
+                                >
+                                  {isExpanded ? "Listo" : "Editar"}
+                                </Button>
                                 {fields.length > 1 && (
                                   <IconButton
-                                    variant={"outline"}
+                                    type="button"
+                                    variant="outline"
                                     colorScheme="red"
-                                    me={2}
-                                    onClick={() => remove(index)}
+                                    onClick={() => handleRemoveItem(index)}
                                     icon={<DeleteIcon />}
-                                    aria-label={""}
+                                    aria-label="Eliminar item"
                                   />
                                 )}
-                              </GridItem>
-                            </Grid>
+                              </Flex>
+                            </Flex>
+
+                            {isExpanded && (
+                              <>
+                                <Divider />
+                                <Box p={4}>
+                                  <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={4}>
+                                    <MySelect
+                                      field={`saleItems.${index}.product`}
+                                      register={register}
+                                      control={control}
+                                      formState={formState}
+                                      label="Producto"
+                                      placeholder="Buscar producto"
+                                      data={products}
+                                      isDisabled={false}
+                                      isRequired={true}
+                                      inputId={getProductInputId(index)}
+                                      autoFocus={index === 0}
+                                      onValueChange={() => {
+                                        focusElement(getQuantityInputId(index));
+                                      }}
+                                    />
+                                    <MyInput
+                                      formState={formState}
+                                      register={register}
+                                      field={`saleItems.${index}.quantity`}
+                                      type={"number"}
+                                      placeholder={"Cantidad"}
+                                      label={"Cantidad"}
+                                      inputId={getQuantityInputId(index)}
+                                      onKeyDown={(event) => {
+                                        if (event.key !== "Enter" || event.ctrlKey) {
+                                          return;
+                                        }
+                                        event.preventDefault();
+                                        closeCurrentItem(index);
+                                      }}
+                                    />
+                                    <Card variant="outline" bg="gray.50">
+                                      <CardBody py={3}>
+                                        <Text fontSize="sm" color="gray.600">
+                                          Subtotal del item
+                                        </Text>
+                                        <Heading size="sm">
+                                          {currencyFormatter.format(subtotal || 0)}
+                                        </Heading>
+                                      </CardBody>
+                                    </Card>
+                                  </SimpleGrid>
+
+                                  <Box mt={4}>
+                                    <VariantSelectionsEditor
+                                      name={`saleItems.${index}.variantSelections`}
+                                      productId={sale.saleItems?.at(index)?.product}
+                                      lineQuantity={Number(
+                                        sale.saleItems?.at(index)?.quantity ?? 0,
+                                      )}
+                                      productItems={productItems}
+                                      assetVariants={assetVariants}
+                                      register={register}
+                                      control={control}
+                                      formState={formState}
+                                      watch={watch}
+                                      inputIdPrefix={getVariantInputPrefix(index)}
+                                      onRequestItemCompletion={() => {
+                                        closeCurrentItem(index);
+                                      }}
+                                    />
+                                  </Box>
+                                </Box>
+                              </>
+                            )}
                           </CardBody>
                         </Card>
-                      </Flex>
-                    );
-                  })}
+                      );
+                    })}
+                  </Stack>
+
                   <Button
                     key={"addRows"}
+                    type="button"
                     variant="ghost"
                     size={"sm"}
                     colorScheme="blue"
                     alignSelf={"start"}
-                    onClick={() =>
-                      append({ product: "", quantity: 1, variantSelections: [] })
-                    }
+                    mt={3}
+                    leftIcon={<ChevronDownIcon />}
+                    onClick={handleAppendItem}
                   >
                     Agregar item
                   </Button>
+
                   <Stack
                     mt={6}
                     spacing={3}
@@ -415,54 +757,46 @@ const SaleFormAdd = ({
                       </GridItem>
                     </Grid>
                     <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
-                      <GridItem colSpan={{ base: 12, md: 6 }}></GridItem>
-                      <GridItem colSpan={{ base: 12, md: 6 }}>
-                        <Card size="sm" display={{ base: "block", md: "none" }}>
-                          <CardHeader>
-                            <Heading textAlign={"center"} size="md">
-                              Total:
-                            </Heading>
-                          </CardHeader>
-                          <CardBody
-                            color="fg.muted"
-                            fontSize={"xl"}
-                            fontWeight={"bold"}
-                            textAlign={"center"}
-                            padding={0}
-                          >
-                            {new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              minimumFractionDigits: 2,
-                              currency: "ARS",
-                            }).format(getTotalSale() || 0)}
-                          </CardBody>
-                        </Card>
-                        <Card size="sm" display={{ base: "none", md: "block" }}>
-                          <Stack
-                            direction={"row"}
-                            justifyContent={"end"}
-                            alignItems={"center"}
-                            paddingX={4}
-                          >
-                            <CardHeader>
-                              <Heading textAlign={"center"} size="md">
-                                Total:
-                              </Heading>
-                            </CardHeader>
-                            <CardBody
-                              color="fg.muted"
-                              fontSize={"xl"}
-                              fontWeight={"bold"}
-                              textAlign={"center"}
-                              padding={0}
+                      <GridItem colSpan={{ base: 12, md: 4 }}></GridItem>
+                      <GridItem colSpan={{ base: 12, md: 8 }}>
+                        <Card
+                          size="sm"
+                          variant="outline"
+                          borderColor="purple.200"
+                          bg="linear-gradient(135deg, rgba(128,90,213,0.08), rgba(255,255,255,1))"
+                          boxShadow="sm"
+                        >
+                          <CardBody px={{ base: 4, md: 5 }} py={4}>
+                            <Flex
+                              direction={{ base: "column", md: "row" }}
+                              justify="space-between"
+                              align={{ base: "flex-start", md: "center" }}
+                              gap={3}
                             >
-                              {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                minimumFractionDigits: 2,
-                                currency: "ARS",
-                              }).format(getTotalSale() || 0)}
-                            </CardBody>
-                          </Stack>
+                              <Box>
+                                <Text
+                                  fontSize="xs"
+                                  letterSpacing="0.08em"
+                                  textTransform="uppercase"
+                                  color="purple.700"
+                                  fontWeight="bold"
+                                >
+                                  Resumen final
+                                </Text>
+                                <Text fontSize="sm" color="gray.600" mt={1}>
+                                  {fields.length} item{fields.length === 1 ? "" : "s"} · {getTotalUnits()} unidades
+                                </Text>
+                              </Box>
+                              <Box textAlign={{ base: "left", md: "right" }}>
+                                <Text fontSize="sm" color="gray.600">
+                                  Total a cobrar
+                                </Text>
+                                <Heading size="lg" color="purple.700">
+                                  {currencyFormatter.format(getTotalSale() || 0)}
+                                </Heading>
+                              </Box>
+                            </Flex>
+                          </CardBody>
                         </Card>
                       </GridItem>
                     </Grid>
@@ -475,11 +809,12 @@ const SaleFormAdd = ({
                       Guardar
                     </Button>
                     <Button
+                      type="button"
                       onClick={() => onCancelOperation()}
                       colorScheme="gray"
                       variant="solid"
                     >
-                      Cancelar
+                      Cancelar (F8)
                     </Button>
                   </Stack>
                 </form>

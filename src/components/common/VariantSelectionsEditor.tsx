@@ -18,6 +18,7 @@ import {
   UseFormWatch,
   useFieldArray,
 } from "react-hook-form"
+import { useEffect } from "react"
 import { IAssetVariant } from "../assetVariants/types"
 import {
   IProductItemFullRelated,
@@ -44,6 +45,9 @@ interface Props {
   formState: FormState<any>
   watch: UseFormWatch<any>
   isReadOnly?: boolean
+  inputIdPrefix?: string
+  onVariantRowAdded?: (variantIndex: number) => void
+  onRequestItemCompletion?: () => void
 }
 
 const VariantSelectionsEditor = ({
@@ -57,6 +61,9 @@ const VariantSelectionsEditor = ({
   formState,
   watch,
   isReadOnly = false,
+  inputIdPrefix,
+  onVariantRowAdded,
+  onRequestItemCompletion,
 }: Props) => {
   const { fields, append, remove } = useFieldArray({
     name,
@@ -77,6 +84,135 @@ const VariantSelectionsEditor = ({
         ProductItemSelectionType.VARIANT_SELECTION
     )
   })
+
+  const focusById = (elementId: string) => {
+    requestAnimationFrame(() => {
+      document.getElementById(elementId)?.focus()
+    })
+  }
+
+  const getProductItemIdFromSelection = (selection: any) =>
+    typeof selection?.productItem === "string"
+      ? selection.productItem
+      : selection?.productItem?._id
+
+  const getAssetVariantIdFromSelection = (selection: any) =>
+    typeof selection?.assetVariant === "string"
+      ? selection.assetVariant
+      : selection?.assetVariant?._id
+
+  const addVariantRow = (productItemId: string, shouldFocus = true) => {
+    const nextIndex = fields.length
+    append({
+      productItem: productItemId,
+      assetVariant: "",
+      quantity: 1,
+    })
+    onVariantRowAdded?.(nextIndex)
+
+    if (shouldFocus && inputIdPrefix) {
+      setTimeout(() => {
+        focusById(`${inputIdPrefix}-variant-${nextIndex}`)
+      }, 0)
+    }
+  }
+
+  useEffect(() => {
+    if (isReadOnly || currentProductItems.length === 0) {
+      return
+    }
+
+    const existingProductItemIds = new Set(
+      currentSelections
+        .map((selection) => getProductItemIdFromSelection(selection))
+        .filter((value): value is string => !!value),
+    )
+
+    const missingProductItems = currentProductItems.filter(
+      (productItem) => !!productItem._id && !existingProductItemIds.has(productItem._id),
+    )
+
+    if (missingProductItems.length === 0) {
+      return
+    }
+
+    missingProductItems.forEach((productItem) => {
+      if (productItem._id) {
+        addVariantRow(productItem._id, false)
+      }
+    })
+  }, [currentProductItems, currentSelections, isReadOnly])
+
+  const focusVariantSelection = (absoluteIndex: number) => {
+    if (!inputIdPrefix) {
+      return
+    }
+
+    focusById(`${inputIdPrefix}-variant-${absoluteIndex}`)
+  }
+
+  const handleVariantQuantitySubmit = (productItemId: string) => {
+    const productItem = currentProductItems.find(
+      (currentProductItem) => currentProductItem._id === productItemId,
+    )
+
+    if (!productItem) {
+      onRequestItemCompletion?.()
+      return
+    }
+
+    const expectedQuantity = getVariantSelectionExpectedQuantity(
+      productItem,
+      lineQuantity,
+    )
+    const currentQuantity = getVariantSelectionCurrentQuantity(
+      currentSelections,
+      productItemId,
+    )
+
+    if (currentQuantity < expectedQuantity) {
+      addVariantRow(productItemId)
+      return
+    }
+
+    const nextIncompleteProductItem = currentProductItems.find(
+      (currentProductItem) => {
+        if (!currentProductItem._id) {
+          return false
+        }
+
+        return (
+          getVariantSelectionCurrentQuantity(
+            currentSelections,
+            currentProductItem._id,
+          ) <
+          getVariantSelectionExpectedQuantity(currentProductItem, lineQuantity)
+        )
+      },
+    )
+
+    if (nextIncompleteProductItem?._id) {
+      const nextSelectionIndex = currentSelections.findIndex((selection) => {
+        const currentProductItemId = getProductItemIdFromSelection(selection)
+        const currentAssetVariantId = getAssetVariantIdFromSelection(selection)
+
+        return (
+          currentProductItemId === nextIncompleteProductItem._id &&
+          (!currentAssetVariantId || String(currentAssetVariantId).trim().length === 0)
+        )
+      })
+
+      if (nextSelectionIndex >= 0) {
+        focusVariantSelection(nextSelectionIndex)
+        return
+      }
+
+      addVariantRow(nextIncompleteProductItem._id)
+      return
+    }
+
+    onRequestItemCompletion?.()
+  }
 
   if (!productId || currentProductItems.length === 0) {
     return null
@@ -170,6 +306,23 @@ const VariantSelectionsEditor = ({
                               data={allowedAssetVariants as never}
                               isDisabled={isReadOnly}
                               isRequired={true}
+                              inputId={
+                                inputIdPrefix
+                                  ? `${inputIdPrefix}-variant-${absoluteIndex}`
+                                  : undefined
+                              }
+                              onValueChange={() => {
+                                if (!inputIdPrefix) {
+                                  return
+                                }
+                                requestAnimationFrame(() => {
+                                  document
+                                    .getElementById(
+                                      `${inputIdPrefix}-variant-quantity-${absoluteIndex}`,
+                                    )
+                                    ?.focus()
+                                })
+                              }}
                             />
                             {selectedVariantName && (
                               <Box mt={2} pl={1}>
@@ -214,6 +367,21 @@ const VariantSelectionsEditor = ({
                               placeholder="Cantidad"
                               label="Cantidad"
                               isDisabled={isReadOnly}
+                              inputId={
+                                inputIdPrefix
+                                  ? `${inputIdPrefix}-variant-quantity-${absoluteIndex}`
+                                  : undefined
+                              }
+                              onKeyDown={(event) => {
+                                if (event.key !== "Enter" || event.ctrlKey) {
+                                  return
+                                }
+
+                                event.preventDefault()
+                                if (productItemId) {
+                                  handleVariantQuantitySubmit(productItemId)
+                                }
+                              }}
                             />
                           </GridItem>
 
@@ -244,13 +412,11 @@ const VariantSelectionsEditor = ({
                       colorScheme="blue"
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        append({
-                          productItem: productItemId,
-                          assetVariant: "",
-                          quantity: 1,
-                        })
-                      }
+                      onClick={() => {
+                        if (productItemId) {
+                          addVariantRow(productItemId)
+                        }
+                      }}
                     >
                       Agregar variante
                     </Button>
