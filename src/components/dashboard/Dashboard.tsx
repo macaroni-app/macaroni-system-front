@@ -14,6 +14,7 @@ import InventoryTransactionReport from "./InventoryTransactionReport";
 import LineChart from "./LineChart";
 import BarChart from "./BarChart";
 import SalesCostsProfitChart from "./SalesCostsProfitChart";
+import SalesByPaymentChannelChart from "./SalesByPaymentChannelChart";
 import SellableReservedStockChart from "./SellableReservedStockChart";
 import PendingOrderPaymentsChart from "./PendingOrderPaymentsChart";
 import TopSoldProductsChart from "./TopSoldProductsChart";
@@ -231,6 +232,9 @@ const Dashboard = () => {
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
         <>
+          <GridItem colSpan={{ base: 12 }}>
+            <SalesByPaymentChannelChart />
+          </GridItem>
           <GridItem colSpan={{ base: 12 }}>
             <SalesCostsProfitChart />
           </GridItem>

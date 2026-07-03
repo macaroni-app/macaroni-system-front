@@ -4,7 +4,7 @@ import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // types
-import { ISaleLessRelated, ISaleFullRelated, ISaleItemOmitSale } from "./types";
+import { ISaleLessRelated, ISaleFullRelated, ISaleItemOmitSale, SalePaymentChannel } from "./types";
 
 import { saleSchema } from "./saleSchema";
 
@@ -61,6 +61,13 @@ interface Props {
   isLoading: boolean;
 }
 
+const paymentChannelOptions = [
+  { _id: SalePaymentChannel.CASH, name: "Efectivo" },
+  { _id: SalePaymentChannel.BANK_TRANSFER, name: "Transferencia" },
+  { _id: SalePaymentChannel.QR, name: "QR" },
+  { _id: SalePaymentChannel.CARD, name: "Tarjeta" },
+];
+
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   minimumFractionDigits: 2,
@@ -94,6 +101,7 @@ const SaleFormAdd = ({
         paymentMethod:
           saleToUpdate?.paymentMethod?._id ||
           paymentMethods?.filter((pm) => pm.name === "Contado").at(0)?._id,
+        paymentChannel: saleToUpdate?.paymentChannel ?? SalePaymentChannel.CASH,
         saleItems: [{ product: "", quantity: 1, variantSelections: [] }],
       },
     });
@@ -485,7 +493,7 @@ const SaleFormAdd = ({
                     </GridItem>
                   </Grid>
                   <Grid mb={4} templateColumns="repeat(12, 1fr)" gap={4}>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
                       <MySelect
                         formState={formState}
                         register={register}
@@ -498,7 +506,20 @@ const SaleFormAdd = ({
                         noOptionsMessage="No hay datos"
                       />
                     </GridItem>
-                    <GridItem colSpan={{ base: 12, md: 6 }}>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
+                      <MySelect
+                        formState={formState}
+                        register={register}
+                        field={"paymentChannel"}
+                        placeholder={"Seleccionar canal de cobro ..."}
+                        label={"Canal de cobro"}
+                        control={control}
+                        data={paymentChannelOptions as never}
+                        isRequired={true}
+                        noOptionsMessage="No hay datos"
+                      />
+                    </GridItem>
+                    <GridItem colSpan={{ base: 12, md: 4 }}>
                       <FormControl>
                         <FormLabel>Por menor?</FormLabel>
                         <Checkbox
@@ -556,7 +577,7 @@ const SaleFormAdd = ({
                           Productos de la venta
                         </Text>
                         <Text fontSize="sm" color="gray.500">
-                          Atajos: F2 nueva venta, F4 agrega item, Alt+Delete elimina el item activo, Ctrl+Enter guarda, F8 cancela la venta y Esc cierra el item abierto.
+                          Atajos: F2 nueva venta, F4 agrega item, Alt+Delete elimina el item activo, Ctrl+Enter guarda, F8 cancela la venta y Esc cierra el item abierto. El canal de cobro es solo para reportes operativos.
                         </Text>
                       </FormControl>
                     </GridItem>

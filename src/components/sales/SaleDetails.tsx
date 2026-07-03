@@ -20,27 +20,36 @@ import {
   Td,
   TableContainer,
   Badge,
-} from "@chakra-ui/react"
-
-import { useNavigate, useParams } from "react-router-dom"
+} from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ChevronLeftIcon, DownloadIcon } from "@chakra-ui/icons";
+import { format } from "date-fns";
 
 // types
-import { ISaleFullRelated } from "./types"
+import { ISaleFullRelated, SalePaymentChannel } from "./types";
 
-import { ChevronLeftIcon, DownloadIcon } from "@chakra-ui/icons"
-
-import { useInvoices } from "../../hooks/useInvoices"
-
-
-// import { format } from "date-fns"
-// import { es } from "date-fns/locale"
-
-import { generateInvoicePDF } from "./generatePdfInvoice"
+import { useInvoices } from "../../hooks/useInvoices";
+import { generateInvoicePDF } from "./generatePdfInvoice";
 
 // custom hooks
-import { useSales } from "../../hooks/useSales"
-import { useSaleItems } from "../../hooks/useSaleItems"
-import { formatVariantSelections } from "../../utils/variants"
+import { useSales } from "../../hooks/useSales";
+import { useSaleItems } from "../../hooks/useSaleItems";
+import { formatVariantSelections } from "../../utils/variants";
+
+const getPaymentChannelLabel = (paymentChannel?: SalePaymentChannel) => {
+  switch (paymentChannel) {
+    case SalePaymentChannel.CASH:
+      return "Efectivo";
+    case SalePaymentChannel.BANK_TRANSFER:
+      return "Transferencia";
+    case SalePaymentChannel.QR:
+      return "QR";
+    case SalePaymentChannel.CARD:
+      return "Tarjeta";
+    default:
+      return "-";
+  }
+};
 
 const SaleDetails = () => {
   const { saleId } = useParams()
@@ -277,6 +286,16 @@ const SaleDetails = () => {
                       <Text fontSize="lg">Método de pago: </Text>
                       <Text as="b" fontSize="lg">
                         {sale?.paymentMethod?.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      mb={2}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      <Text fontSize="lg">Canal de cobro: </Text>
+                      <Text as="b" fontSize="lg">
+                        {getPaymentChannelLabel(sale?.paymentChannel)}
                       </Text>
                     </Flex>
                     <Flex

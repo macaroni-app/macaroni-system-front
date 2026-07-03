@@ -9,6 +9,13 @@ export enum SaleStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum SalePaymentChannel {
+  CASH = 'CASH',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  QR = 'QR',
+  CARD = 'CARD'
+}
+
 export enum CONCEPT_TYPE_AFIP {
   PRODUCTOS = 1,
   SERVICIOS = 2,
@@ -37,12 +44,14 @@ export interface ISaleFullRelated extends ISaleFather{
   client?: IClient
   business?: IBusiness
   paymentMethod?: IPaymentMethod
+  paymentChannel?: SalePaymentChannel
 }
 
 export interface ISaleLessRelated extends ISaleFather {
   client?: string
   business?: string
   paymentMethod?: string
+  paymentChannel?: SalePaymentChannel
 }
 
 export interface ISaleItemFather extends IGenericObject {

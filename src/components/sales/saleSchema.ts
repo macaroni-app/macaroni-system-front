@@ -1,6 +1,7 @@
 import {z} from "zod"
 
 export const SALE_STATUS = ['PAID', 'CANCELLED'] as const
+export const SALE_PAYMENT_CHANNELS = ['CASH', 'BANK_TRANSFER', 'QR', 'CARD'] as const
 
 const emptyStringToUndefined = (value: unknown) =>
   typeof value === "string" && value.trim() === "" ? undefined : value
@@ -56,6 +57,7 @@ export const saleSchema = z.object({
   _id: z.string().optional(),
   client: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
   paymentMethod: z.string({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).min(24, "Seleccione una opción").max(24),
+  paymentChannel: z.enum(SALE_PAYMENT_CHANNELS, { required_error: "Complete el campo", invalid_type_error: "Complete el campo" }),
   total: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
   costTotal: z.number({ required_error: "Complete el campo", invalid_type_error: "Complete el campo"}).nonnegative().optional(),
   discount: z.number().nonnegative().optional(),
