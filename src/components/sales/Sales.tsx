@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -11,6 +12,10 @@ import {
   Stack,
   Skeleton,
   GridItem,
+  Badge,
+  Button,
+  Collapse,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 // components
@@ -41,6 +46,7 @@ import ProfileBase from "../common/permissions";
 const Sales = () => {
   const { checkRole } = useCheckRole();
   const today = useTodayDate();
+  const { isOpen, onToggle } = useDisclosure();
   const [rangeDate, setRangeDate] = useState({
     startDate: today,
     endDate: today,
@@ -122,6 +128,9 @@ const Sales = () => {
       });
     }
   };
+
+  const hasActiveDateFilter =
+    rangeDate.startDate !== today || rangeDate.endDate !== today;
 
   // if (querySales?.isError) {
   //   throwError(querySales?.error)
@@ -210,11 +219,51 @@ const Sales = () => {
 
       {/* end stats */}
 
-      <Grid gap={3} templateColumns="repeat(12, 1fr)" mt={3}>
-        <GridItem colSpan={{ base: 12, lg: 3 }}>
-          {<RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />}
-        </GridItem>
-        <GridItem colSpan={{ base: 12, lg: 9 }}>
+      <Stack spacing={3} mt={3}>
+        <Card variant="outline">
+          <CardBody>
+            <Flex
+              direction={{ base: "column", md: "row" }}
+              align={{ base: "stretch", md: "center" }}
+              justify="space-between"
+              gap={3}
+            >
+              <Flex align="center" gap={3} wrap="wrap">
+                <Button
+                  onClick={onToggle}
+                  leftIcon={hasActiveDateFilter ? <CheckIcon /> : undefined}
+                  rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  colorScheme={isOpen || hasActiveDateFilter ? "purple" : "gray"}
+                  variant={isOpen || hasActiveDateFilter ? "solid" : "outline"}
+                  size={{ base: "sm", md: "md" }}
+                  width={{ base: "fit-content", md: "auto" }}
+                >
+                  {isOpen ? "Ocultar filtros" : "Mostrar filtros"}
+                </Button>
+                {hasActiveDateFilter && (
+                  <Badge colorScheme="purple" variant="subtle" px={2} py={1}>
+                    Filtros activos
+                  </Badge>
+                )}
+              </Flex>
+              <Text
+                fontSize="sm"
+                color="gray.500"
+                display={{ base: "none", md: "block" }}
+              >
+                Filtrá por rango de fechas solo cuando lo necesites.
+              </Text>
+            </Flex>
+            <Collapse in={isOpen} animateOpacity>
+              <Grid templateColumns="repeat(12, 1fr)" gap={3} mt={4}>
+                <GridItem colSpan={{ base: 12, md: 5, lg: 4 }}>
+                  <RangeDateFilter onSubmit={onSubmit} rangeDate={rangeDate} />
+                </GridItem>
+              </Grid>
+            </Collapse>
+          </CardBody>
+        </Card>
+        <Grid>
           {querySales?.isLoading && (
             <>
               <Card variant="filled" mb={3}>
@@ -284,7 +333,7 @@ const Sales = () => {
                 <Card variant="outline">
                   <CardBody>
                     <Grid
-                      templateColumns="repeat(7, 1fr)"
+                      templateColumns="repeat(8, 1fr)"
                       gap={2}
                       alignItems={"center"}
                     >
@@ -311,6 +360,11 @@ const Sales = () => {
                       <GridItem>
                         <Flex direction="column" gap={2} placeItems={"center"}>
                           <Text fontWeight="bold">Fecha</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem>
+                        <Flex direction="column" gap={2} placeItems={"center"}>
+                          <Text fontWeight="bold">Cobro</Text>
                         </Flex>
                       </GridItem>
                       <GridItem>
@@ -343,8 +397,8 @@ const Sales = () => {
                 )}
             </GridItem>
           </Grid>
-        </GridItem>
-      </Grid>
+        </Grid>
+      </Stack>
     </>
   );
 };

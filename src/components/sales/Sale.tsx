@@ -47,6 +47,7 @@ import {
   ISaleItemFullRelated,
   POINT_OF_SALE_AFIP,
   // ISaleItemPreview,
+  SalePaymentChannel,
   SaleStatus,
 } from "./types";
 
@@ -72,6 +73,21 @@ import { RangeDate } from "../common/RangeDateFilter";
 import { IInvoice } from "../afip/types";
 import { AxiosError } from "axios";
 
+const getPaymentChannelConfig = (paymentChannel?: SalePaymentChannel) => {
+  switch (paymentChannel) {
+    case SalePaymentChannel.CASH:
+      return { label: "Efectivo", colorScheme: "green" };
+    case SalePaymentChannel.BANK_TRANSFER:
+      return { label: "Transferencia", colorScheme: "blue" };
+    case SalePaymentChannel.QR:
+      return { label: "QR", colorScheme: "purple" };
+    case SalePaymentChannel.CARD:
+      return { label: "Tarjeta", colorScheme: "orange" };
+    default:
+      return { label: "Sin canal", colorScheme: "gray" };
+  }
+};
+
 interface Props {
   sale: ISaleFullRelated;
   inventories: IInventoryFullRelated[];
@@ -95,6 +111,8 @@ const Sale = ({
   const cancelModal = useDisclosure();
 
   const { checkRole } = useCheckRole();
+
+  const paymentChannelConfig = getPaymentChannelConfig(sale.paymentChannel);
 
   const saleCreatedDatetime = new Date(
     String(sale?.sortingDate),
@@ -435,7 +453,7 @@ const Sale = ({
           <Card variant="outline">
             <CardBody>
               <Grid
-                templateColumns="repeat(7, 1fr)"
+                templateColumns="repeat(8, 1fr)"
                 gap={2}
                 alignItems="center"
               >
@@ -461,6 +479,14 @@ const Sale = ({
                       alignSelf={"flex-start"}
                     >
                       {sale.isBilled === false ? "No facturado" : "Facturado"}
+                    </Badge>
+                    <Badge
+                      display={{ md: "none" }}
+                      variant={"subtle"}
+                      colorScheme={paymentChannelConfig.colorScheme}
+                      alignSelf={"flex-start"}
+                    >
+                      {paymentChannelConfig.label}
                     </Badge>
                     <Text
                       display={{ md: "none" }}
@@ -511,6 +537,16 @@ const Sale = ({
                 </GridItem>
                 <GridItem display={{ base: "none", md: "block" }}>
                   <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Badge
+                      variant={"subtle"}
+                      colorScheme={paymentChannelConfig.colorScheme}
+                    >
+                      {paymentChannelConfig.label}
+                    </Badge>
+                  </Flex>
+                </GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
                     <Text as="b">
                       {sale?.total
                         ? new Intl.NumberFormat("en-US", {
@@ -527,7 +563,7 @@ const Sale = ({
                   </Flex>
                 </GridItem>
 
-                <GridItem colStart={{ base: 7 }}>
+                <GridItem colStart={{ base: 8 }}>
                   <Flex direction="column" gap={2}>
                     <Text display={{ md: "none" }} as="b">
                       {sale?.total
