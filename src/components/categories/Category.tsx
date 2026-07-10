@@ -5,7 +5,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -20,7 +19,7 @@ import {
 
 import { useNavigate } from "react-router-dom"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { useState } from "react"
 
 import { useDeleteCategory } from "../../hooks/useDeleteCategory"
@@ -151,19 +150,7 @@ const Category = ({ category }: Props) => {
                 {checkRole(ProfileBase.categories.viewActions) && (
                   <Popover placement="bottom-start">
                     <PopoverTrigger>
-                      <IconButton
-                        alignSelf="end"
-                        variant={"link"}
-                        colorScheme="blackAlpha"
-                        size="md"
-                        icon={
-                          <>
-                            <AddIcon boxSize="3" />
-                            <ChevronDownIcon boxSize="4" />
-                          </>
-                        }
-                        aria-label={""}
-                      />
+                      <ActionMenuButton ariaLabel="Acciones de la categoría" />
                     </PopoverTrigger>
                     <Portal>
                       <PopoverContent width="3xs">

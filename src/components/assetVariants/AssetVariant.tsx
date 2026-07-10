@@ -6,7 +6,6 @@ import {
   Flex,
   Grid,
   GridItem,
-  IconButton,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -15,9 +14,10 @@ import {
   Portal,
   Text,
   VStack,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import CustomModal from "../common/CustomModal"
@@ -42,6 +42,8 @@ const AssetVariant = ({ assetVariant }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const secondaryTextColor = useColorModeValue("gray.600", "gray.300")
+  const valueTextColor = useColorModeValue("gray.700", "gray.100")
 
   const handleEdit = () => {
     navigate(`${assetVariant._id}/edit`)
@@ -103,11 +105,17 @@ const AssetVariant = ({ assetVariant }: Props) => {
                 <Text fontSize="xl" align="start">
                   {assetVariant.name}
                 </Text>
-                <Text fontSize="sm" color="gray.600">
-                  Insumo base: {baseAssetName ?? "-"}
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Insumo base:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {baseAssetName ?? "-"}
+                  </Text>
                 </Text>
-                <Text fontSize="sm" color="gray.600">
-                  Valores: {valuesLabel || "-"}
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Valores:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {valuesLabel || "-"}
+                  </Text>
                 </Text>
                 <Badge
                   variant="subtle"
@@ -118,23 +126,11 @@ const AssetVariant = ({ assetVariant }: Props) => {
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem colSpan={1} colStart={6}>
+            <GridItem colSpan={1} colStart={6} justifySelf="end">
               {checkRole(ProfileBase.assetVariants.viewActions) && (
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                      aria-label={""}
-                    />
+                    <ActionMenuButton ariaLabel="Acciones de la variante de insumo" />
                   </PopoverTrigger>
                   <Portal>
                     <PopoverContent width="3xs">

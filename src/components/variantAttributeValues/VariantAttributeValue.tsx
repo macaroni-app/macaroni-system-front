@@ -6,7 +6,6 @@ import {
   Flex,
   Grid,
   GridItem,
-  IconButton,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -15,9 +14,10 @@ import {
   Portal,
   Text,
   VStack,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import CustomModal from "../common/CustomModal"
@@ -43,6 +43,8 @@ const VariantAttributeValue = ({ variantAttributeValue }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const secondaryTextColor = useColorModeValue("gray.600", "gray.300")
+  const valueTextColor = useColorModeValue("gray.700", "gray.100")
 
   const handleEdit = () => {
     navigate(`${variantAttributeValue._id}/edit`)
@@ -102,8 +104,11 @@ const VariantAttributeValue = ({ variantAttributeValue }: Props) => {
                 <Text fontSize="xl" align="start">
                   {variantAttributeValue.name}
                 </Text>
-                <Text fontSize="sm" color="gray.600">
-                  Atributo: {attributeName ?? "-"}
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Atributo:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {attributeName ?? "-"}
+                  </Text>
                 </Text>
                 <Badge
                   variant="subtle"
@@ -114,23 +119,11 @@ const VariantAttributeValue = ({ variantAttributeValue }: Props) => {
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem colSpan={1} colStart={6}>
+            <GridItem colSpan={1} colStart={6} justifySelf="end">
               {checkRole(ProfileBase.variantAttributeValues.viewActions) && (
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                      aria-label={""}
-                    />
+                    <ActionMenuButton ariaLabel="Acciones del valor de variante" />
                   </PopoverTrigger>
                   <Portal>
                     <PopoverContent width="3xs">

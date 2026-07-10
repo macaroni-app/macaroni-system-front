@@ -21,6 +21,7 @@ import {
   SimpleGrid,
   Heading,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
 
 import Loading from "../common/Loading"
@@ -177,6 +178,16 @@ const RangeButtons = ({
 )
 
 const SalesByPaymentChannelChart = () => {
+  const axisColor = useColorModeValue("#4A5568", "#E2E8F0")
+  const gridColor = useColorModeValue("#EDF2F7", "rgba(255,255,255,0.08)")
+  const helperTextColor = useColorModeValue("gray.600", "gray.400")
+  const statCardBg = useColorModeValue("gray.50", "#1D2130")
+  const statValueColor = useColorModeValue("gray.800", "white")
+  const statMutedColor = useColorModeValue("gray.500", "gray.400")
+  const tooltipBg = useColorModeValue("#FFFFFF", "#171923")
+  const tooltipText = useColorModeValue("#2D3748", "#E2E8F0")
+  const tooltipBorder = useColorModeValue("#E2E8F0", "#2A3142")
+
   const [numberOfMonth, setNumberOfMonth] = useState(12)
 
   const querySalesReport = useSalesReport({
@@ -198,20 +209,39 @@ const SalesByPaymentChannelChart = () => {
     scales: {
       x: {
         stacked: true,
+        ticks: {
+          color: axisColor,
+        },
+        grid: {
+          color: gridColor,
+        },
       },
       y: {
         stacked: true,
         beginAtZero: true,
         ticks: {
+          color: axisColor,
           callback: (value) => formatCurrency(Number(value)),
+        },
+        grid: {
+          color: gridColor,
         },
       },
     },
     plugins: {
       legend: {
         position: "bottom",
+        labels: {
+          color: axisColor,
+        },
       },
       tooltip: {
+        backgroundColor: tooltipBg,
+        titleColor: tooltipText,
+        bodyColor: tooltipText,
+        footerColor: tooltipText,
+        borderColor: tooltipBorder,
+        borderWidth: 1,
         callbacks: {
           label: (context) => {
             const value = Number(context.parsed.y ?? 0)
@@ -272,7 +302,7 @@ const SalesByPaymentChannelChart = () => {
         <Heading size="lg">
           Facturación por canal de cobro últimos {numberOfMonth} meses
         </Heading>
-        <Text color="gray.600" fontSize="sm" mt={2}>
+        <Text color={helperTextColor} fontSize="sm" mt={2}>
           Arriba ves la mezcla del mes actual. Abajo, la evolución mensual de efectivo, transferencia, QR y tarjeta.
         </Text>
       </CardHeader>
@@ -284,17 +314,17 @@ const SalesByPaymentChannelChart = () => {
               currentMonthTotal > 0 ? (amount / currentMonthTotal) * 100 : 0
 
             return (
-              <Card key={channelConfig.key} variant="outline" bg="gray.50" h="100%">
+              <Card key={channelConfig.key} variant="outline" bg={statCardBg} h="100%">
                 <CardBody>
                   <Flex direction="column" gap={2}>
                     <Flex align="center" gap={2}>
                       <Box w="10px" h="10px" borderRadius="full" bg={channelConfig.color} />
                       <Text fontWeight="semibold">{channelConfig.label}</Text>
                     </Flex>
-                    <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+                    <Text fontSize="2xl" fontWeight="bold" color={statValueColor}>
                       {formatCurrency(amount)}
                     </Text>
-                    <Text color="gray.500" fontSize="sm">
+                    <Text color={statMutedColor} fontSize="sm">
                       {percentage.toFixed(1)}% del mes actual
                     </Text>
                   </Flex>

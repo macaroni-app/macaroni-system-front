@@ -30,6 +30,7 @@ import {
   Divider,
   Input,
   FormLabel,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -37,7 +38,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 // components
 import Loading from "../common/Loading";
 import MyInput from "../ui/inputs/MyInput";
-import MySelect from "../ui/inputs/MySelect";
+import MySelect, { useReactSelectStyles } from "../ui/inputs/MySelect";
 import { ICategory } from "../categories/types";
 import { IProductTypeType } from "../productTypes/types";
 import { IAssetFullCategory } from "../assets/types";
@@ -66,6 +67,8 @@ const ProductFormAdd = ({
 }: Props) => {
   const menuPortalTarget =
     typeof document !== "undefined" ? document.body : undefined;
+  const helperTextColor = useColorModeValue("gray.600", "gray.400");
+  const reactSelectStyles = useReactSelectStyles();
 
   const { register, formState, handleSubmit, control, watch, setValue } =
     useForm<IProductLessRelated>({
@@ -403,7 +406,7 @@ const ProductFormAdd = ({
                                     ProductItemSelectionType.VARIANT_SELECTION && (
                                     <FormControl>
                                       <FormLabel>Atributos permitidos</FormLabel>
-                                      <Text fontSize="sm" color="gray.600">
+                                      <Text fontSize="sm" color={helperTextColor}>
                                         Si no elegís valores, se podrán usar todas
                                         las variantes del insumo base.
                                       </Text>
@@ -430,12 +433,7 @@ const ProductFormAdd = ({
                                               }))}
                                             menuPortalTarget={menuPortalTarget}
                                             menuPosition="fixed"
-                                            styles={{
-                                              menuPortal: (base) => ({
-                                                ...base,
-                                                zIndex: 9999,
-                                              }),
-                                            }}
+                                            styles={reactSelectStyles}
                                             onChange={(selectedOptions) => {
                                               field.onChange(
                                                 selectedOptions.map(

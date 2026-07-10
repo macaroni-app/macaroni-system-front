@@ -6,7 +6,6 @@ import {
   Flex,
   Grid,
   GridItem,
-  IconButton,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -17,7 +16,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import CustomModal from "../common/CustomModal"
@@ -103,23 +102,11 @@ const VariantAttribute = ({ variantAttribute }: Props) => {
                 </Badge>
               </Flex>
             </GridItem>
-            <GridItem colSpan={1} colStart={6}>
+            <GridItem colSpan={1} colStart={6} justifySelf="end">
               {checkRole(ProfileBase.variantAttributes.viewActions) && (
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
-                    <IconButton
-                      alignSelf="end"
-                      variant={"link"}
-                      colorScheme="blackAlpha"
-                      size="md"
-                      icon={
-                        <>
-                          <AddIcon boxSize="3" />
-                          <ChevronDownIcon boxSize="4" />
-                        </>
-                      }
-                      aria-label={""}
-                    />
+                    <ActionMenuButton ariaLabel="Acciones del atributo de variante" />
                   </PopoverTrigger>
                   <Portal>
                     <PopoverContent width="3xs">

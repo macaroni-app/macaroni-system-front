@@ -3,7 +3,9 @@ import {
   CalendarIcon,
   HamburgerIcon,
   InfoIcon,
+  MoonIcon,
   RepeatIcon,
+  SunIcon,
 } from "@chakra-ui/icons"
 import {
   Box,
@@ -26,6 +28,7 @@ import {
   SimpleGrid,
   Text,
   VStack,
+  useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
@@ -146,6 +149,7 @@ const HeaderMenu = (): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const drawer = useDisclosure()
+  const { colorMode, toggleColorMode } = useColorMode()
 
   const { auth } = useAuthContext() as IUserContext
   const { logout } = useLogout()
@@ -156,8 +160,10 @@ const HeaderMenu = (): JSX.Element => {
   const inactiveColor = useColorModeValue("gray.600", "gray.300")
   const mobileSurface = useColorModeValue(
     "rgba(255, 255, 255, 0.96)",
-    "gray.900"
+    "rgba(23, 25, 35, 0.96)"
   )
+  const colorModeLabel = colorMode === "light" ? "Tema oscuro" : "Tema claro"
+  const colorModeIcon = colorMode === "light" ? <MoonIcon /> : <SunIcon />
 
   const allowedItems = navigationItems.filter((item) =>
     checkRole(item.permission)
@@ -310,6 +316,10 @@ const HeaderMenu = (): JSX.Element => {
                 <MenuDivider />
               </>
             )}
+            <MenuItem icon={colorModeIcon} onClick={toggleColorMode}>
+              {colorModeLabel}
+            </MenuItem>
+            <MenuDivider />
             <MenuItem onClick={() => goTo(`/users/${auth.id}/details`)}>
               {auth.firstName} {auth.lastName}
             </MenuItem>
@@ -413,6 +423,15 @@ const HeaderMenu = (): JSX.Element => {
                 <Divider />
 
                 <VStack alignItems="stretch" spacing={2}>
+                  <Button
+                    justifyContent="flex-start"
+                    leftIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+                    minH="44px"
+                    variant="outline"
+                    onClick={toggleColorMode}
+                  >
+                    {colorModeLabel}
+                  </Button>
                   <Button
                     justifyContent="flex-start"
                     minH="44px"

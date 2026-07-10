@@ -8,6 +8,7 @@ import {
   // Card,
   // CardBody,
   Box,
+  useColorModeValue,
 } from "@chakra-ui/react"
 // import {
 //   FaHouse,
@@ -68,8 +69,10 @@ import InventoryTransactionBulkForm from "../inventoryTransactions/InventoryTran
 import BusinessForm from "../businesses/BusinessForm"
 
 const Home = () => {
+  const pageBg = useColorModeValue("gray.50", "gray.950")
+
   return (
-    <Box maxW="100vw" overflowX="hidden">
+    <Box maxW="100vw" overflowX="hidden" minH="100vh" bg={pageBg}>
       {import.meta.env.VITE_VERCEL_ENV === "development" && (
         <Box
           bgGradient="linear(to-r, blue.200, blue.500, blue.200)"

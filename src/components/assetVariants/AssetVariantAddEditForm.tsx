@@ -9,6 +9,7 @@ import {
   Heading,
   Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Select from "react-select"
@@ -16,7 +17,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { IAssetFullCategory } from "../assets/types"
 import Loading from "../common/Loading"
 import MyInput from "../ui/inputs/MyInput"
-import MySelect from "../ui/inputs/MySelect"
+import MySelect, { useReactSelectStyles } from "../ui/inputs/MySelect"
 import { IVariantAttributeValue } from "../variantAttributeValues/types"
 import { IAssetVariant } from "./types"
 import { assetVariantSchema } from "./assetVariantSchema"
@@ -42,6 +43,8 @@ const AssetVariantAddEditForm = ({
 }: Props) => {
   const menuPortalTarget =
     typeof document !== "undefined" ? document.body : undefined
+  const helperTextColor = useColorModeValue("gray.600", "gray.400")
+  const reactSelectStyles = useReactSelectStyles()
 
   const { register, formState, handleSubmit, control } =
     useForm<IAssetVariant>({
@@ -137,9 +140,9 @@ const AssetVariantAddEditForm = ({
                   </Grid>
                   <Grid mb={4}>
                     <GridItem>
-                      <FormControl>
-                        <FormLabel>Valores de variante</FormLabel>
-                        <Text fontSize="sm" color="gray.600" mb={2}>
+                        <FormControl>
+                          <FormLabel>Valores de variante</FormLabel>
+                        <Text fontSize="sm" color={helperTextColor} mb={2}>
                           Podés combinar uno o más valores, por ejemplo sabor y color.
                         </Text>
                         <Controller
@@ -175,12 +178,7 @@ const AssetVariantAddEditForm = ({
                                 }))}
                               menuPortalTarget={menuPortalTarget}
                               menuPosition="fixed"
-                              styles={{
-                                menuPortal: (base) => ({
-                                  ...base,
-                                  zIndex: 9999,
-                                }),
-                              }}
+                              styles={reactSelectStyles}
                               onChange={(selectedOptions) => {
                                 field.onChange(
                                   selectedOptions.map((option) => option.value),

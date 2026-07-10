@@ -6,7 +6,8 @@ const Header = (): JSX.Element => {
   return (
     <Box
       borderBottom={"1px"}
-      borderBottomColor={"#E2E8F0"}
+      borderBottomColor={useColorModeValue("gray.200", "whiteAlpha.200")}
+      bg={useColorModeValue("white", "gray.900")}
       padding={2}
       pb={{ base: 2, md: 3 }}
     >

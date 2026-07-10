@@ -8,7 +8,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -22,7 +21,7 @@ import {
 
 import CustomModal from "../common/CustomModal"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 
 import { useDeleteFixedCost } from "../../hooks/useDeleteFixedCost"
 import { useMessage } from "../../hooks/useMessage"
@@ -131,19 +130,7 @@ const FixedCost = ({ fixedCost }: Props) => {
                 {checkRole(ProfileBase.fixedCosts.viewActions) && (
                   <Popover placement="bottom-start">
                     <PopoverTrigger>
-                      <IconButton
-                        alignSelf="end"
-                        variant={"link"}
-                        colorScheme="blackAlpha"
-                        size="md"
-                        icon={
-                          <>
-                            <AddIcon boxSize="3" />
-                            <ChevronDownIcon boxSize="4" />
-                          </>
-                        }
-                        aria-label={""}
-                      />
+                      <ActionMenuButton ariaLabel="Acciones del gasto fijo" />
                     </PopoverTrigger>
                     <Portal>
                       <PopoverContent width="3xs">

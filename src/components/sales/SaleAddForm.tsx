@@ -26,6 +26,7 @@ import {
   FormLabel,
   Input,
   Box,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 import { ChevronDownIcon, ChevronUpIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
@@ -85,6 +86,17 @@ const SaleFormAdd = ({
   clients,
   paymentMethods,
 }: Props) => {
+  const subtleCardBg = useColorModeValue("gray.50", "#1D2130");
+  const accentCardBg = useColorModeValue("purple.50", "rgba(129, 70, 230, 0.16)");
+  const mutedTextColor = useColorModeValue("gray.600", "gray.300");
+  const subtleTextColor = useColorModeValue("gray.500", "gray.400");
+  const accentTextColor = useColorModeValue("purple.700", "purple.200");
+  const summaryGradient = useColorModeValue(
+    "linear-gradient(135deg, rgba(128,90,213,0.08), rgba(255,255,255,1))",
+    "linear-gradient(135deg, rgba(129,70,230,0.16), rgba(26,32,44,0.98))"
+  );
+  const summaryBorderColor = useColorModeValue("purple.200", "purple.700");
+
   const [expandedIndex, setExpandedIndex] = useState(0);
 
   const { register, formState, handleSubmit, control, watch, setValue } =
@@ -535,28 +547,28 @@ const SaleFormAdd = ({
                   </Grid>
 
                   <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} mb={6}>
-                    <Card variant="outline" bg="gray.50">
+                    <Card variant="outline" bg={subtleCardBg}>
                       <CardBody py={3}>
-                        <Text fontSize="sm" color="gray.600">
+                        <Text fontSize="sm" color={mutedTextColor}>
                           Items cargados
                         </Text>
                         <Heading size="md">{fields.length}</Heading>
                       </CardBody>
                     </Card>
-                    <Card variant="outline" bg="gray.50">
+                    <Card variant="outline" bg={subtleCardBg}>
                       <CardBody py={3}>
-                        <Text fontSize="sm" color="gray.600">
+                        <Text fontSize="sm" color={mutedTextColor}>
                           Unidades totales
                         </Text>
                         <Heading size="md">{getTotalUnits()}</Heading>
                       </CardBody>
                     </Card>
-                    <Card variant="outline" bg="purple.50">
+                    <Card variant="outline" bg={accentCardBg}>
                       <CardBody py={3}>
-                        <Text fontSize="sm" color="purple.700">
+                        <Text fontSize="sm" color={accentTextColor}>
                           Total actual
                         </Text>
-                        <Heading size="md" color="purple.700">
+                        <Heading size="md" color={accentTextColor}>
                           {currencyFormatter.format(getTotalSale() || 0)}
                         </Heading>
                       </CardBody>
@@ -576,7 +588,7 @@ const SaleFormAdd = ({
                         <Text fontSize="large" fontWeight="semibold">
                           Productos de la venta
                         </Text>
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color={subtleTextColor}>
                           Atajos: F2 nueva venta, F4 agrega item, Alt+Delete elimina el item activo, Ctrl+Enter guarda, F8 cancela la venta y Esc cierra el item abierto. El canal de cobro es solo para reportes operativos.
                         </Text>
                       </FormControl>
@@ -615,21 +627,21 @@ const SaleFormAdd = ({
                             >
                               <Box flex="1" minW={0}>
                                 <Flex mb={1} align="center" gap={2} wrap="wrap">
-                                  <Text fontSize="sm" fontWeight="bold" color="gray.500">
+                                  <Text fontSize="sm" fontWeight="bold" color={subtleTextColor}>
                                     Item {index + 1}
                                   </Text>
                                   <Text fontWeight="semibold" noOfLines={1}>
                                     {productName}
                                   </Text>
                                 </Flex>
-                                <Flex wrap="wrap" gap={4} fontSize="sm" color="gray.600">
+                                <Flex wrap="wrap" gap={4} fontSize="sm" color={mutedTextColor}>
                                   <Text>Cant.: {quantity || 0}</Text>
                                   <Text>
                                     Subtotal: {currencyFormatter.format(subtotal || 0)}
                                   </Text>
                                 </Flex>
                                 {variantSummary && (
-                                  <Text mt={2} fontSize="sm" color="gray.500">
+                                  <Text mt={2} fontSize="sm" color={subtleTextColor}>
                                     {variantSummary}
                                   </Text>
                                 )}
@@ -710,9 +722,9 @@ const SaleFormAdd = ({
                                         closeCurrentItem(index);
                                       }}
                                     />
-                                    <Card variant="outline" bg="gray.50">
+                                    <Card variant="outline" bg={subtleCardBg}>
                                       <CardBody py={3}>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color={mutedTextColor}>
                                           Subtotal del item
                                         </Text>
                                         <Heading size="sm">
@@ -783,8 +795,8 @@ const SaleFormAdd = ({
                         <Card
                           size="sm"
                           variant="outline"
-                          borderColor="purple.200"
-                          bg="linear-gradient(135deg, rgba(128,90,213,0.08), rgba(255,255,255,1))"
+                          borderColor={summaryBorderColor}
+                          bg={summaryGradient}
                           boxShadow="sm"
                         >
                           <CardBody px={{ base: 4, md: 5 }} py={4}>
@@ -799,20 +811,20 @@ const SaleFormAdd = ({
                                   fontSize="xs"
                                   letterSpacing="0.08em"
                                   textTransform="uppercase"
-                                  color="purple.700"
+                                  color={accentTextColor}
                                   fontWeight="bold"
                                 >
                                   Resumen final
                                 </Text>
-                                <Text fontSize="sm" color="gray.600" mt={1}>
+                                <Text fontSize="sm" color={mutedTextColor} mt={1}>
                                   {fields.length} item{fields.length === 1 ? "" : "s"} · {getTotalUnits()} unidades
                                 </Text>
                               </Box>
                               <Box textAlign={{ base: "left", md: "right" }}>
-                                <Text fontSize="sm" color="gray.600">
+                                <Text fontSize="sm" color={mutedTextColor}>
                                   Total a cobrar
                                 </Text>
-                                <Heading size="lg" color="purple.700">
+                                <Heading size="lg" color={accentTextColor}>
                                   {currencyFormatter.format(getTotalSale() || 0)}
                                 </Heading>
                               </Box>

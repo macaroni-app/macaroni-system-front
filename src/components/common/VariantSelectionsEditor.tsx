@@ -10,6 +10,7 @@ import {
   GridItem,
   IconButton,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import {
   Control,
@@ -65,6 +66,10 @@ const VariantSelectionsEditor = ({
   onVariantRowAdded,
   onRequestItemCompletion,
 }: Props) => {
+  const mutedTextColor = useColorModeValue("gray.600", "gray.300")
+  const subtleTextColor = useColorModeValue("gray.700", "gray.200")
+  const subtleHintColor = useColorModeValue("gray.500", "gray.400")
+
   const { fields, append, remove } = useFieldArray({
     name,
     control,
@@ -257,7 +262,7 @@ const VariantSelectionsEditor = ({
                     ? productItem.baseAsset
                     : productItem.baseAsset?.name ?? "Insumo base"}
                 </Text>
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color={mutedTextColor}>
                   Debés distribuir {expectedQuantity} unidad/es. Cargadas:{" "}
                   {currentQuantity}.
                 </Text>
@@ -328,7 +333,7 @@ const VariantSelectionsEditor = ({
                               <Box mt={2} pl={1}>
                                 <Text
                                   fontSize="sm"
-                                  color="gray.700"
+                                  color={subtleTextColor}
                                   fontWeight="medium"
                                   title={selectedVariantName}
                                 >
@@ -338,7 +343,7 @@ const VariantSelectionsEditor = ({
                                   <Text
                                     mt={1}
                                     fontSize="xs"
-                                    color="gray.500"
+                                    color={subtleHintColor}
                                     title={selectedVariantAttributes
                                       .map(
                                         (attribute) =>

@@ -18,6 +18,7 @@ import {
   Heading,
   Link,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
 
 import { useSalesReport } from "../../hooks/useSalesReport"
@@ -27,6 +28,8 @@ import Loading from "../common/Loading"
 
 type MonthlyComparisonChartProps = {
   records: MonthData[]
+  chartTextColor: string
+  gridColor: string
 }
 
 type LegendItemProps = {
@@ -61,17 +64,23 @@ const getSeriesData = (
 }
 
 const LegendItem = ({ color, label }: LegendItemProps) => {
+  const textColor = useColorModeValue("gray.600", "gray.300")
+
   return (
     <Flex alignItems="center" gap={2}>
       <Box bg={color} borderRadius="full" h="10px" w="10px" />
-      <Text color="gray.600" fontSize="sm" fontWeight="medium">
+      <Text color={textColor} fontSize="sm" fontWeight="medium">
         {label}
       </Text>
     </Flex>
   )
 }
 
-const MonthlyComparisonChart = ({ records }: MonthlyComparisonChartProps) => {
+const MonthlyComparisonChart = ({
+  records,
+  chartTextColor,
+  gridColor,
+}: MonthlyComparisonChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -81,12 +90,12 @@ const MonthlyComparisonChart = ({ records }: MonthlyComparisonChartProps) => {
       height: 340,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#4A5568",
+        textColor: chartTextColor,
         attributionLogo: false,
       },
       grid: {
-        vertLines: { color: "#EDF2F7" },
-        horzLines: { color: "#EDF2F7" },
+        vertLines: { color: gridColor },
+        horzLines: { color: gridColor },
       },
       rightPriceScale: {
         borderVisible: false,
@@ -139,12 +148,17 @@ const MonthlyComparisonChart = ({ records }: MonthlyComparisonChartProps) => {
       resizeObserver.disconnect()
       chart.remove()
     }
-  }, [records])
+  }, [chartTextColor, gridColor, records])
 
   return <Box ref={chartContainerRef} minH="340px" w="100%" />
 }
 
 const SalesCostsProfitChart = () => {
+  const chartTextColor = useColorModeValue("#4A5568", "#E2E8F0")
+  const gridColor = useColorModeValue("#EDF2F7", "rgba(255,255,255,0.08)")
+  const helperTextColor = useColorModeValue("gray.500", "gray.400")
+  const linkColor = useColorModeValue("purple.500", "purple.300")
+
   const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
   const querySalesReport = useSalesReport({
@@ -187,13 +201,17 @@ const SalesCostsProfitChart = () => {
             <LegendItem color={costsColor} label="Costos" />
             <LegendItem color={profitColor} label="Ganancia" />
           </Flex>
-          <MonthlyComparisonChart records={groupedSales} />
-          <Text mt={2} fontSize="xs" color="gray.500" textAlign="right">
+          <MonthlyComparisonChart
+            records={groupedSales}
+            chartTextColor={chartTextColor}
+            gridColor={gridColor}
+          />
+          <Text mt={2} fontSize="xs" color={helperTextColor} textAlign="right">
             Gráfico por{" "}
             <Link
               href="https://www.tradingview.com/"
               isExternal
-              color="purple.500"
+              color={linkColor}
             >
               TradingView
             </Link>

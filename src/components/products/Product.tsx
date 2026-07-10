@@ -7,7 +7,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -27,7 +26,7 @@ import { useMessage } from "../../hooks/useMessage"
 import { useDeleteProduct } from "../../hooks/useDeleteProduct"
 import { useDeleteManyProductItem } from "../../hooks/useDeleteManyProductItem"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 
 // import { format } from "date-fns";
 // import { es } from "date-fns/locale";
@@ -266,19 +265,7 @@ const Product = ({ product }: Props) => {
                     {checkRole(ProfileBase.products.viewActions) && (
                       <Popover placement="bottom-start">
                         <PopoverTrigger>
-                          <IconButton
-                            alignSelf="end"
-                            variant={"link"}
-                            colorScheme="blackAlpha"
-                            size="md"
-                            icon={
-                              <>
-                                <AddIcon boxSize="3" />
-                                <ChevronDownIcon boxSize="4" />
-                              </>
-                            }
-                            aria-label={""}
-                          />
+                          <ActionMenuButton ariaLabel="Acciones del producto" />
                         </PopoverTrigger>
                         <Portal>
                           <PopoverContent width="3xs">

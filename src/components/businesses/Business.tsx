@@ -5,7 +5,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -22,7 +21,7 @@ import CustomModal from "../common/CustomModal"
 
 import { useNavigate } from "react-router-dom"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { useState } from "react"
 
 import { useChangeIsActiveBusiness } from "../../hooks/useChangeIsActiveBusiness"
@@ -153,19 +152,7 @@ const Business = ({ business }: Props) => {
                 {checkRole(ProfileBase.businesses.viewActions) && (
                   <Popover placement="bottom-start">
                     <PopoverTrigger>
-                      <IconButton
-                        alignSelf="end"
-                        variant={"link"}
-                        colorScheme="blackAlpha"
-                        size="md"
-                        icon={
-                          <>
-                            <AddIcon boxSize="3" />
-                            <ChevronDownIcon boxSize="4" />
-                          </>
-                        }
-                        aria-label={""}
-                      />
+                      <ActionMenuButton ariaLabel="Acciones del negocio" />
                     </PopoverTrigger>
                     <Portal>
                       <PopoverContent width="3xs">

@@ -18,7 +18,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -31,7 +30,7 @@ import {
   Badge,
 } from "@chakra-ui/react"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 
 import { useChangeIsActiveAsset } from "../../hooks/useChangeIsActiveAsset"
@@ -200,19 +199,7 @@ const Asset = ({ asset }: Props): JSX.Element => {
                   <>
                     <Popover placement="bottom-start">
                       <PopoverTrigger>
-                        <IconButton
-                          alignSelf="end"
-                          variant={"link"}
-                          colorScheme="blackAlpha"
-                          aria-label="some"
-                          size="md"
-                          icon={
-                            <>
-                              <AddIcon boxSize="3" />
-                              <ChevronDownIcon boxSize="4" />
-                            </>
-                          }
-                        />
+                        <ActionMenuButton ariaLabel="Acciones del insumo" />
                       </PopoverTrigger>
                       <Portal>
                         <PopoverContent width="3xs">

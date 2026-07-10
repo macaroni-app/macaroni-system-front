@@ -5,7 +5,7 @@ import {
   Controller,
 } from "react-hook-form"
 
-import { FormLabel, FormControl, FormErrorMessage } from "@chakra-ui/react"
+import { FormLabel, FormControl, FormErrorMessage, useColorModeValue } from "@chakra-ui/react"
 import Select, { PropsValue } from "react-select"
 
 import { ICategory } from "../../categories/types"
@@ -32,6 +32,96 @@ interface Props {
 type Option = {
   value: string
   label: string
+}
+
+export const useReactSelectStyles = () => {
+  const selectBg = useColorModeValue("white", "#1A202C")
+  const selectBorder = useColorModeValue("#E2E8F0", "#2A3142")
+  const selectBorderHover = useColorModeValue("#CBD5E0", "#4A5568")
+  const selectText = useColorModeValue("#1A202C", "#F7FAFC")
+  const selectMuted = useColorModeValue("#718096", "#A0AEC0")
+  const selectMenuBg = useColorModeValue("white", "#171923")
+  const selectOptionHover = useColorModeValue("#F7FAFC", "#222838")
+  const selectOptionSelected = useColorModeValue("#E9DBFF", "#4F288D")
+  const selectMultiBg = useColorModeValue("#EDF2F7", "#2D3748")
+  const selectMultiLabel = useColorModeValue("#2D3748", "#E2E8F0")
+  const selectMultiRemoveHover = useColorModeValue("#E2E8F0", "#4A5568")
+
+  return {
+    menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+    control: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: selectBg,
+      borderColor: state.isFocused ? "#8146E6" : selectBorder,
+      boxShadow: state.isFocused ? "0 0 0 1px #8146E6" : "none",
+      minHeight: 40,
+      "&:hover": {
+        borderColor: state.isFocused ? "#8146E6" : selectBorderHover,
+      },
+    }),
+    valueContainer: (base: any) => ({
+      ...base,
+      backgroundColor: selectBg,
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: selectText,
+    }),
+    input: (base: any) => ({
+      ...base,
+      color: selectText,
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: selectMuted,
+    }),
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: selectMenuBg,
+      border: `1px solid ${selectBorder}`,
+      overflow: "hidden",
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? selectOptionSelected
+        : state.isFocused
+          ? selectOptionHover
+          : "transparent",
+      color: selectText,
+      cursor: "pointer",
+    }),
+    indicatorSeparator: (base: any) => ({
+      ...base,
+      backgroundColor: selectBorder,
+    }),
+    dropdownIndicator: (base: any) => ({
+      ...base,
+      color: selectMuted,
+    }),
+    clearIndicator: (base: any) => ({
+      ...base,
+      color: selectMuted,
+    }),
+    multiValue: (base: any) => ({
+      ...base,
+      backgroundColor: selectMultiBg,
+      borderRadius: 8,
+    }),
+    multiValueLabel: (base: any) => ({
+      ...base,
+      color: selectMultiLabel,
+      fontWeight: 600,
+    }),
+    multiValueRemove: (base: any) => ({
+      ...base,
+      color: selectMultiLabel,
+      ":hover": {
+        backgroundColor: selectMultiRemoveHover,
+        color: selectText,
+      },
+    }),
+  }
 }
 
 const MySelect = (props: Props) => {
@@ -64,6 +154,7 @@ const MySelect = (props: Props) => {
   })
   const menuPortalTarget =
     typeof document !== "undefined" ? document.body : undefined
+  const reactSelectStyles = useReactSelectStyles()
 
   return (
     <FormControl
@@ -90,9 +181,7 @@ const MySelect = (props: Props) => {
             menuPortalTarget={menuPortalTarget}
             menuPosition="fixed"
             autoFocus={autoFocus}
-            styles={{
-              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-            }}
+            styles={reactSelectStyles}
             onBlur={onBlur}
             onFocus={onFocus}
             onKeyDown={onKeyDown}

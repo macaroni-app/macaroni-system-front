@@ -19,6 +19,7 @@ import {
   Divider,
   CardHeader,
   Heading,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 // custom Hooks
@@ -38,37 +39,6 @@ const compactCurrencyFormatter = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 });
 
-const barValueLabelPlugin: Plugin<"bar"> = {
-  id: "barValueLabelPlugin",
-  afterDatasetsDraw(chart) {
-    const {
-      ctx,
-      data,
-      chartArea: { right },
-    } = chart;
-
-    ctx.save();
-    ctx.font = "600 12px sans-serif";
-    ctx.fillStyle = "#2D3748";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-
-    const dataset = data.datasets[0];
-    const meta = chart.getDatasetMeta(0);
-
-    meta.data.forEach((bar, index) => {
-      const rawValue = Number(dataset.data[index] ?? 0);
-      const label = compactCurrencyFormatter.format(rawValue);
-      const xPosition = Math.min(bar.x + 10, right - 78);
-      const yPosition = bar.y;
-
-      ctx.fillText(label, xPosition, yPosition);
-    });
-
-    ctx.restore();
-  },
-};
-
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -81,6 +51,14 @@ ChartJS.register(
 );
 
 const BarChart = () => {
+  const axisColor = useColorModeValue("#4A5568", "#E2E8F0");
+  const gridColor = useColorModeValue("#EDF2F7", "rgba(255,255,255,0.08)");
+  const helperTextColor = useColorModeValue("gray.600", "gray.400");
+  const valueLabelColor = useColorModeValue("#2D3748", "#F7FAFC");
+  const tooltipBg = useColorModeValue("#FFFFFF", "#171923");
+  const tooltipText = useColorModeValue("#2D3748", "#E2E8F0");
+  const tooltipBorder = useColorModeValue("#E2E8F0", "#2A3142");
+
   const queryInventory = useInventories({});
   const inventories = queryInventory.inventories as IInventoryFullRelated[];
 
@@ -107,6 +85,11 @@ const BarChart = () => {
         display: false,
       },
       tooltip: {
+        backgroundColor: tooltipBg,
+        titleColor: tooltipText,
+        bodyColor: tooltipText,
+        borderColor: tooltipBorder,
+        borderWidth: 1,
         callbacks: {
           label: (context: { parsed: { x: number } }) =>
             `Costo total: ${currencyFormatter.format(context.parsed.x)}`,
@@ -116,13 +99,21 @@ const BarChart = () => {
     scales: {
       x: {
         ticks: {
+          color: axisColor,
           callback: (value: string | number) =>
             compactCurrencyFormatter.format(Number(value)),
+        },
+        grid: {
+          color: gridColor,
         },
       },
       y: {
         ticks: {
           autoSkip: false,
+          color: axisColor,
+        },
+        grid: {
+          color: gridColor,
         },
       },
     },
@@ -161,13 +152,48 @@ const BarChart = () => {
         <Card variant="outline" mb={3}>
           <CardHeader textAlign={"center"}>
             <Heading size={"lg"}>Costo del inventario</Heading>
-            <Text color="gray.600" fontSize="sm" mt={2}>
+            <Text color={helperTextColor} fontSize="sm" mt={2}>
               Top 10 inventarios por costo total disponible
             </Text>
           </CardHeader>
           <CardBody>
             <Box h={`${Math.max(320, records.length * 52)}px`} w="100%">
-              <Bar options={options} data={data} plugins={[barValueLabelPlugin]} />
+              <Bar
+                options={options}
+                data={data}
+                plugins={[
+                  {
+                    id: "barValueLabelPlugin",
+                    afterDatasetsDraw(chart) {
+                      const {
+                        ctx,
+                        data,
+                        chartArea: { right },
+                      } = chart;
+
+                      ctx.save();
+                      ctx.font = "600 12px sans-serif";
+                      ctx.fillStyle = valueLabelColor;
+                      ctx.textAlign = "left";
+                      ctx.textBaseline = "middle";
+
+                      const dataset = data.datasets[0];
+                      const meta = chart.getDatasetMeta(0);
+
+                      meta.data.forEach((bar, index) => {
+                        const rawValue = Number(dataset.data[index] ?? 0);
+                        const label = compactCurrencyFormatter.format(rawValue);
+                        const xPosition = Math.min(bar.x + 10, right - 78);
+                        const yPosition = bar.y;
+
+                        ctx.fillText(label, xPosition, yPosition);
+                      });
+
+                      ctx.restore();
+                    },
+                  } as Plugin<"bar">,
+                ]}
+              />
             </Box>
           </CardBody>
           <Divider />

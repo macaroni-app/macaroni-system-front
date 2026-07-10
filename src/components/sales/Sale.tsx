@@ -7,7 +7,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -33,8 +32,6 @@ import { useNavigate } from "react-router-dom";
 import { useMessage } from "../../hooks/useMessage";
 // import { useDeleteSale } from "../../hooks/useDeleteSale"
 // import { useDeleteManySaleItem } from "../../hooks/useDeleteManySaleItem"
-
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 
 // import { format } from "date-fns"
 // import { es } from "date-fns/locale"
@@ -72,6 +69,7 @@ import ProfileBase from "../common/permissions";
 import { RangeDate } from "../common/RangeDateFilter";
 import { IInvoice } from "../afip/types";
 import { AxiosError } from "axios";
+import ActionMenuButton from "../common/ActionMenuButton";
 
 const getPaymentChannelConfig = (paymentChannel?: SalePaymentChannel) => {
   switch (paymentChannel) {
@@ -106,7 +104,6 @@ const Sale = ({
   inventoriesByAssetVariant,
 }: Props) => {
   const navigate = useNavigate();
-
   const popover = useDisclosure();
   const cancelModal = useDisclosure();
 
@@ -585,22 +582,12 @@ const Sale = ({
                         onClose={popover.onClose}
                       >
                         <PopoverTrigger>
-                          <IconButton
+                          <ActionMenuButton
                             onClick={(e) => {
                               e.stopPropagation();
                               popover.onToggle();
                             }}
-                            alignSelf="end"
-                            variant={"link"}
-                            colorScheme="blackAlpha"
-                            size="md"
-                            icon={
-                              <Flex gap={1}>
-                                <AddIcon boxSize="3" />
-                                <ChevronDownIcon boxSize="4" />
-                              </Flex>
-                            }
-                            aria-label={""}
+                            ariaLabel="Acciones de la venta"
                           />
                         </PopoverTrigger>
                         <Portal>

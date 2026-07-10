@@ -8,7 +8,6 @@ import {
   CardBody,
   Text,
   Flex,
-  IconButton,
   Popover,
   PopoverTrigger,
   Button,
@@ -29,7 +28,7 @@ import {
 
 import { useNavigate } from "react-router-dom"
 
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons"
+import ActionMenuButton from "../common/ActionMenuButton"
 
 import { useDeleteInventory } from "../../hooks/useDeleteInventory"
 import { useMessage } from "../../hooks/useMessage"
@@ -159,19 +158,7 @@ const Inventory = ({ inventory }: Props) => {
                 {checkRole(ProfileBase.inventories.viewActions) && (
                   <Popover placement="bottom-start">
                     <PopoverTrigger>
-                      <IconButton
-                        alignSelf="end"
-                        variant={"link"}
-                        colorScheme="blackAlpha"
-                        aria-label="some"
-                        size="md"
-                        icon={
-                          <>
-                            <AddIcon boxSize="3" />
-                            <ChevronDownIcon boxSize="4" />
-                          </>
-                        }
-                      />
+                      <ActionMenuButton ariaLabel="Acciones del inventario" />
                     </PopoverTrigger>
                     <Portal>
                       <PopoverContent width="3xs">

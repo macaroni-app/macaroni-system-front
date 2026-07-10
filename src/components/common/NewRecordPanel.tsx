@@ -1,5 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons"
-import { Button, Card, CardBody, Flex, HStack, Stack, Text } from "@chakra-ui/react"
+import { Button, Card, CardBody, Stack, Text, useColorModeValue } from "@chakra-ui/react"
 
 import { useCheckRole } from "../../hooks/useCheckRole"
 
@@ -23,9 +23,17 @@ const NewRecordPanel = ({
   handleAddBulkRecords,
 }: Props) => {
   const { checkRole } = useCheckRole()
+  const panelBg = useColorModeValue("#373E68", "#151824")
+  const panelBorder = useColorModeValue("#373E68", "#2A3142")
 
   return (
-    <Card bgColor={"#373E68"} variant="filled" mt={5} mb={3}>
+    <Card
+      bg={panelBg}
+      borderColor={panelBorder}
+      variant="outline"
+      mt={5}
+      mb={3}
+    >
       <CardBody>
         <Stack spacing={4}>
           <Text

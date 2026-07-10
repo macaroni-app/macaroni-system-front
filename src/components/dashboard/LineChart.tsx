@@ -18,6 +18,7 @@ import {
   Heading,
   Box,
   Link,
+  useColorModeValue,
 } from "@chakra-ui/react"
 
 // custom hooks
@@ -33,6 +34,8 @@ import { groupSalesByMonth, MonthData } from "../../utils/reports"
 
 interface ProfitAreaChartProps {
   profitRecords: MonthData[]
+  chartTextColor: string
+  gridColor: string
 }
 
 const formatCurrency = (amount: number) => {
@@ -47,7 +50,11 @@ const getMonthTime = (profitRecord: MonthData) => {
   return `${profitRecord.year}-${String(profitRecord.month).padStart(2, "0")}-01`
 }
 
-const ProfitAreaChart = ({ profitRecords }: ProfitAreaChartProps) => {
+const ProfitAreaChart = ({
+  profitRecords,
+  chartTextColor,
+  gridColor,
+}: ProfitAreaChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -57,12 +64,12 @@ const ProfitAreaChart = ({ profitRecords }: ProfitAreaChartProps) => {
       height: 320,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#4A5568",
+        textColor: chartTextColor,
         attributionLogo: false,
       },
       grid: {
-        vertLines: { color: "#EDF2F7" },
-        horzLines: { color: "#EDF2F7" },
+        vertLines: { color: gridColor },
+        horzLines: { color: gridColor },
       },
       rightPriceScale: {
         borderVisible: false,
@@ -106,13 +113,17 @@ const ProfitAreaChart = ({ profitRecords }: ProfitAreaChartProps) => {
       resizeObserver.disconnect()
       chart.remove()
     }
-  }, [profitRecords])
+  }, [chartTextColor, gridColor, profitRecords])
 
   return <Box ref={chartContainerRef} minH="320px" w="100%" />
 }
 
 
 const LineChart = () => {
+  const chartTextColor = useColorModeValue("#4A5568", "#E2E8F0")
+  const gridColor = useColorModeValue("#EDF2F7", "rgba(255,255,255,0.08)")
+  const helperTextColor = useColorModeValue("gray.500", "gray.400")
+  const linkColor = useColorModeValue("purple.500", "purple.300")
 
   const [numberOfMonth, setNumberOfMonth] = useState<number>(12)
 
@@ -170,13 +181,17 @@ const LineChart = () => {
             </Heading>
           </CardHeader>
           <CardBody>
-            <ProfitAreaChart profitRecords={profitRecords} />
-            <Text mt={2} fontSize="xs" color="gray.500" textAlign="right">
+            <ProfitAreaChart
+              profitRecords={profitRecords}
+              chartTextColor={chartTextColor}
+              gridColor={gridColor}
+            />
+            <Text mt={2} fontSize="xs" color={helperTextColor} textAlign="right">
               Gráfico por{" "}
               <Link
                 href="https://www.tradingview.com/"
                 isExternal
-                color="purple.500"
+                color={linkColor}
               >
                 TradingView
               </Link>
