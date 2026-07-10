@@ -5,7 +5,8 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    assetsDir: 'static',
   },
   base: '/', // Assets absolutos para BrowserRouter en Vercel
 })
