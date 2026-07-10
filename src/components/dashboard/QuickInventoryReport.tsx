@@ -1,5 +1,4 @@
 import {
-  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -18,10 +17,7 @@ import {
 import { useInventories } from "../../hooks/useInventories";
 
 import { IInventoryFullRelated } from "../inventories/types";
-import {
-  getInventoryDisplayName,
-  getInventoryVariantLabel,
-} from "../../utils/variants";
+import { getInventoryDisplayName } from "../../utils/variants";
 
 const QuickInventoryReport = () => {
   const queryInventories = useInventories({});
@@ -34,15 +30,6 @@ const QuickInventoryReport = () => {
         return (
           <Tr key={inventory?._id + inventory?.createdAt}>
             <Td>{getInventoryDisplayName({ asset: inventory.asset, assetVariant: inventory.assetVariant })}</Td>
-            <Td>
-              {getInventoryVariantLabel(inventory.assetVariant) ? (
-                <Badge colorScheme="purple" variant="subtle">
-                  {getInventoryVariantLabel(inventory.assetVariant)}
-                </Badge>
-              ) : (
-                "-"
-              )}
-            </Td>
             <Td isNumeric>{inventory.quantityAvailable}</Td>
             <Td isNumeric>{inventory.quantityReserved}</Td>
             <Td isNumeric>
@@ -68,7 +55,6 @@ const QuickInventoryReport = () => {
                 <Thead>
                   <Tr>
                     <Th>Insumo</Th>
-                    <Th>Variante</Th>
                     <Th isNumeric>Fisico</Th>
                     <Th isNumeric>Reservado</Th>
                     <Th isNumeric>Disponible</Th>

@@ -23,6 +23,7 @@ import {
   Select,
   Spacer,
   Text,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import { AxiosError } from "axios"
@@ -56,6 +57,8 @@ const OrderRequest = ({ orderRequest }: Props) => {
   const convertModal = useDisclosure()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentChannel, setPaymentChannel] = useState<SalePaymentChannel>(SalePaymentChannel.CASH)
+  const secondaryTextColor = useColorModeValue("gray.600", "gray.300")
+  const valueTextColor = useColorModeValue("gray.700", "gray.100")
 
   const { showMessage } = useMessage()
   const { checkRole } = useCheckRole()
@@ -186,22 +189,34 @@ const OrderRequest = ({ orderRequest }: Props) => {
                     {getOrderRequestStatusLabel(orderRequest.status as OrderRequestStatus)}
                   </Badge>
                 </Flex>
-                <Text color="gray.600">
-                  Nro. de pedido: {orderRequest.orderCode ?? "-"}
+                <Text color={secondaryTextColor}>
+                  Nro. de pedido:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {orderRequest.orderCode ?? "-"}
+                  </Text>
                 </Text>
-                <Text color="gray.600">
-                  Fecha: {orderRequestCreatedDatetime}
+                <Text color={secondaryTextColor}>
+                  Fecha:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {orderRequestCreatedDatetime}
+                  </Text>
                 </Text>
-                <Text color="gray.600">
-                  Items: {orderRequest.items?.length ?? 0}
+                <Text color={secondaryTextColor}>
+                  Items:{" "}
+                  <Text as="span" color={valueTextColor} fontWeight="medium">
+                    {orderRequest.items?.length ?? 0}
+                  </Text>
                 </Text>
                 <Flex gap={2} alignItems="center" flexWrap="wrap">
-                  <Text color="gray.600">
-                    Pagado: {new Intl.NumberFormat("en-US", {
+                  <Text color={secondaryTextColor}>
+                    Pagado:{" "}
+                    <Text as="span" color={valueTextColor} fontWeight="medium">
+                      {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       minimumFractionDigits: 2,
                       currency: "ARS",
                     }).format(Number(orderRequest.paidAmount ?? 0))}
+                    </Text>
                   </Text>
                   <Badge
                     colorScheme={getOrderRequestPaymentStatusColorScheme(orderRequest.paymentStatus)}

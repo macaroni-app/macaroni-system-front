@@ -208,11 +208,18 @@ const Dashboard = () => {
           </GridItem>
         </>
       )}
+      {checkRole(ProfileBase.dashboard.stats) && (
+        <GridItem colSpan={{ base: 12 }}>
+          <SalesByPaymentChannelChart />
+        </GridItem>
+      )}
+      {checkRole(ProfileBase.dashboard.stats) && (
+        <GridItem colSpan={{ base: 12 }}>
+          <LineChart />
+        </GridItem>
+      )}
       {checkRole(ProfileBase.dashboard.stockTab) && (
         <>
-          <GridItem colSpan={{ base: 12 }}>
-            <SellableReservedStockChart />
-          </GridItem>
           <GridItem colSpan={{ base: 12, md: 6 }}>
             {queryInventories.isLoading && (
               <SimpleBoardSkeleton numberRows={7} />
@@ -226,15 +233,15 @@ const Dashboard = () => {
             {!queryInventories.isLoading && <BarChart />}
           </GridItem>
           <GridItem colSpan={{ base: 12 }}>
+            <SellableReservedStockChart />
+          </GridItem>
+          <GridItem colSpan={{ base: 12 }}>
             <InventoryMovementsByReasonChart />
           </GridItem>
         </>
       )}
       {checkRole(ProfileBase.dashboard.stats) && (
         <>
-          <GridItem colSpan={{ base: 12 }}>
-            <SalesByPaymentChannelChart />
-          </GridItem>
           <GridItem colSpan={{ base: 12 }}>
             <SalesCostsProfitChart />
           </GridItem>
@@ -243,9 +250,6 @@ const Dashboard = () => {
           </GridItem>
           <GridItem colSpan={{ base: 12 }}>
             <TopSoldProductsChart />
-          </GridItem>
-          <GridItem colSpan={{ base: 12 }}>
-            <LineChart />
           </GridItem>
           <GridItem colSpan={{ base: 12 }}>
             <InventoryTransactionReport />
