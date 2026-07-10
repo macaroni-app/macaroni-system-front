@@ -5,7 +5,7 @@ import { IInventoryFullRelated } from "../inventories/types"
 import { IPaymentMethod } from "../paymentMethods/types"
 import { IAssetVariant } from "../assetVariants/types"
 import { IProductFullRelated, IVariantSelection } from "../products/types"
-import { ISaleFullRelated } from "../sales/types"
+import { ISaleFullRelated, SalePaymentChannel } from "../sales/types"
 
 export enum OrderRequestStatus {
   DRAFT = "DRAFT",
@@ -90,7 +90,7 @@ export interface IOrderRequestItemLessRelated extends IOrderRequestItemFather {
 
 export interface IConvertOrderRequestPayload {
   business?: string
-  paymentMethod: string
+  paymentChannel: SalePaymentChannel
   discount?: number
 }
 
@@ -101,7 +101,7 @@ export interface IAddOrderRequestPaymentPayload {
 }
 
 export interface IConvertOrderRequestModalValues {
-  paymentMethod: string
+  paymentChannel: SalePaymentChannel
 }
 
 export type IOrderRequestItemPreview = Pick<IOrderRequestItemLessRelated, "product" | "quantity" | "id" | "variantSelections">

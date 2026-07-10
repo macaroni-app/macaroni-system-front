@@ -32,33 +32,36 @@ import { useCancelOrderRequest } from "../../hooks/useCancelOrderRequest"
 import { useConfirmOrderRequest } from "../../hooks/useConfirmOrderRequest"
 import { useConvertOrderRequest } from "../../hooks/useConvertOrderRequest"
 import { useMessage } from "../../hooks/useMessage"
-import { usePaymentMethods } from "../../hooks/usePaymentMethods"
 import { useCheckRole } from "../../hooks/useCheckRole"
 import { AlertColorScheme, AlertStatus } from "../../utils/enums"
 import { ORDER_REQUEST_CANCELLED, ORDER_REQUEST_CONFIRMED, ORDER_REQUEST_CONVERTED, SOMETHING_WENT_WRONG_MESSAGE } from "../../utils/constants"
 import ProfileBase from "../common/permissions"
 import { getApiErrorMessage, getOrderRequestPaymentStatusColorScheme, getOrderRequestPaymentStatusLabel, getOrderRequestStatusColorScheme, getOrderRequestStatusLabel } from "./helpers"
 import { IConvertOrderRequestPayload, IOrderRequestFullRelated, OrderRequestStatus } from "./types"
+import { SalePaymentChannel } from "../sales/types"
 
 interface Props {
   orderRequest: IOrderRequestFullRelated
 }
 
 const OrderRequest = ({ orderRequest }: Props) => {
+  const paymentChannelOptions = [
+    { value: SalePaymentChannel.CASH, label: "Efectivo" },
+    { value: SalePaymentChannel.BANK_TRANSFER, label: "Transferencia" },
+    { value: SalePaymentChannel.QR, label: "QR" },
+    { value: SalePaymentChannel.CARD, label: "Tarjeta" },
+  ]
   const navigate = useNavigate()
   const popover = useDisclosure()
   const convertModal = useDisclosure()
   const [isLoading, setIsLoading] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("")
+  const [paymentChannel, setPaymentChannel] = useState<SalePaymentChannel>(SalePaymentChannel.CASH)
 
   const { showMessage } = useMessage()
   const { checkRole } = useCheckRole()
   const { confirmOrderRequest } = useConfirmOrderRequest()
   const { cancelOrderRequest } = useCancelOrderRequest()
   const { convertOrderRequest } = useConvertOrderRequest()
-
-  const queryPaymentMethods = usePaymentMethods({})
-  const paymentMethods = queryPaymentMethods.data ?? []
 
   const orderRequestCreatedDatetime = new Date(
     String(orderRequest?.sortingDate ?? orderRequest?.createdAt),
@@ -122,22 +125,13 @@ const OrderRequest = ({ orderRequest }: Props) => {
   }
 
   const handleConvert = async () => {
-    if (paymentMethod === "") {
-      showMessage(
-        "Seleccioná un método de pago",
-        AlertStatus.Error,
-        AlertColorScheme.Red,
-      )
-      return
-    }
-
     setIsLoading(true)
 
     try {
       const response = await convertOrderRequest({
         orderRequestId: orderRequest._id ?? "",
         payload: {
-          paymentMethod,
+          paymentChannel,
           business: orderRequest.business?._id,
           discount: Number(orderRequest.discount ?? 0),
         } as IConvertOrderRequestPayload,
@@ -284,18 +278,20 @@ const OrderRequest = ({ orderRequest }: Props) => {
           <ModalHeader>Convertir pedido a venta</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb={3}>Seleccioná el método de pago para la venta.</Text>
+            <Text mb={3}>Seleccioná el canal de cobro para la venta.</Text>
             <Select
-              placeholder="Método de pago"
-              value={paymentMethod}
-              onChange={(event) => setPaymentMethod(event.target.value)}
+              value={paymentChannel}
+              onChange={(event) => setPaymentChannel(event.target.value as SalePaymentChannel)}
             >
-              {paymentMethods.map((currentPaymentMethod) => (
-                <option key={currentPaymentMethod._id} value={currentPaymentMethod._id}>
-                  {currentPaymentMethod.name}
+              {paymentChannelOptions.map((currentPaymentChannel) => (
+                <option key={currentPaymentChannel.value} value={currentPaymentChannel.value}>
+                  {currentPaymentChannel.label}
                 </option>
               ))}
             </Select>
+            <Text mt={3} color="gray.600" fontSize="sm">
+              El método de pago se registrará como Contado por defecto.
+            </Text>
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={convertModal.onClose}>

@@ -48,13 +48,21 @@ import { getApiErrorMessage, getInventoryNameByReservedItem, getOrderRequestPaym
 import { IOrderRequestFullRelated, OrderRequestPaymentStatus, OrderRequestStatus } from "./types"
 import { generateOrderRequestSummaryPdf } from "./generateOrderRequestSummaryPdf"
 import { formatVariantSelections } from "../../utils/variants"
+import { SalePaymentChannel } from "../sales/types"
+
+const paymentChannelOptions = [
+  { value: SalePaymentChannel.CASH, label: "Efectivo" },
+  { value: SalePaymentChannel.BANK_TRANSFER, label: "Transferencia" },
+  { value: SalePaymentChannel.QR, label: "QR" },
+  { value: SalePaymentChannel.CARD, label: "Tarjeta" },
+]
 
 const OrderRequestDetails = () => {
   const { orderRequestId } = useParams()
   const navigate = useNavigate()
   const convertModal = useDisclosure()
   const paymentModal = useDisclosure()
-  const [paymentMethod, setPaymentMethod] = useState("")
+  const [paymentChannel, setPaymentChannel] = useState<SalePaymentChannel>(SalePaymentChannel.CASH)
   const [newPaymentAmount, setNewPaymentAmount] = useState("")
   const [newPaymentMethod, setNewPaymentMethod] = useState("")
   const [newPaymentNote, setNewPaymentNote] = useState("")
@@ -131,22 +139,13 @@ const OrderRequestDetails = () => {
   }
 
   const handleConvert = async () => {
-    if (paymentMethod === "") {
-      showMessage(
-        "Seleccioná un método de pago",
-        AlertStatus.Error,
-        AlertColorScheme.Red,
-      )
-      return
-    }
-
     setIsLoadingAction(true)
 
     try {
       const response = await convertOrderRequest({
         orderRequestId: orderRequestId ?? "",
         payload: {
-          paymentMethod,
+          paymentChannel,
           business: orderRequest?.business?._id,
           discount: Number(orderRequest?.discount ?? 0),
         },
@@ -541,18 +540,20 @@ const OrderRequestDetails = () => {
           <ModalHeader>Convertir pedido a venta</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb={3}>Seleccioná el método de pago para la venta.</Text>
+            <Text mb={3}>Seleccioná el canal de cobro para la venta.</Text>
             <Select
-              placeholder="Método de pago"
-              value={paymentMethod}
-              onChange={(event) => setPaymentMethod(event.target.value)}
+              value={paymentChannel}
+              onChange={(event) => setPaymentChannel(event.target.value as SalePaymentChannel)}
             >
-              {paymentMethods.map((currentPaymentMethod) => (
-                <option key={currentPaymentMethod._id} value={currentPaymentMethod._id}>
-                  {currentPaymentMethod.name}
+              {paymentChannelOptions.map((currentPaymentChannel) => (
+                <option key={currentPaymentChannel.value} value={currentPaymentChannel.value}>
+                  {currentPaymentChannel.label}
                 </option>
               ))}
             </Select>
+            <Text mt={3} color="gray.600" fontSize="sm">
+              El método de pago se registrará como Contado por defecto.
+            </Text>
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={convertModal.onClose}>
