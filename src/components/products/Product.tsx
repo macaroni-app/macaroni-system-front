@@ -165,7 +165,7 @@ const Product = ({ product }: Props) => {
           <Card variant="outline">
             <CardBody>
               <Grid
-                templateColumns="repeat(6, 1fr)"
+                templateColumns="repeat(7, 1fr)"
                 gap={2}
                 alignItems="center"
               >
@@ -199,6 +199,25 @@ const Product = ({ product }: Props) => {
                     <Badge variant={"subtle"} colorScheme={"gray"}>
                       {product.productType?.name}
                     </Badge>
+                  </Flex>
+                </GridItem>
+                <GridItem display={{ base: "none", md: "block" }}>
+                  <Flex direction="column" gap={2} placeItems={"center"}>
+                    <Text as="b">
+                      {product?.costPrice
+                        ? new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(
+                          Number.parseFloat(product?.costPrice.toString())
+                        )
+                        : new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          minimumFractionDigits: 2,
+                          currency: "USD",
+                        }).format(0)}
+                    </Text>
                   </Flex>
                 </GridItem>
                 <GridItem display={{ base: "none", md: "block" }}>
@@ -243,7 +262,7 @@ const Product = ({ product }: Props) => {
                     </Text>
                   </Flex>
                 </GridItem>
-                <GridItem colStart={{ base: 6 }}>
+                <GridItem colStart={{ base: 7 }}>
                   <Flex direction="column" gap={2}>
                     <Text display={{ md: "none" }} as="b">
                       {product?.retailsalePrice
